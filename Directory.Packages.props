@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+
+  <PropertyGroup>
+    <AssemblyName>$(AssemblyName.Replace(' ', '_'))</AssemblyName>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="GraphQL" Version="7.0.1" />
+    <PackageVersion Include="GraphQL.MicrosoftDI" Version="7.0.1" />
+    <PackageVersion Include="GraphQL.Server.Transports.AspNetCore" Version="7.0.0" />
+    <PackageVersion Include="GraphQL.Server.Ui.Playground" Version="7.0.0" />
+    <PackageVersion Include="GraphQL.SystemTextJson" Version="7.0.1" />
+  </ItemGroup>
+
+</Project>
