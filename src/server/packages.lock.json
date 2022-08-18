@@ -2,6 +2,12 @@
   "version": 2,
   "dependencies": {
     "net6.0": {
+      "Bogus": {
+        "type": "Direct",
+        "requested": "[34.0.2, )",
+        "resolved": "34.0.2",
+        "contentHash": "2KQAuMn3fLAQ2r6jeiffZnpv0bi3GCW3iRB2v1KeHIEBu8MNTh9dBlLTZwGvM0pr+9doKkU8L5JgCURmTmT88A=="
+      },
       "GraphQL": {
         "type": "Direct",
         "requested": "[7.0.1, )",
@@ -57,6 +63,12 @@
           "Humanizer.Core": "2.8.26",
           "Microsoft.EntityFrameworkCore.Relational": "6.0.8"
         }
+      },
+      "morelinq": {
+        "type": "Direct",
+        "requested": "[3.3.2, )",
+        "resolved": "3.3.2",
+        "contentHash": "MQc8GppZJLmjvcpEdf3EkC6ovsp7gRWt2e5mC7dcIOrgwSc+yjFd3JQ0iRqr3XrUT6rb/phv0IkEmBtbfVA7AQ=="
       },
       "Npgsql.EntityFrameworkCore.PostgreSQL": {
         "type": "Direct",
