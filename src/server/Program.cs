@@ -1,13 +1,18 @@
+using Funicular.Server.Data;
 using Funicular.Server.Graph;
 using Funicular.Server.Graph.Models;
 
 using GraphQL;
 using GraphQL.Types;
 
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var services = builder.Services;
+
+services.AddDbContext<FunicularDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
 services.AddSingleton<CharacterType>();
 services.AddSingleton<FunicularQuery>();

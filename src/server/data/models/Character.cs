@@ -1,4 +1,6 @@
 namespace Funicular.Server.Data.Models;
 
-public record Character(Guid Id, string Name, int Strength);
+using System.Text.Json;
+
+internal record Character(Guid Id, string Name, JsonElement? Json);
 

@@ -13,6 +13,11 @@
     <PackageReference Include="GraphQL.Server.Transports.AspNetCore" />
     <PackageReference Include="GraphQL.Server.Ui.Playground" />
     <PackageReference Include="GraphQL.SystemTextJson" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
 
 </Project>
