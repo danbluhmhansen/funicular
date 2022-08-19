@@ -1,0 +1,18 @@
+{
+  "name": "funicular",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "yarn@3.2.2",
+  "workspaces": [
+    "src/*"
+  ],
+  "scripts": {
+    "dev": "yarn workspace server dev",
+    "build": "yarn workspace server build",
+    "restore": "yarn workspace server restore",
+    "efDatabaseUpdate": "dotnet ef database update \"$@\" --project src/server",
+    "efDatabaseDrop": "dotnet ef database drop \"$@\" --project src/server",
+    "efMigrationsAdd": "dotnet ef migrations add \"$@\" --project src/server",
+    "efMigrationsRemove": "dotnet ef migrations remove \"$@\" --project src/server"
+  }
+}
