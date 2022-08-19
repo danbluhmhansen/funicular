@@ -1,16 +1,20 @@
 namespace Funicular.Server.Graph.Models;
 
-using Funicular.Server.Data.Models;
-
 using GraphQL.Types;
 
-internal class CharacterType : ObjectGraphType<Character>
+internal class CharacterType : ObjectGraphType<object>
 {
     public CharacterType()
     {
         Name = "Character";
-        Field(_ => _.Id);
-        Field(_ => _.Name);
+        Field<IdGraphType>("id");
+        Field<StringGraphType>("name");
+        Field<IntGraphType>("strength");
+        Field<IntGraphType>("dexterity");
+        Field<IntGraphType>("constitution");
+        Field<IntGraphType>("intelligence");
+        Field<IntGraphType>("wisdom");
+        Field<IntGraphType>("charisma");
     }
 }
 
