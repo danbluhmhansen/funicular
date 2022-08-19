@@ -1,4 +1,3 @@
-#if DEBUG
 namespace Funicular.Server.Services;
 
 using System.Text.Json;
@@ -59,4 +58,3 @@ internal class DataSeedWorker : IHostedService
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }
-#endif

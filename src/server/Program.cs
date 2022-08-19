@@ -1,9 +1,7 @@
 using Funicular.Server.Data;
 using Funicular.Server.Graph;
 using Funicular.Server.Graph.Models;
-#if DEBUG
 using Funicular.Server.Services;
-#endif
 
 using GraphQL;
 using GraphQL.Types;
@@ -23,9 +21,8 @@ services.AddGraphQL(options => options
     .AddSystemTextJson()
     .AddSchema<FunicularSchema>());
 
-#if DEBUG
-services.AddHostedService<DataSeedWorker>();
-#endif
+if (builder.Environment.IsDevelopment())
+    services.AddHostedService<DataSeedWorker>();
 
 var app = builder.Build();
 

@@ -3,13 +3,11 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Funicular.Server</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bogus" Condition="'$(Configuration)' == 'Debug'" />
+    <PackageReference Include="Bogus" />
     <PackageReference Include="GraphQL" />
     <PackageReference Include="GraphQL.MicrosoftDI" />
     <PackageReference Include="GraphQL.Server.Transports.AspNetCore" />
