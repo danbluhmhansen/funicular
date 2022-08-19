@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Funicular.Server.Data.Migrations
 {
     [DbContext(typeof(FunicularDbContext))]
-    [Migration("20220818203720_Init")]
+    [Migration("20220819195018_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,7 +31,7 @@ namespace Funicular.Server.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<JsonElement?>("Json")
+                    b.Property<JsonElement>("Json")
                         .HasColumnType("jsonb");
 
                     b.Property<string>("Name")

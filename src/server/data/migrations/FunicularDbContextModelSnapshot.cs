@@ -29,7 +29,7 @@ namespace Funicular.Server.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<JsonElement?>("Json")
+                    b.Property<JsonElement>("Json")
                         .HasColumnType("jsonb");
 
                     b.Property<string>("Name")

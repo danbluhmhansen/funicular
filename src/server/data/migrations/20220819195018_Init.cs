@@ -16,7 +16,7 @@ namespace Funicular.Server.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Json = table.Column<JsonElement>(type: "jsonb", nullable: true)
+                    Json = table.Column<JsonElement>(type: "jsonb", nullable: false)
                 },
                 constraints: table =>
                 {
