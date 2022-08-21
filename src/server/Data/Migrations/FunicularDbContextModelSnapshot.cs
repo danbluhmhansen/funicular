@@ -40,6 +40,23 @@ namespace Funicular.Server.Data.Migrations
 
                     b.ToTable("Characters");
                 });
+
+            modelBuilder.Entity("Funicular.Server.Data.Models.CharacterField", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Required")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Name");
+
+                    b.ToTable("CharacterFields");
+                });
 #pragma warning restore 612, 618
         }
     }

@@ -9,6 +9,8 @@ using Bogus;
 using Funicular.Server.Data;
 using Funicular.Server.Data.Models;
 
+using GraphQL.Utilities;
+
 using Microsoft.EntityFrameworkCore;
 
 using MoreLinq;
@@ -28,6 +30,19 @@ internal class DataSeedWorker : IHostedService
         var services = scope.ServiceProvider;
 
         var db = services.GetRequiredService<FunicularDbContext>();
+
+        if (!await db.CharacterFields.AnyAsync(cancellationToken))
+        {
+            db.CharacterFields.AddRange(new CharacterField[]
+            {
+                new("Strength", "int"),
+                new("Dexterity", "int"),
+                new("Constitution", "int"),
+                new("Intelligence", "int"),
+                new("Wisdom", "int"),
+                new("Charisma", "int"),
+            });
+        }
 
         if (!await db.Characters.AnyAsync(cancellationToken))
         {

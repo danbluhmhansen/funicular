@@ -15,17 +15,28 @@ var services = builder.Services;
 
 services.AddDbContext<FunicularDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
-services.AddSingleton<CharacterType>();
-services.AddSingleton<FunicularQuery>();
+services.AddScoped<CharacterType>();
+services.AddScoped<FunicularQuery>();
 services.AddGraphQL(options => options
     .AddSystemTextJson()
-    .AddSchema<FunicularSchema>());
+    .AddSchema<FunicularSchema>(GraphQL.DI.ServiceLifetime.Scoped));
 
 if (builder.Environment.IsDevelopment())
     services.AddHostedService<DataSeedWorker>();
 
 var app = builder.Build();
 
+app.Use(async (context, next) =>
+{
+    var characterType = context.RequestServices.GetRequiredService<CharacterType>();
+    var db = context.RequestServices.GetRequiredService<FunicularDbContext>();
+    var fields = await db.CharacterFields.ToListAsync(context.RequestAborted);
+    foreach (var field in fields)
+    {
+        characterType.CharacterField(field);
+    }
+    await next.Invoke();
+});
 app.UseGraphQL<ISchema>();
 
 // Configure the HTTP request pipeline.
