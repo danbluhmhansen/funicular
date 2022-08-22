@@ -1,9 +1,11 @@
 namespace Funicular.Server.Graph;
 
 using Funicular.Server.Data;
+using Funicular.Server.Data.Models;
 using Funicular.Server.Graph.Models;
 
 using GraphQL;
+using GraphQL.Builders;
 using GraphQL.MicrosoftDI;
 using GraphQL.Types;
 
@@ -11,22 +13,54 @@ using Microsoft.EntityFrameworkCore;
 
 internal class FunicularQuery : ObjectGraphType<object>
 {
+    private FieldBuilder<object, List<object>> charactersFieldBuilder;
+    private readonly List<CharacterField> characterFields = new();
+
     public FunicularQuery()
     {
         Name = "Query";
 
-        Field<ListGraphType<CharacterType>, List<object>>("characters")
+        charactersFieldBuilder = Field<ListGraphType<CharacterType>, List<object>>("characters")
             .Argument<StringGraphType>("id")
-            .Argument<StringGraphType>("name")
-            .Argument<IntGraphType>("strength")
-            .Argument<IntGraphType>("dexterity")
-            .Argument<IntGraphType>("constitution")
-            .Argument<IntGraphType>("intelligence")
-            .Argument<IntGraphType>("wisdom")
-            .Argument<IntGraphType>("charisma")
-            .Resolve()
-            .WithScope()
-            .WithService<FunicularDbContext>()
+            .Argument<StringGraphType>("name");
+    }
+
+    public void AddCharacterFields(params CharacterField[] fields) => characterFields.AddRange(fields);
+    public void AddCharacterFields(IEnumerable<CharacterField> fields) => AddCharacterFields(fields.ToArray());
+
+    public static IQueryable<Character> CharacterFieldPredicate(IResolveFieldContext<object> context, IQueryable<Character> query, CharacterField field)
+    {
+        var fieldName = field.Name;
+        switch (field.Type)
+        {
+            case "int":
+                var intArgument = context.GetArgument<int?>(fieldName.ToCamelCase());
+                return intArgument.HasValue
+                    ? query.Where(character => character.Json.GetProperty(fieldName).GetInt32() == intArgument.Value)
+                    : query;
+            case "string":
+                var stringArgument = context.GetArgument<string?>(fieldName.ToCamelCase());
+                return !string.IsNullOrWhiteSpace(stringArgument)
+                    ? query.Where(character => character.Json.GetProperty(fieldName).GetString() == stringArgument)
+                    : query;
+            default:
+                throw new NotSupportedException();
+        }
+    }
+
+    public FieldBuilder<object, List<object>> CharacterFieldArgument(CharacterField field) =>
+        charactersFieldBuilder = field.Type switch
+        {
+            "int" => charactersFieldBuilder.Argument<IntGraphType>(field.Name),
+            "string" => charactersFieldBuilder.Argument<StringGraphType>(field.Name),
+            _ => throw new NotSupportedException(),
+        };
+
+    public FieldBuilder<object, List<object>> InitializeCharacters()
+    {
+        foreach (var field in characterFields)
+            CharacterFieldArgument(field);
+        return charactersFieldBuilder = charactersFieldBuilder.Resolve().WithScope().WithService<FunicularDbContext>()
             .ResolveAsync((context, db) =>
             {
                 var query = db.Characters.AsQueryable();
@@ -39,29 +73,8 @@ internal class FunicularQuery : ObjectGraphType<object>
                 if (!string.IsNullOrWhiteSpace(nameArgument))
                     query = query.Where(character => EF.Functions.Like(character.Name, $"%{nameArgument}%"));
 
-                var strengthArgument = context.GetArgument<int?>("strength");
-                if (strengthArgument.HasValue)
-                    query = query.Where(character => character.Json.GetProperty("Strength").GetInt32() == strengthArgument.Value);
-
-                var dexterityArgument = context.GetArgument<int?>("dexterity");
-                if (dexterityArgument.HasValue)
-                    query = query.Where(character => character.Json.GetProperty("Dexterity").GetInt32() == dexterityArgument.Value);
-
-                var constitutionArgument = context.GetArgument<int?>("constitution");
-                if (constitutionArgument.HasValue)
-                    query = query.Where(character => character.Json.GetProperty("Constitution").GetInt32() == constitutionArgument.Value);
-
-                var intelligenceArgument = context.GetArgument<int?>("intelligence");
-                if (intelligenceArgument.HasValue)
-                    query = query.Where(character => character.Json.GetProperty("Intelligence").GetInt32() == intelligenceArgument.Value);
-
-                var wisdomArgument = context.GetArgument<int?>("wisdom");
-                if (wisdomArgument.HasValue)
-                    query = query.Where(character => character.Json.GetProperty("Wisdom").GetInt32() == wisdomArgument.Value);
-
-                var charismaArgument = context.GetArgument<int?>("charisma");
-                if (charismaArgument.HasValue)
-                    query = query.Where(character => character.Json.GetProperty("Charisma").GetInt32() == charismaArgument.Value);
+                foreach (var field in characterFields)
+                    query = CharacterFieldPredicate(context, query, field);
 
                 var selectId = context.SubFields?.ContainsKey("id") == true;
                 var selectName = context.SubFields?.ContainsKey("name") == true;

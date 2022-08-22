@@ -29,12 +29,14 @@ var app = builder.Build();
 app.Use(async (context, next) =>
 {
     var characterType = context.RequestServices.GetRequiredService<CharacterType>();
+    var query = context.RequestServices.GetRequiredService<FunicularQuery>();
     var db = context.RequestServices.GetRequiredService<FunicularDbContext>();
-    var fields = await db.CharacterFields.ToListAsync(context.RequestAborted);
-    foreach (var field in fields)
+    await foreach (var field in db.CharacterFields.AsAsyncEnumerable().WithCancellation(context.RequestAborted))
     {
         characterType.CharacterField(field);
+        query.AddCharacterFields(field);
     }
+    query.InitializeCharacters();
     await next.Invoke();
 });
 app.UseGraphQL<ISchema>();
