@@ -90,11 +90,11 @@ internal class FunicularQuery : ObjectGraphType<object>
                         id = selectId ? character.Id.ToString() : default,
                         name = selectName ? character.Name : string.Empty,
                         strength = selectStrength ? character.Json.GetProperty("Strength").GetInt32() : default,
-                        dexterity = selectStrength ? character.Json.GetProperty("Dexterity").GetInt32() : default,
-                        constitution = selectStrength ? character.Json.GetProperty("Constitution").GetInt32() : default,
-                        intelligence = selectStrength ? character.Json.GetProperty("Intelligence").GetInt32() : default,
-                        wisdom = selectStrength ? character.Json.GetProperty("Wisdom").GetInt32() : default,
-                        charisma = selectStrength ? character.Json.GetProperty("Charisma").GetInt32() : default,
+                        dexterity = selectDexterity ? character.Json.GetProperty("Dexterity").GetInt32() : default,
+                        constitution = selectConstitution ? character.Json.GetProperty("Constitution").GetInt32() : default,
+                        intelligence = selectIntelligence ? character.Json.GetProperty("Intelligence").GetInt32() : default,
+                        wisdom = selectWisdom ? character.Json.GetProperty("Wisdom").GetInt32() : default,
+                        charisma = selectCharisma ? character.Json.GetProperty("Charisma").GetInt32() : default,
                     })
                     .OfType<object>()
                     .ToListAsync(context.CancellationToken) as Task<List<object>?>;
