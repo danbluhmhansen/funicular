@@ -25,11 +25,9 @@ internal class FunicularQuery : ObjectGraphType<object>
             .Argument<StringGraphType>("name");
     }
 
-    public void AddCharacterFields(params CharacterField[] fields) =>
-        characterFields.AddRange(fields);
+    public void AddCharacterFields(params CharacterField[] fields) => characterFields.AddRange(fields);
 
-    public void AddCharacterFields(IEnumerable<CharacterField> fields) =>
-        AddCharacterFields(fields.ToArray());
+    public void AddCharacterFields(IEnumerable<CharacterField> fields) => AddCharacterFields(fields.ToArray());
 
     public static IQueryable<Character> CharacterFieldPredicate(
         IResolveFieldContext<object> context,
@@ -43,18 +41,12 @@ internal class FunicularQuery : ObjectGraphType<object>
             case "int":
                 var intArgument = context.GetArgument<int?>(fieldName.ToCamelCase());
                 return intArgument.HasValue
-                    ? query.Where(
-                        character =>
-                            character.Json.GetProperty(fieldName).GetInt32() == intArgument.Value
-                    )
+                    ? query.Where(character => character.Json.GetProperty(fieldName).GetInt32() == intArgument.Value)
                     : query;
             case "string":
                 var stringArgument = context.GetArgument<string?>(fieldName.ToCamelCase());
                 return !string.IsNullOrWhiteSpace(stringArgument)
-                    ? query.Where(
-                        character =>
-                            character.Json.GetProperty(fieldName).GetString() == stringArgument
-                    )
+                    ? query.Where(character => character.Json.GetProperty(fieldName).GetString() == stringArgument)
                     : query;
             default:
                 throw new NotSupportedException();
@@ -84,16 +76,11 @@ internal class FunicularQuery : ObjectGraphType<object>
 
                     var idArgument = context.GetArgument<string>("id");
                     if (!string.IsNullOrWhiteSpace(idArgument))
-                        query = query.Where(
-                            character =>
-                                EF.Functions.Like(character.Id.ToString(), $"%{idArgument}%")
-                        );
+                        query = query.Where(character => EF.Functions.Like(character.Id.ToString(), $"%{idArgument}%"));
 
                     var nameArgument = context.GetArgument<string>("name");
                     if (!string.IsNullOrWhiteSpace(nameArgument))
-                        query = query.Where(
-                            character => EF.Functions.Like(character.Name, $"%{nameArgument}%")
-                        );
+                        query = query.Where(character => EF.Functions.Like(character.Name, $"%{nameArgument}%"));
 
                     foreach (var field in characterFields)
                         query = CharacterFieldPredicate(context, query, field);

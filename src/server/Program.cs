@@ -20,8 +20,7 @@ services.AddDbContext<FunicularDbContext>(
 services.AddScoped<CharacterType>();
 services.AddScoped<FunicularQuery>();
 services.AddGraphQL(
-    options =>
-        options.AddSystemTextJson().AddSchema<FunicularSchema>(GraphQL.DI.ServiceLifetime.Scoped)
+    options => options.AddSystemTextJson().AddSchema<FunicularSchema>(GraphQL.DI.ServiceLifetime.Scoped)
 );
 
 if (builder.Environment.IsDevelopment())
@@ -35,11 +34,7 @@ app.Use(
         var characterType = context.RequestServices.GetRequiredService<CharacterType>();
         var query = context.RequestServices.GetRequiredService<FunicularQuery>();
         var db = context.RequestServices.GetRequiredService<FunicularDbContext>();
-        await foreach (
-            var field in db.CharacterFields
-                .AsAsyncEnumerable()
-                .WithCancellation(context.RequestAborted)
-        )
+        await foreach (var field in db.CharacterFields.AsAsyncEnumerable().WithCancellation(context.RequestAborted))
         {
             characterType.CharacterField(field);
             query.AddCharacterFields(field);
