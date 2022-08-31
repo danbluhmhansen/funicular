@@ -1,12 +1,18 @@
 namespace Funicular.Server.Graph;
 
+using GraphQL.Instrumentation;
 using GraphQL.Types;
 
 internal class FunicularSchema : Schema
 {
-    public FunicularSchema(IServiceProvider services) : base(services)
+    public FunicularSchema(
+        IServiceProvider services,
+        FunicularQuery query,
+        IEnumerable<IFieldMiddleware> middlewares) : base(services)
     {
-        Query = services.GetRequiredService<FunicularQuery>();
+        Query = query;
+
+        foreach (var middleware in middlewares) FieldMiddleware.Use(middleware);
     }
 }
 

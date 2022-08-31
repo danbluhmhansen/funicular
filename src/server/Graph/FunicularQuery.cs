@@ -78,24 +78,11 @@ internal class FunicularQuery : ObjectGraphType<object>
 
                 var selectId = context.SubFields?.ContainsKey("id") == true;
                 var selectName = context.SubFields?.ContainsKey("name") == true;
-                var selectStrength = context.SubFields?.ContainsKey("strength") == true;
-                var selectDexterity = context.SubFields?.ContainsKey("dexterity") == true;
-                var selectConstitution = context.SubFields?.ContainsKey("constitution") == true;
-                var selectIntelligence = context.SubFields?.ContainsKey("intelligence") == true;
-                var selectWisdom = context.SubFields?.ContainsKey("wisdom") == true;
-                var selectCharisma = context.SubFields?.ContainsKey("charisma") == true;
                 return query
-                    .Select(character => new
-                    {
-                        id = selectId ? character.Id.ToString() : default,
-                        name = selectName ? character.Name : string.Empty,
-                        strength = selectStrength ? character.Json.GetProperty("Strength").GetInt32() : default,
-                        dexterity = selectDexterity ? character.Json.GetProperty("Dexterity").GetInt32() : default,
-                        constitution = selectConstitution ? character.Json.GetProperty("Constitution").GetInt32() : default,
-                        intelligence = selectIntelligence ? character.Json.GetProperty("Intelligence").GetInt32() : default,
-                        wisdom = selectWisdom ? character.Json.GetProperty("Wisdom").GetInt32() : default,
-                        charisma = selectCharisma ? character.Json.GetProperty("Charisma").GetInt32() : default,
-                    })
+                    .Select(character => new Character(
+                        selectId ? character.Id : default,
+                        selectName ? character.Name : string.Empty,
+                        character.Json))
                     .OfType<object>()
                     .ToListAsync(context.CancellationToken) as Task<List<object>?>;
             });
