@@ -1,5 +1,7 @@
 namespace Funicular.Server.Graph;
 
+using System.Linq.Expressions;
+
 using Funicular.Server.Data;
 using Funicular.Server.Data.Models;
 using Funicular.Server.Graph.Models;
@@ -21,8 +23,12 @@ internal class FunicularQuery : ObjectGraphType<object>
         Name = "Query";
 
         charactersFieldBuilder = Field<ListGraphType<CharacterType>, List<object>>("characters")
+            .Argument<BooleanGraphType>("count")
+            .Argument<IntGraphType>("top")
+            .Argument<IntGraphType>("skip")
             .Argument<StringGraphType>("id")
-            .Argument<StringGraphType>("name");
+            .Argument<StringGraphType>("name")
+            .Argument<ListGraphType<OrderByGraphType>>("orderby");
     }
 
     public void AddCharacterFields(params CharacterField[] fields) => characterFields.AddRange(fields);
@@ -70,34 +76,77 @@ internal class FunicularQuery : ObjectGraphType<object>
             .WithScope()
             .WithService<FunicularDbContext>()
             .ResolveAsync(
-                (context, db) =>
+                async (context, db) =>
                 {
                     var query = db.Characters.AsQueryable();
 
-                    var idArgument = context.GetArgument<string>("id");
-                    if (!string.IsNullOrWhiteSpace(idArgument))
-                        query = query.Where(character => EF.Functions.Like(character.Id.ToString(), $"%{idArgument}%"));
+                    var count = context.GetArgument<bool>("count");
+                    var countTask = count ? query.CountAsync(context.CancellationToken) : default;
 
-                    var nameArgument = context.GetArgument<string>("name");
-                    if (!string.IsNullOrWhiteSpace(nameArgument))
-                        query = query.Where(character => EF.Functions.Like(character.Name, $"%{nameArgument}%"));
+                    var id = context.GetArgument<string>("id");
+                    if (!string.IsNullOrWhiteSpace(id))
+                        query = query.Where(character => EF.Functions.Like(character.Id.ToString(), $"%{id}%"));
+
+                    var name = context.GetArgument<string>("name");
+                    if (!string.IsNullOrWhiteSpace(name))
+                        query = query.Where(character => EF.Functions.Like(character.Name, $"%{name}%"));
 
                     foreach (var field in characterFields)
                         query = CharacterFieldPredicate(context, query, field);
 
+                    foreach ((var field, var desc) in context.GetArgument<IEnumerable<OrderBy>>("orderby"))
+                    {
+                        var pascalField = field.ToPascalCase();
+                        var characterField = characterFields.FirstOrDefault(
+                            characterField => characterField.Name == field.ToPascalCase()
+                        );
+                        Expression<Func<Character, object?>> keySelector = pascalField switch
+                        {
+                            nameof(Character.Id) => character => character.Id,
+                            nameof(Character.Name) => character => character.Name,
+                            _
+                                => characterField!.Type switch
+                                {
+                                    "int" => character => character.Json.GetProperty(field).GetInt32(),
+                                    "string" => character => character.Json.GetProperty(field).GetString(),
+                                    _ => throw new NotSupportedException(),
+                                },
+                        };
+
+                        query = query is IOrderedQueryable<Character> ordered
+                            ? desc
+                                ? ordered.ThenByDescending(keySelector)
+                                : ordered.ThenBy(keySelector)
+                            : desc
+                                ? query.OrderByDescending(keySelector)
+                                : query.OrderBy(keySelector);
+                    }
+
+                    var top = context.GetArgument<int>("top");
+                    if (top is not 0)
+                        query = query.Take(top);
+
+                    var skip = context.GetArgument<int>("skip");
+                    if (skip is not 0)
+                        query = query.Skip(skip);
+
                     var selectId = context.SubFields?.ContainsKey("id") == true;
                     var selectName = context.SubFields?.ContainsKey("name") == true;
-                    return query
-                            .Select(
-                                character =>
-                                    new Character(
-                                        selectId ? character.Id : default,
-                                        selectName ? character.Name : string.Empty,
-                                        character.Json
-                                    )
-                            )
-                            .OfType<object>()
-                            .ToListAsync(context.CancellationToken) as Task<List<object>?>;
+
+                    if (countTask is not null)
+                        context.OutputExtensions["count"] = await countTask;
+
+                    return await query
+                        .Select(
+                            character =>
+                                new Character(
+                                    selectId ? character.Id : default,
+                                    selectName ? character.Name : string.Empty,
+                                    character.Json
+                                )
+                        )
+                        .OfType<object>()
+                        .ToListAsync(context.CancellationToken);
                 }
             );
     }

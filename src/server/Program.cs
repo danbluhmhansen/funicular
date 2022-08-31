@@ -17,6 +17,7 @@ services.AddDbContext<FunicularDbContext>(
     options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default"))
 );
 
+services.AddScoped<OrderByGraphType>();
 services.AddScoped<CharacterType>();
 services.AddScoped<FunicularQuery>();
 services.AddGraphQL(
@@ -40,7 +41,7 @@ app.Use(
             query.AddCharacterFields(field);
         }
         query.InitializeCharacters();
-        await next.Invoke();
+        await next();
     }
 );
 app.UseGraphQL<ISchema>();
