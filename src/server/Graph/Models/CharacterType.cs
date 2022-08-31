@@ -14,13 +14,15 @@ internal class CharacterType : ObjectGraphType<Character>
         Field<StringGraphType>("name").Resolve(context => context.Source.Name);
     }
 
-    public FieldBuilder<Character, object> CharacterField(CharacterField field) => field.Type switch
-    {
-        "int" => Field<IntGraphType>(field.Name)
-            .Resolve(context => context.Source.Json.GetProperty(field.Name).GetInt32()),
-        "string" => Field<StringGraphType>(field.Name)
-            .Resolve(context => context.Source.Json.GetProperty(field.Name).GetString()),
-        _ => throw new NotSupportedException(),
-    };
+    public FieldBuilder<Character, object> CharacterField(CharacterField field) =>
+        field.Type switch
+        {
+            "int"
+                => Field<IntGraphType>(field.Name)
+                    .Resolve(context => context.Source.Json.GetProperty(field.Name).GetInt32()),
+            "string"
+                => Field<StringGraphType>(field.Name)
+                    .Resolve(context => context.Source.Json.GetProperty(field.Name).GetString()),
+            _ => throw new NotSupportedException(),
+        };
 }
-

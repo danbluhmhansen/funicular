@@ -7,12 +7,21 @@
     "src/*"
   ],
   "scripts": {
-    "dev": "yarn workspace server dev",
-    "build": "yarn workspace server build",
-    "restore": "yarn workspace server restore",
+    "dev": "yarn workspaces foreach run dev",
+    "build": "yarn workspaces foreach run build",
+    "restore": "yarn workspaces foreach run restore",
+    "lint": "yarn workspaces foreach run lint",
     "efDatabaseUpdate": "dotnet ef database update \"$@\" --project src/server",
     "efDatabaseDrop": "dotnet ef database drop \"$@\" --project src/server",
     "efMigrationsAdd": "dotnet ef migrations add \"$@\" --project src/server",
-    "efMigrationsRemove": "dotnet ef migrations remove \"$@\" --project src/server"
+    "efMigrationsRemove": "dotnet ef migrations remove \"$@\" --project src/server",
+    "postinstall": "husky install"
+  },
+  "devDependencies": {
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3"
+  },
+  "lint-staged": {
+    "*.cs": ["dotnet csharpier", "dotnet format src/server --include"]
   }
 }

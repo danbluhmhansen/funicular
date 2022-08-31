@@ -17,7 +17,8 @@ internal class FunicularDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        if (modelBuilder is null) throw new ArgumentNullException(nameof(modelBuilder));
+        if (modelBuilder is null)
+            throw new ArgumentNullException(nameof(modelBuilder));
 
         base.OnModelCreating(modelBuilder);
 

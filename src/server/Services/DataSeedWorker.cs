@@ -33,39 +33,45 @@ internal class DataSeedWorker : IHostedService
 
         if (!await db.CharacterFields.AnyAsync(cancellationToken))
         {
-            db.CharacterFields.AddRange(new CharacterField[]
-            {
-                new("Strength", "int"),
-                new("Dexterity", "int"),
-                new("Constitution", "int"),
-                new("Intelligence", "int"),
-                new("Wisdom", "int"),
-                new("Charisma", "int"),
-            });
+            db.CharacterFields.AddRange(
+                new CharacterField[]
+                {
+                    new("Strength", "int"),
+                    new("Dexterity", "int"),
+                    new("Constitution", "int"),
+                    new("Intelligence", "int"),
+                    new("Wisdom", "int"),
+                    new("Charisma", "int"),
+                }
+            );
         }
 
         if (!await db.Characters.AnyAsync(cancellationToken))
         {
             var standardArray = new[] { 15, 14, 13, 12, 10, 8 };
-            db.Characters.AddRange(new Faker<Character>()
-                .CustomInstantiator(f =>
-                {
-                    var stats = standardArray.Shuffle().ToArray();
-                    return new(
-                        Guid.NewGuid(),
-                        f.Name.FirstName(),
-                        JsonSerializer.SerializeToElement(
-                            new Dictionary<string, object?>
-                            {
-                                { "Strength", stats[0] },
-                                { "Dexterity", stats[1] },
-                                { "Constitution", stats[2] },
-                                { "Intelligence", stats[3] },
-                                { "Wisdom", stats[4] },
-                                { "Charisma", stats[5] },
-                            }));
-                })
-                .Generate(100));
+            db.Characters.AddRange(
+                new Faker<Character>()
+                    .CustomInstantiator(f =>
+                    {
+                        var stats = standardArray.Shuffle().ToArray();
+                        return new(
+                            Guid.NewGuid(),
+                            f.Name.FirstName(),
+                            JsonSerializer.SerializeToElement(
+                                new Dictionary<string, object?>
+                                {
+                                    { "Strength", stats[0] },
+                                    { "Dexterity", stats[1] },
+                                    { "Constitution", stats[2] },
+                                    { "Intelligence", stats[3] },
+                                    { "Wisdom", stats[4] },
+                                    { "Charisma", stats[5] },
+                                }
+                            )
+                        );
+                    })
+                    .Generate(100)
+            );
         }
 
         await db.SaveChangesAsync(cancellationToken);

@@ -25,10 +25,17 @@ internal class FunicularQuery : ObjectGraphType<object>
             .Argument<StringGraphType>("name");
     }
 
-    public void AddCharacterFields(params CharacterField[] fields) => characterFields.AddRange(fields);
-    public void AddCharacterFields(IEnumerable<CharacterField> fields) => AddCharacterFields(fields.ToArray());
+    public void AddCharacterFields(params CharacterField[] fields) =>
+        characterFields.AddRange(fields);
 
-    public static IQueryable<Character> CharacterFieldPredicate(IResolveFieldContext<object> context, IQueryable<Character> query, CharacterField field)
+    public void AddCharacterFields(IEnumerable<CharacterField> fields) =>
+        AddCharacterFields(fields.ToArray());
+
+    public static IQueryable<Character> CharacterFieldPredicate(
+        IResolveFieldContext<object> context,
+        IQueryable<Character> query,
+        CharacterField field
+    )
     {
         var fieldName = field.Name;
         switch (field.Type)
@@ -36,12 +43,18 @@ internal class FunicularQuery : ObjectGraphType<object>
             case "int":
                 var intArgument = context.GetArgument<int?>(fieldName.ToCamelCase());
                 return intArgument.HasValue
-                    ? query.Where(character => character.Json.GetProperty(fieldName).GetInt32() == intArgument.Value)
+                    ? query.Where(
+                        character =>
+                            character.Json.GetProperty(fieldName).GetInt32() == intArgument.Value
+                    )
                     : query;
             case "string":
                 var stringArgument = context.GetArgument<string?>(fieldName.ToCamelCase());
                 return !string.IsNullOrWhiteSpace(stringArgument)
-                    ? query.Where(character => character.Json.GetProperty(fieldName).GetString() == stringArgument)
+                    ? query.Where(
+                        character =>
+                            character.Json.GetProperty(fieldName).GetString() == stringArgument
+                    )
                     : query;
             default:
                 throw new NotSupportedException();
@@ -60,32 +73,45 @@ internal class FunicularQuery : ObjectGraphType<object>
     {
         foreach (var field in characterFields)
             CharacterFieldArgument(field);
-        return charactersFieldBuilder = charactersFieldBuilder.Resolve().WithScope().WithService<FunicularDbContext>()
-            .ResolveAsync((context, db) =>
-            {
-                var query = db.Characters.AsQueryable();
+        return charactersFieldBuilder = charactersFieldBuilder
+            .Resolve()
+            .WithScope()
+            .WithService<FunicularDbContext>()
+            .ResolveAsync(
+                (context, db) =>
+                {
+                    var query = db.Characters.AsQueryable();
 
-                var idArgument = context.GetArgument<string>("id");
-                if (!string.IsNullOrWhiteSpace(idArgument))
-                    query = query.Where(character => EF.Functions.Like(character.Id.ToString(), $"%{idArgument}%"));
+                    var idArgument = context.GetArgument<string>("id");
+                    if (!string.IsNullOrWhiteSpace(idArgument))
+                        query = query.Where(
+                            character =>
+                                EF.Functions.Like(character.Id.ToString(), $"%{idArgument}%")
+                        );
 
-                var nameArgument = context.GetArgument<string>("name");
-                if (!string.IsNullOrWhiteSpace(nameArgument))
-                    query = query.Where(character => EF.Functions.Like(character.Name, $"%{nameArgument}%"));
+                    var nameArgument = context.GetArgument<string>("name");
+                    if (!string.IsNullOrWhiteSpace(nameArgument))
+                        query = query.Where(
+                            character => EF.Functions.Like(character.Name, $"%{nameArgument}%")
+                        );
 
-                foreach (var field in characterFields)
-                    query = CharacterFieldPredicate(context, query, field);
+                    foreach (var field in characterFields)
+                        query = CharacterFieldPredicate(context, query, field);
 
-                var selectId = context.SubFields?.ContainsKey("id") == true;
-                var selectName = context.SubFields?.ContainsKey("name") == true;
-                return query
-                    .Select(character => new Character(
-                        selectId ? character.Id : default,
-                        selectName ? character.Name : string.Empty,
-                        character.Json))
-                    .OfType<object>()
-                    .ToListAsync(context.CancellationToken) as Task<List<object>?>;
-            });
+                    var selectId = context.SubFields?.ContainsKey("id") == true;
+                    var selectName = context.SubFields?.ContainsKey("name") == true;
+                    return query
+                            .Select(
+                                character =>
+                                    new Character(
+                                        selectId ? character.Id : default,
+                                        selectName ? character.Name : string.Empty,
+                                        character.Json
+                                    )
+                            )
+                            .OfType<object>()
+                            .ToListAsync(context.CancellationToken) as Task<List<object>?>;
+                }
+            );
     }
 }
-

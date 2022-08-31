@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "dotnet watch",
     "build": "dotnet build",
-    "restore": "dotnet restore"
+    "restore": "dotnet restore",
+    "lint": "dotnet csharpier . && dotnet format"
   }
 }
