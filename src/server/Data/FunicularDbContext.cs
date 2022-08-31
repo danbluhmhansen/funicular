@@ -13,7 +13,7 @@ internal class FunicularDbContext : DbContext
     protected FunicularDbContext() { }
 
     public DbSet<Character> Characters => Set<Character>();
-    public DbSet<CharacterField> CharacterFields => Set<CharacterField>();
+    public DbSet<DynamicField> CharacterFields => Set<DynamicField>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,6 +22,6 @@ internal class FunicularDbContext : DbContext
 
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<CharacterField>().HasKey(field => field.Name);
+        modelBuilder.Entity<DynamicField>().HasKey(field => field.Name);
     }
 }

@@ -34,7 +34,7 @@ internal class DataSeedWorker : IHostedService
         if (!await db.CharacterFields.AnyAsync(cancellationToken))
         {
             db.CharacterFields.AddRange(
-                new CharacterField[]
+                new DynamicField[]
                 {
                     new("Strength", "int"),
                     new("Dexterity", "int"),

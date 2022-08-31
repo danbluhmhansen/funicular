@@ -37,8 +37,8 @@ app.Use(
         var db = context.RequestServices.GetRequiredService<FunicularDbContext>();
         await foreach (var field in db.CharacterFields.AsAsyncEnumerable().WithCancellation(context.RequestAborted))
         {
-            characterType.CharacterField(field);
-            query.AddCharacterFields(field);
+            characterType.DynamicField(field);
+            query.AddDynamicFields(field);
         }
         query.InitializeCharacters();
         await next();

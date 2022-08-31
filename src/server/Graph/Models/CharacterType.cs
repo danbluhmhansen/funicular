@@ -14,7 +14,7 @@ internal class CharacterType : ObjectGraphType<Character>
         Field<StringGraphType>("name").Resolve(context => context.Source.Name);
     }
 
-    public FieldBuilder<Character, object> CharacterField(CharacterField field) =>
+    public FieldBuilder<Character, object> DynamicField(DynamicField field) =>
         field.Type switch
         {
             "int"

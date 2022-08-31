@@ -16,7 +16,7 @@ using Microsoft.EntityFrameworkCore;
 internal class FunicularQuery : ObjectGraphType<object>
 {
     private FieldBuilder<object, List<object>> charactersFieldBuilder;
-    private readonly List<CharacterField> characterFields = new();
+    private readonly List<DynamicField> dynamicFields = new();
 
     public FunicularQuery()
     {
@@ -31,14 +31,14 @@ internal class FunicularQuery : ObjectGraphType<object>
             .Argument<ListGraphType<OrderByGraphType>>("orderby");
     }
 
-    public void AddCharacterFields(params CharacterField[] fields) => characterFields.AddRange(fields);
+    public void AddDynamicFields(params DynamicField[] fields) => dynamicFields.AddRange(fields);
 
-    public void AddCharacterFields(IEnumerable<CharacterField> fields) => AddCharacterFields(fields.ToArray());
+    public void AddDynamicFields(IEnumerable<DynamicField> fields) => AddDynamicFields(fields.ToArray());
 
-    public static IQueryable<Character> CharacterFieldPredicate(
+    public static IQueryable<Character> DynamicFieldPredicate(
         IResolveFieldContext<object> context,
         IQueryable<Character> query,
-        CharacterField field
+        DynamicField field
     )
     {
         var fieldName = field.Name;
@@ -59,7 +59,7 @@ internal class FunicularQuery : ObjectGraphType<object>
         }
     }
 
-    public FieldBuilder<object, List<object>> CharacterFieldArgument(CharacterField field) =>
+    public FieldBuilder<object, List<object>> DynamicFieldArgument(DynamicField field) =>
         charactersFieldBuilder = field.Type switch
         {
             "int" => charactersFieldBuilder.Argument<IntGraphType>(field.Name),
@@ -69,8 +69,8 @@ internal class FunicularQuery : ObjectGraphType<object>
 
     public FieldBuilder<object, List<object>> InitializeCharacters()
     {
-        foreach (var field in characterFields)
-            CharacterFieldArgument(field);
+        foreach (var field in dynamicFields)
+            DynamicFieldArgument(field);
         return charactersFieldBuilder = charactersFieldBuilder
             .Resolve()
             .WithScope()
@@ -91,21 +91,21 @@ internal class FunicularQuery : ObjectGraphType<object>
                     if (!string.IsNullOrWhiteSpace(name))
                         query = query.Where(character => EF.Functions.Like(character.Name, $"%{name}%"));
 
-                    foreach (var field in characterFields)
-                        query = CharacterFieldPredicate(context, query, field);
+                    foreach (var field in dynamicFields)
+                        query = DynamicFieldPredicate(context, query, field);
 
                     foreach ((var field, var desc) in context.GetArgument<IEnumerable<OrderBy>>("orderby"))
                     {
                         var pascalField = field.ToPascalCase();
-                        var characterField = characterFields.FirstOrDefault(
-                            characterField => characterField.Name == field.ToPascalCase()
+                        var dynamicField = dynamicFields.FirstOrDefault(
+                            dynamicField => dynamicField.Name == pascalField
                         );
                         Expression<Func<Character, object?>> keySelector = pascalField switch
                         {
                             nameof(Character.Id) => character => character.Id,
                             nameof(Character.Name) => character => character.Name,
                             _
-                                => characterField!.Type switch
+                                => dynamicField!.Type switch
                                 {
                                     "int" => character => character.Json.GetProperty(field).GetInt32(),
                                     "string" => character => character.Json.GetProperty(field).GetString(),
