@@ -20,6 +20,7 @@ services.AddDbContext<FunicularDbContext>(
 services.AddScoped<OrderByGraphType>();
 services.AddScoped<CharacterType>();
 services.AddScoped<FunicularQuery>();
+services.AddScoped<FunicularMutation>();
 services.AddGraphQL(
     options => options.AddSystemTextJson().AddSchema<FunicularSchema>(GraphQL.DI.ServiceLifetime.Scoped)
 );
