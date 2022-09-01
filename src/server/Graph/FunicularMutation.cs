@@ -16,23 +16,34 @@ internal class FunicularMutation : ObjectGraphType
 
         Field<CharacterType>("saveCharacter")
             .Argument<IdGraphType>("id")
-            .Argument<NonNullGraphType<StringGraphType>>("name")
+            .Argument<StringGraphType>("name")
             .Resolve()
             .WithScope()
             .WithService<FunicularDbContext>()
             .ResolveAsync(
                 async (context, db) =>
                 {
-                    var id = context.GetArgument<Guid?>("id");
+                    var id = context.GetArgument<Guid?>("id") ?? Guid.Empty;
+                    var name = context.GetArgument<string>("name");
                     Character character;
-                    if (id.HasValue)
+                    if (id != Guid.Empty)
                     {
-                        var existing = await db.Characters.FindAsync(id.Value, context.CancellationToken);
-                        character = existing ?? new(id.Value, context.GetArgument<string>("name"), default);
+                        var existing = await db.Characters.FindAsync(id, context.CancellationToken);
+                        if (existing is not null)
+                        {
+                            if (name is not null) existing = existing with { Name = name };
+                            character = existing;
+                        }
+                        else
+                        {
+                            character = new(id, name, default);
+                        }
                     }
                     else
-                        character = new(Guid.Empty, context.GetArgument<string>("name"), default);
-                    db.Characters.Update(character);
+                    {
+                        character = new(Guid.Empty, name, default);
+                        db.Characters.Add(character);
+                    }
                     return character;
                 }
             );
