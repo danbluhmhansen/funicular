@@ -94,33 +94,34 @@ internal class FunicularQuery : ObjectGraphType<object>
                     foreach (var field in dynamicFields)
                         query = DynamicFieldPredicate(context, query, field);
 
-                    foreach ((var field, var desc) in context.GetArgument<IEnumerable<OrderBy>>("orderby"))
-                    {
-                        var pascalField = field.ToPascalCase();
-                        var dynamicField = dynamicFields.FirstOrDefault(
-                            dynamicField => dynamicField.Name == pascalField
-                        );
-                        Expression<Func<Character, object?>> keySelector = pascalField switch
+                    if (context.HasArgument("orderby"))
+                        foreach ((var field, var desc) in context.GetArgument<IEnumerable<OrderBy>>("orderby"))
                         {
-                            nameof(Character.Id) => character => character.Id,
-                            nameof(Character.Name) => character => character.Name,
-                            _
-                                => dynamicField!.Type switch
-                                {
-                                    "int" => character => character.Json.GetProperty(field).GetInt32(),
-                                    "string" => character => character.Json.GetProperty(field).GetString(),
-                                    _ => throw new NotSupportedException(),
-                                },
-                        };
+                            var pascalField = field.ToPascalCase();
+                            var dynamicField = dynamicFields.FirstOrDefault(
+                                dynamicField => dynamicField.Name == pascalField
+                            );
+                            Expression<Func<Character, object?>> keySelector = pascalField switch
+                            {
+                                nameof(Character.Id) => character => character.Id,
+                                nameof(Character.Name) => character => character.Name,
+                                _
+                                    => dynamicField!.Type switch
+                                    {
+                                        "int" => character => character.Json.GetProperty(field).GetInt32(),
+                                        "string" => character => character.Json.GetProperty(field).GetString(),
+                                        _ => throw new NotSupportedException(),
+                                    },
+                            };
 
-                        query = query is IOrderedQueryable<Character> ordered
-                            ? desc
-                                ? ordered.ThenByDescending(keySelector)
-                                : ordered.ThenBy(keySelector)
-                            : desc
-                                ? query.OrderByDescending(keySelector)
-                                : query.OrderBy(keySelector);
-                    }
+                            query = query is IOrderedQueryable<Character> ordered
+                                ? desc
+                                    ? ordered.ThenByDescending(keySelector)
+                                    : ordered.ThenBy(keySelector)
+                                : desc
+                                    ? query.OrderByDescending(keySelector)
+                                    : query.OrderBy(keySelector);
+                        }
 
                     var top = context.GetArgument<int>("top");
                     if (top is not 0)
