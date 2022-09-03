@@ -31,7 +31,8 @@ internal class FunicularMutation : ObjectGraphType
                         var existing = await db.Characters.FindAsync(id, context.CancellationToken);
                         if (existing is not null)
                         {
-                            if (name is not null) existing = existing with { Name = name };
+                            if (name is not null)
+                                existing = existing with { Name = name };
                             character = existing;
                         }
                         else
@@ -42,8 +43,8 @@ internal class FunicularMutation : ObjectGraphType
                     else
                     {
                         character = new(Guid.Empty, name, default);
-                        db.Characters.Add(character);
                     }
+                    db.Characters.Update(character);
                     return character;
                 }
             );
