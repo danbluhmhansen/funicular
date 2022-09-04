@@ -47,5 +47,23 @@ internal class FunicularMutation : ObjectGraphType
                     return character;
                 }
             );
+
+        Field<CharacterType>("dropCharacter")
+            .Argument<NonNullGraphType<IdGraphType>>("id")
+            .Resolve()
+            .WithService<FunicularDbContext>()
+            .ResolveAsync(
+                async (context, db) =>
+                {
+                    var id = context.GetArgument<Guid>("id");
+                    var character = await db.Characters.FindAsync(new object[] { id }, context.CancellationToken);
+                    if (character is not null)
+                    {
+                        db.Characters.Remove(character);
+                        return character;
+                    }
+                    return null;
+                }
+            );
     }
 }
