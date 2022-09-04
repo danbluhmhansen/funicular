@@ -1,7 +1,5 @@
 namespace Funicular.Server.Graph;
 
-using System.Text.Json.Nodes;
-
 using Funicular.Server.Data;
 using Funicular.Server.Data.Models;
 using Funicular.Server.Graph.Models;

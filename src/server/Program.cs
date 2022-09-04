@@ -38,6 +38,7 @@ app.Use(
     {
         var characterType = context.RequestServices.GetRequiredService<CharacterType>();
         var query = context.RequestServices.GetRequiredService<FunicularQuery>();
+        var mutation = context.RequestServices.GetRequiredService<FunicularMutation>();
         var db = context.RequestServices.GetRequiredService<FunicularDbContext>();
         await foreach (var field in db.CharacterFields.AsAsyncEnumerable().WithCancellation(context.RequestAborted))
         {
@@ -45,6 +46,7 @@ app.Use(
             query.AddDynamicFields(field);
         }
         query.InitializeCharacters();
+        mutation.InitializeSaveCharacters();
         await next();
     }
 );
