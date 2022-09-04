@@ -19,10 +19,20 @@ internal class CharacterType : ObjectGraphType<Character>
         {
             "int"
                 => Field<IntGraphType>(field.Name)
-                    .Resolve(context => context.Source.Json.GetProperty(field.Name).GetInt32()),
+                    .Resolve(
+                        context =>
+                            context.Source.Json.HasValue
+                                ? context.Source.Json.Value.GetProperty(field.Name).GetInt32()
+                                : 0
+                    ),
             "string"
                 => Field<StringGraphType>(field.Name)
-                    .Resolve(context => context.Source.Json.GetProperty(field.Name).GetString()),
+                    .Resolve(
+                        context =>
+                            context.Source.Json.HasValue
+                                ? context.Source.Json.Value.GetProperty(field.Name).GetString()
+                                : null
+                    ),
             _ => throw new NotSupportedException(),
         };
 }

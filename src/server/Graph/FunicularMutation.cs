@@ -18,7 +18,6 @@ internal class FunicularMutation : ObjectGraphType
             .Argument<IdGraphType>("id")
             .Argument<StringGraphType>("name")
             .Resolve()
-            .WithScope()
             .WithService<FunicularDbContext>()
             .ResolveAsync(
                 async (context, db) =>

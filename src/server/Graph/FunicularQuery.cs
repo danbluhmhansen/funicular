@@ -47,12 +47,20 @@ internal class FunicularQuery : ObjectGraphType<object>
             case "int":
                 var intArgument = context.GetArgument<int?>(fieldName.ToCamelCase());
                 return intArgument.HasValue
-                    ? query.Where(character => character.Json.GetProperty(fieldName).GetInt32() == intArgument.Value)
+                    ? query.Where(
+                        character =>
+                            character.Json.HasValue
+                            && character.Json.Value.GetProperty(fieldName).GetInt32() == intArgument.Value
+                    )
                     : query;
             case "string":
                 var stringArgument = context.GetArgument<string?>(fieldName.ToCamelCase());
                 return !string.IsNullOrWhiteSpace(stringArgument)
-                    ? query.Where(character => character.Json.GetProperty(fieldName).GetString() == stringArgument)
+                    ? query.Where(
+                        character =>
+                            character.Json.HasValue
+                            && character.Json.Value.GetProperty(fieldName).GetString() == stringArgument
+                    )
                     : query;
             default:
                 throw new NotSupportedException();
@@ -73,7 +81,6 @@ internal class FunicularQuery : ObjectGraphType<object>
             DynamicFieldArgument(field);
         return charactersFieldBuilder = charactersFieldBuilder
             .Resolve()
-            .WithScope()
             .WithService<FunicularDbContext>()
             .ResolveAsync(
                 async (context, db) =>
@@ -108,8 +115,16 @@ internal class FunicularQuery : ObjectGraphType<object>
                                 _
                                     => dynamicField!.Type switch
                                     {
-                                        "int" => character => character.Json.GetProperty(field).GetInt32(),
-                                        "string" => character => character.Json.GetProperty(field).GetString(),
+                                        "int"
+                                            => character =>
+                                                character.Json.HasValue
+                                                    ? character.Json.Value.GetProperty(field).GetInt32()
+                                                    : 0,
+                                        "string"
+                                            => character =>
+                                                character.Json.HasValue
+                                                    ? character.Json.Value.GetProperty(field).GetString()
+                                                    : null,
                                         _ => throw new NotSupportedException(),
                                     },
                             };
