@@ -58,6 +58,14 @@ internal class FunicularMutation : ObjectGraphType
             _ => throw new NotSupportedException(),
         };
 
+    public static JsonNode? GetDynamicField(IResolveFieldContext<object?> context, DynamicField field) =>
+        field.Type switch
+        {
+            "int" => context.GetArgument<int>(field.Name),
+            "string" => context.GetArgument<string>(field.Name),
+            _ => throw new NotSupportedException(),
+        };
+
     public FieldBuilder<object?, object> InitializeSaveCharacters()
     {
         foreach (var field in dynamicFields)
@@ -86,10 +94,7 @@ internal class FunicularMutation : ObjectGraphType
                     {
                         var json = character.Json.HasValue ? JsonObject.Create(character.Json.Value) ?? new() : new();
                         foreach (var field in dynamicFields)
-                        {
-                            var argument = context.GetArgument<int>(field.Name);
-                            json[field.Name] = argument;
-                        }
+                            json[field.Name] = GetDynamicField(context, field);
                         character = character with { Json = JsonDocument.Parse(json.ToJsonString()).RootElement };
                     }
 
