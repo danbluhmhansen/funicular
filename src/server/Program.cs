@@ -44,6 +44,7 @@ app.Use(
         {
             characterType.DynamicField(field);
             query.AddDynamicFields(field);
+            mutation.AddDynamicFields(field);
         }
         query.InitializeCharacters();
         mutation.InitializeSaveCharacters();

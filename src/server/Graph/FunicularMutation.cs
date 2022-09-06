@@ -1,5 +1,7 @@
 namespace Funicular.Server.Graph;
 
+using System.Text.Json;
+
 using Funicular.Server.Data;
 using Funicular.Server.Data.Models;
 using Funicular.Server.Graph.Models;
@@ -71,6 +73,21 @@ internal class FunicularMutation : ObjectGraphType
 
                     if (context.HasArgument("name"))
                         character = character with { Name = context.GetArgument<string>("name") };
+
+                    var dynamicFields = this.dynamicFields.Where(field => context.HasArgument(field.Name));
+                    if (dynamicFields.Any())
+                    {
+                        var json = character.Json.HasValue
+                            ? JsonSerializer.Deserialize<IDictionary<string, object?>>(character.Json.Value)
+                                ?? new Dictionary<string, object?>()
+                            : new Dictionary<string, object?>();
+                        foreach (var field in dynamicFields)
+                        {
+                            var argument = context.GetArgument<int>(field.Name);
+                            json[field.Name] = argument;
+                        }
+                        character = character with { Json = JsonSerializer.SerializeToElement(json) };
+                    }
 
                     db.Characters.Update(character);
                     return character;
