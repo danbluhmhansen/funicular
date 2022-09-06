@@ -1,6 +1,7 @@
 namespace Funicular.Server.Graph;
 
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 using Funicular.Server.Data;
 using Funicular.Server.Data.Models;
@@ -10,6 +11,8 @@ using GraphQL;
 using GraphQL.Builders;
 using GraphQL.MicrosoftDI;
 using GraphQL.Types;
+
+using Microsoft.EntityFrameworkCore;
 
 internal class FunicularMutation : ObjectGraphType
 {
@@ -68,7 +71,11 @@ internal class FunicularMutation : ObjectGraphType
                     var id = context.GetArgument<Guid?>("id") ?? Guid.Empty;
 
                     var existing =
-                        id != Guid.Empty ? await db.Characters.FindAsync(id, context.CancellationToken) : default;
+                        id != Guid.Empty
+                            ? await db.Characters
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(character => character.Id == id, context.CancellationToken)
+                            : default;
                     var character = existing ?? new(id, string.Empty, default);
 
                     if (context.HasArgument("name"))
@@ -77,16 +84,13 @@ internal class FunicularMutation : ObjectGraphType
                     var dynamicFields = this.dynamicFields.Where(field => context.HasArgument(field.Name));
                     if (dynamicFields.Any())
                     {
-                        var json = character.Json.HasValue
-                            ? JsonSerializer.Deserialize<IDictionary<string, object?>>(character.Json.Value)
-                                ?? new Dictionary<string, object?>()
-                            : new Dictionary<string, object?>();
+                        var json = character.Json.HasValue ? JsonObject.Create(character.Json.Value) ?? new() : new();
                         foreach (var field in dynamicFields)
                         {
                             var argument = context.GetArgument<int>(field.Name);
                             json[field.Name] = argument;
                         }
-                        character = character with { Json = JsonSerializer.SerializeToElement(json) };
+                        character = character with { Json = JsonDocument.Parse(json.ToJsonString()).RootElement };
                     }
 
                     db.Characters.Update(character);
