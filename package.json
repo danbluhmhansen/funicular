@@ -22,6 +22,9 @@
     "lint-staged": "^13.0.3"
   },
   "lint-staged": {
-    "*.cs": ["dotnet csharpier", "dotnet format src/server --include"]
+    "*.cs": [
+      "dotnet csharpier",
+      "dotnet format src/server --include"
+    ]
   }
 }
