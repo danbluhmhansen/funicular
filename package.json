@@ -25,6 +25,14 @@
     "*.cs": [
       "dotnet csharpier",
       "dotnet format src/server --include"
+    ],
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.tsx": [
+      "eslint --fix",
+      "prettier --write"
     ]
   }
 }
