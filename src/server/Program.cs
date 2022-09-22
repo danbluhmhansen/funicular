@@ -4,7 +4,6 @@ using Funicular.Server.Graph.Models;
 using Funicular.Server.Services;
 
 using GraphQL;
-using GraphQL.Types;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var services = builder.Services;
+
+services.AddCors(
+    options => options.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin())
+);
 
 services.AddDbContext<FunicularDbContext>(
     options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default"))
@@ -61,6 +64,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.UseCors();
 
 app.MapControllers();
 

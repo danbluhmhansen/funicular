@@ -1,15 +1,18 @@
 import type { LoaderFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import type Character from "~/models/character";
 
 export const loader: LoaderFunction = async () => {
-  return json([
-    { id: "d7d2bbdd-f9b1-420d-a7bc-049e3294820e", name: "Foo" },
-    { id: "6c2cc8c5-46f1-4118-9531-6284fcb2ab02", name: "Bar" },
-    { id: "02fc2dbd-75cf-451a-b929-6e2b6a164f65", name: "Obi" },
-    { id: "c38f42b2-3df8-487a-b69d-bba4a8067d05", name: "Wan" },
-  ]);
+  const response = await fetch("https://localhost:7000/graphql", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      query:
+        "query { characters(top: 10) { id name strength dexterity constitution intelligence wisdom charisma } }",
+    }),
+  });
+  const context = await response.json();
+  return context.data.characters;
 };
 
 export default function Index() {
@@ -27,13 +30,43 @@ export default function Index() {
                     scope="col"
                     className="px-6 py-4 text-left text-sm font-medium"
                   >
-                    #
+                    Name
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-4 text-left text-sm font-medium"
                   >
-                    Name
+                    Strength
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-4 text-left text-sm font-medium"
+                  >
+                    Dexterity
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-4 text-left text-sm font-medium"
+                  >
+                    Constitution
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-4 text-left text-sm font-medium"
+                  >
+                    Intelligence
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-4 text-left text-sm font-medium"
+                  >
+                    Wisdom
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-4 text-left text-sm font-medium"
+                  >
+                    Charisma
                   </th>
                 </tr>
               </thead>
@@ -41,11 +74,26 @@ export default function Index() {
                 {characters &&
                   characters.map((character: Character) => (
                     <tr key={character.id} className="border-b">
-                      <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                        {character.id}
-                      </td>
                       <td className="whitespace-nowrap px-6 py-4 text-sm font-light">
                         {character.name}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-light">
+                        {character.strength}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-light">
+                        {character.dexterity}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-light">
+                        {character.constitution}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-light">
+                        {character.intelligence}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-light">
+                        {character.wisdom}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-light">
+                        {character.charisma}
                       </td>
                     </tr>
                   ))}
