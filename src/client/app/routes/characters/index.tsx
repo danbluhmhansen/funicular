@@ -1,6 +1,16 @@
-import type { LoaderFunction } from "@remix-run/node";
+import type { ErrorBoundaryComponent, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import type Character from "~/models/character";
+
+export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
+  return (
+    <div>
+      <h1>{error.name}</h1>
+      <p>{error.message}</p>
+      {error.stack && <p>{error.stack}</p>}
+    </div>
+  );
+};
 
 export const loader: LoaderFunction = async () => {
   const response = await fetch("https://localhost:7000/graphql", {
