@@ -35,10 +35,18 @@ export default function Pagination({
 
   return (
     <nav className="pagination">
-      <a className="pagination-previous" onClick={() => setPage((p) => p - 1)}>
+      <a
+        className={"pagination-previous" + (page === 1 ? " is-disabled" : "")}
+        onClick={() => setPage((p) => (p - 1 < 1 ? 1 : p - 1))}
+      >
         Prev
       </a>
-      <a className="pagination-next" onClick={() => setPage((p) => p + 1)}>
+      <a
+        className={
+          "pagination-next" + (page === pageCount ? " is-disabled" : "")
+        }
+        onClick={() => setPage((p) => (p + 1 > pageCount ? pageCount : p + 1))}
+      >
         Next
       </a>
       <ul className="pagination-list">

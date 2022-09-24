@@ -138,13 +138,13 @@ internal class FunicularQuery : ObjectGraphType<object>
                                     : query.OrderBy(keySelector);
                         }
 
-                    var top = context.GetArgument<int>("top");
-                    if (top is not 0)
-                        query = query.Take(top);
-
                     var skip = context.GetArgument<int>("skip");
                     if (skip is not 0)
                         query = query.Skip(skip);
+
+                    var top = context.GetArgument<int>("top");
+                    if (top is not 0)
+                        query = query.Take(top);
 
                     var selectId = context.SubFields?.ContainsKey("id") == true;
                     var selectName = context.SubFields?.ContainsKey("name") == true;
