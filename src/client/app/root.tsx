@@ -7,7 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import type { NavLink } from "./components/navbar";
+import type { NavItem } from "./components/navbar";
 import Navbar from "./components/navbar";
 import styles from "../styles/styles.css";
 
@@ -19,7 +19,7 @@ export const meta: MetaFunction = () => ({
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
-const navigation: NavLink[] = [
+const navigation: NavItem[] = [
   { name: "Home", path: "/" },
   { name: "Characters", path: "/characters" },
 ];

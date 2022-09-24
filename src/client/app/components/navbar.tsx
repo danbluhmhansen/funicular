@@ -1,11 +1,12 @@
+import { Link } from "@remix-run/react";
 import { useToggle } from "~/hooks/use-toggle";
 
-export interface NavLink {
+export interface NavItem {
   name: string;
   path: string;
 }
 
-export default function Navbar({ navigation }: { navigation: NavLink[] }) {
+export default function Navbar({ navigation }: { navigation: NavItem[] }) {
   const [active, toggleActive] = useToggle();
 
   return (
@@ -21,9 +22,9 @@ export default function Navbar({ navigation }: { navigation: NavLink[] }) {
       <div className={"navbar-menu" + (active ? " is-active" : "")}>
         <div className="navbar-start">
           {navigation.map((navLink) => (
-            <a key={navLink.path} href={navLink.path} className="navbar-item">
+            <Link key={navLink.path} to={navLink.path} className="navbar-item">
               {navLink.name}
-            </a>
+            </Link>
           ))}
         </div>
 

@@ -1,5 +1,6 @@
 import type { ErrorBoundaryComponent, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import Pagination from "~/components/pagination";
 import type Character from "~/models/character";
 
 export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
@@ -17,16 +18,26 @@ export const loader: LoaderFunction = async () => {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      query:
-        "query { characters(top: 10) { id name strength dexterity constitution intelligence wisdom charisma } }",
+      query: `
+query {
+  characters(count: true, top: 10) {
+    id
+    name
+    strength
+    dexterity
+    constitution
+    intelligence
+    wisdom
+    charisma
+  }
+}`,
     }),
   });
-  const context = await response.json();
-  return context.data.characters;
+  return await response.json();
 };
 
 export default function Index() {
-  const characters = useLoaderData();
+  const context = useLoaderData();
 
   return (
     <table className="table">
@@ -41,9 +52,19 @@ export default function Index() {
           <th>Charisma</th>
         </tr>
       </thead>
+      <tfoot>
+        <tr>
+          <td colSpan={7}>
+            <Pagination
+              count={context.extensions.count}
+              pageSizes={[5, 10, 25]}
+            />
+          </td>
+        </tr>
+      </tfoot>
       <tbody>
-        {characters &&
-          characters.map((character: Character) => (
+        {context.data.characters &&
+          context.data.characters.map((character: Character) => (
             <tr key={character.id}>
               <td>{character.name}</td>
               <td>{character.strength}</td>
