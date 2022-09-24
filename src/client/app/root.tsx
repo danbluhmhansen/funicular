@@ -7,8 +7,9 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import type { NavLink } from "./components/navbar";
 import Navbar from "./components/navbar";
-import styles from "./tailwind.css";
+import styles from "../styles/styles.css";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -18,6 +19,11 @@ export const meta: MetaFunction = () => ({
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
+const navigation: NavLink[] = [
+  { name: "Home", path: "/" },
+  { name: "Characters", path: "/characters" },
+];
+
 export default function App() {
   return (
     <html lang="en">
@@ -25,8 +31,8 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="bg-white text-slate-500 antialiased dark:bg-slate-900 dark:text-slate-400">
-        <Navbar />
+      <body>
+        <Navbar navigation={navigation} />
         <Outlet />
         <ScrollRestoration />
         <Scripts />

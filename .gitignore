@@ -464,4 +464,4 @@ $RECYCLE.BIN/
 !.yarn/sdks
 !.yarn/versions
 
-src/client/app/tailwind.css
+src/client/styles/styles.css
