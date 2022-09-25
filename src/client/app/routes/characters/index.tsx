@@ -1,7 +1,9 @@
 import type { ErrorBoundaryComponent, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import Pagination from "~/components/pagination";
+import { fetchGraphQl } from "~/lib/graphql";
 import type Character from "~/models/character";
+import type { GraphQlResponse } from "~/models/graphql/graphql-response";
 
 export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
   return (
@@ -22,26 +24,25 @@ export const loader: LoaderFunction = async ({ request }) => {
   const page = +(url.searchParams.get("page") ?? "1");
   const pageSize = +(url.searchParams.get("pageSize") ?? "10");
 
-  const response = await fetch("https://localhost:7000/graphql", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      query: `
-query {
-  characters(count: true, skip: ${(page - 1) * pageSize}, top: ${pageSize}) {
-    id
-    name
-    strength
-    dexterity
-    constitution
-    intelligence
-    wisdom
-    charisma
-  }
-}`,
-    }),
+  return await fetchGraphQl({
+    query: `
+      query CharactersQuery($skip: Int, $top: Int) {
+        characters(count: true, skip: $skip, top: $top) {
+          id
+          name
+          strength
+          dexterity
+          constitution
+          intelligence
+          wisdom
+          charisma
+        }
+      }`,
+    variables: {
+      skip: (page - 1) * pageSize,
+      top: pageSize,
+    },
   });
-  return await response.json();
 };
 
 const headers = [
@@ -55,7 +56,9 @@ const headers = [
 ];
 
 export default function Index() {
-  const context = useLoaderData();
+  const { data, extensions } = useLoaderData<GraphQlResponse>();
+  const characters: Character[] = data.characters;
+  const count: number = extensions.count;
 
   return (
     <div className="container">
@@ -71,16 +74,13 @@ export default function Index() {
         <tfoot>
           <tr>
             <td colSpan={7}>
-              <Pagination
-                count={context.extensions.count}
-                pageSizes={[5, 10, 25]}
-              />
+              <Pagination count={count} pageSizes={[5, 10, 25]} />
             </td>
           </tr>
         </tfoot>
         <tbody>
-          {context.data.characters &&
-            context.data.characters.map((character: Character) => (
+          {characters &&
+            characters.map((character) => (
               <tr key={character.id}>
                 <td>{character.name}</td>
                 <td>{character.strength}</td>
