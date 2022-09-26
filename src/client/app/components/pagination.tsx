@@ -1,5 +1,5 @@
 import { useSearchParams } from "@remix-run/react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 function GetCurrentPages(items: number[], selected: number) {
   if (items.length < 4) return items;
@@ -16,10 +16,8 @@ export default function Pagination({
   pageSizes: number[];
 }) {
   const [params, setParams] = useSearchParams();
-  const [page, setPage] = useState(+(params.get("page") ?? "1"));
-  const [pageSize, setPageSize] = useState(+(params.get("pageSize") ?? "10"));
-
-  if (!pageSizes.some((ps) => ps === pageSize)) setPageSize(10);
+  const page = +(params.get("page") ?? "1");
+  const pageSize = +(params.get("pageSize") ?? "10");
 
   const pageCount = count ? Math.ceil(count / pageSize) : 1;
   const pages = GetCurrentPages(
@@ -28,16 +26,24 @@ export default function Pagination({
   );
 
   useEffect(() => {
-    params.set("page", page.toString());
-    params.set("pageSize", pageSize.toString());
+    if (page > pageCount) setPage(pageCount);
+  }, [pageCount]);
+
+  function setPage(page: number) {
+    params.set("page", page + "");
     setParams(params);
-  }, [page, pageSize]);
+  }
+
+  function setPageSize(pageSize: number) {
+    params.set("pageSize", pageSize + "");
+    setParams(params);
+  }
 
   return (
     <nav className="pagination">
       <a
         className={"pagination-previous" + (page === 1 ? " is-disabled" : "")}
-        onClick={() => setPage((p) => (p - 1 < 1 ? 1 : p - 1))}
+        onClick={() => setPage(page - 1 < 1 ? 1 : page - 1)}
       >
         Prev
       </a>
@@ -45,7 +51,7 @@ export default function Pagination({
         className={
           "pagination-next" + (page === pageCount ? " is-disabled" : "")
         }
-        onClick={() => setPage((p) => (p + 1 > pageCount ? pageCount : p + 1))}
+        onClick={() => setPage(page + 1 > pageCount ? pageCount : page + 1)}
       >
         Next
       </a>

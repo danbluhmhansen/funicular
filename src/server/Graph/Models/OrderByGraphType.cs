@@ -6,7 +6,7 @@ internal class OrderByGraphType : InputObjectGraphType<OrderBy>
 {
     public OrderByGraphType()
     {
-        Name = "orderby";
+        Name = "Orderby";
         Field(orderby => orderby.Field);
         Field(orderby => orderby.Desc, true);
     }
