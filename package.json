@@ -8,6 +8,8 @@
   ],
   "scripts": {
     "dev": "yarn workspaces foreach run dev",
+    "dev:server": "yarn workspace server dev",
+    "dev:client": "yarn workspace client dev",
     "build": "yarn workspaces foreach run build",
     "restore": "yarn workspaces foreach run restore",
     "lint": "yarn workspaces foreach run lint",

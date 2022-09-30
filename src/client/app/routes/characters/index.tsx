@@ -1,10 +1,17 @@
 import type { ErrorBoundaryComponent, LoaderFunction } from "@remix-run/node";
 import { useLoaderData, useSearchParams } from "@remix-run/react";
-import Pagination from "~/components/pagination";
 import { fetchGraphQl } from "~/lib/graphql";
 import type Character from "~/models/character";
 import type { GraphQlSort } from "~/models/graphql/graphql-sort";
 import type { GraphQlResponse } from "~/models/graphql/graphql-response";
+import type { PaginationState } from "@tanstack/react-table";
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { useEffect, useMemo, useState } from "react";
 
 export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
   return (
@@ -22,7 +29,7 @@ export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
-  const page = +(url.searchParams.get("page") ?? "1");
+  const pageIndex = +(url.searchParams.get("pageIndex") ?? "0");
   const pageSize = +(url.searchParams.get("pageSize") ?? "10");
 
   return await fetchGraphQl({
@@ -40,28 +47,83 @@ export const loader: LoaderFunction = async ({ request }) => {
         }
       }`,
     variables: {
-      skip: (page - 1) * pageSize,
+      skip: pageIndex * pageSize,
       top: pageSize,
       orderby: [{ field: "name" }],
     },
   });
 };
 
-const headers = [
-  "Name",
-  "Strength",
-  "Dexterity",
-  "Constitution",
-  "Intelligence",
-  "Wisdom",
-  "Charisma",
+const columnHelper = createColumnHelper<Character>();
+
+const columns = [
+  columnHelper.accessor((row) => row.name, {
+    id: "name",
+    cell: (info) => info.getValue(),
+    header: "Name",
+  }),
+  columnHelper.accessor((row) => row.strength, {
+    id: "strength",
+    cell: (info) => info.getValue(),
+    header: "Strength",
+  }),
+  columnHelper.accessor((row) => row.dexterity, {
+    id: "dexterity",
+    cell: (info) => info.getValue(),
+    header: "Dexterity",
+  }),
+  columnHelper.accessor((row) => row.constitution, {
+    id: "constitution",
+    cell: (info) => info.getValue(),
+    header: "Constitution",
+  }),
+  columnHelper.accessor((row) => row.intelligence, {
+    id: "intelligence",
+    cell: (info) => info.getValue(),
+    header: "Intelligence",
+  }),
+  columnHelper.accessor((row) => row.wisdom, {
+    id: "wisdom",
+    cell: (info) => info.getValue(),
+    header: "Wisdom",
+  }),
+  columnHelper.accessor((row) => row.charisma, {
+    id: "charisma",
+    cell: (info) => info.getValue(),
+    header: "Charisma",
+  }),
 ];
 
 export default function Index() {
-  const [params, setParams] = useSearchParams();
   const { data, extensions } = useLoaderData<GraphQlResponse>();
-  const characters: Character[] = data.characters;
-  const count: number = extensions.count;
+  const [params, setParams] = useSearchParams();
+
+  const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
+    pageIndex: +(params.get("page") ?? "0"),
+    pageSize: +(params.get("pageSize") ?? "10"),
+  });
+  const pagination = useMemo(
+    () => ({ pageIndex, pageSize }),
+    [pageIndex, pageSize]
+  );
+
+  const table = useReactTable({
+    data: data.characters,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+    pageCount: extensions.count ? Math.ceil(extensions.count / pageSize) : 1,
+    state: {
+      pagination,
+    },
+    onPaginationChange: setPagination,
+    manualPagination: true,
+  });
+
+  useEffect(() => {
+    params.set("pageIndex", "" + pageIndex);
+    params.set("pageSize", "" + pageSize);
+    setParams(params);
+  }, [pageIndex, pageSize]);
 
   const orderby = params
     .getAll("orderby")
@@ -88,39 +150,57 @@ export default function Index() {
       <h3 className="title">Characters</h3>
       <table className="table">
         <thead>
-          <tr>
-            {headers.map((header) => (
-              <th
-                key={header}
-                onClick={() =>
-                  setOrderby({ field: header.toLowerCase(), desc: false })
-                }
-              >
-                {header}
-              </th>
-            ))}
-          </tr>
+          {table.getHeaderGroups().map((row) => (
+            <tr key={row.id}>
+              {row.headers.map((header) => (
+                <th key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </th>
+              ))}
+            </tr>
+          ))}
         </thead>
         <tfoot>
           <tr>
-            <td colSpan={7}>
-              <Pagination count={count} pageSizes={[5, 10, 25]} />
-            </td>
+            <th colSpan={table.getAllColumns().length}>
+              <nav className="pagination">
+                <a
+                  className={
+                    "pagination-previous" +
+                    (table.getCanPreviousPage() ? "" : " is-disabled")
+                  }
+                  onClick={() => table.previousPage()}
+                >
+                  Prev
+                </a>
+                <a
+                  className={
+                    "pagination-next" +
+                    (table.getCanNextPage() ? "" : " is-disabled")
+                  }
+                  onClick={() => table.nextPage()}
+                >
+                  Next
+                </a>
+              </nav>
+            </th>
           </tr>
         </tfoot>
         <tbody>
-          {characters &&
-            characters.map((character) => (
-              <tr key={character.id}>
-                <td>{character.name}</td>
-                <td>{character.strength}</td>
-                <td>{character.dexterity}</td>
-                <td>{character.constitution}</td>
-                <td>{character.intelligence}</td>
-                <td>{character.wisdom}</td>
-                <td>{character.charisma}</td>
-              </tr>
-            ))}
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
