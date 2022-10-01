@@ -3,6 +3,7 @@
   "include": ["Content/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"],
   "compilerOptions": {
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "lib": ["DOM"]
   }
 }

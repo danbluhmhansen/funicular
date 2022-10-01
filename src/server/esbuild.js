@@ -3,6 +3,7 @@ require('esbuild').build({
   logLevel: 'info',
   entryPoints: [
     "Content/pages/home/index.tsx",
+    "Content/pages/shared/layout.tsx",
   ],
   bundle: true,
   outdir: 'wwwroot/dist',

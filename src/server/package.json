@@ -6,17 +6,25 @@
     "extends": "../../package.json"
   },
   "scripts": {
-    "dev": "dotnet watch",
     "build": "dotnet build",
     "build:js": "./esbuild.js",
+    "build:css": "node-sass --omit-source-map-url Content/styles/styles.scss wwwroot/dist/styles.css",
+    "dev": "dotnet watch",
+    "dev:css": "yarn build:css --watch",
     "restore": "dotnet restore",
     "lint": "dotnet csharpier . && dotnet format"
   },
   "dependencies": {
+    "@funicular/shared": "workspace:^",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "esbuild": "^0.15.10"
+    "@types/react": "^18.0.21",
+    "@types/react-dom": "^18.0.6",
+    "bulma": "^0.9.4",
+    "bulma-prefers-dark": "^0.1.0-beta.1",
+    "esbuild": "^0.15.10",
+    "node-sass": "^7.0.3"
   }
 }

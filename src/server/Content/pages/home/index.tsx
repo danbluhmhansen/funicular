@@ -1,7 +1,9 @@
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 
 export default function Index() {
-  return <h1>Hello, World!</h1>;
+  return <h1 className="title">Hello, World!</h1>;
 }
 
-render(<Index />, document.querySelector("#container"));
+createRoot(document.querySelector("#container") as HTMLElement).render(
+  <Index />
+);

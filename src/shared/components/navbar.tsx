@@ -1,7 +1,11 @@
 import type { ReactElement } from "react";
 import { useToggle } from "../hooks/use-toggle";
 
-export function Navbar({ children }: { children: ReactElement[] }) {
+export function Navbar({
+  children,
+}: {
+  children: ReactElement | ReactElement[] | undefined;
+}) {
   const [active, toggleActive] = useToggle();
 
   return (
