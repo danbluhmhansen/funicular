@@ -10,7 +10,10 @@
     "lint": "dotnet csharpier . && dotnet format"
   },
   "eslintConfig": {
-    "extends": "eslint:recommended",
+    "extends": [
+      "eslint:recommended",
+      "prettier"
+    ],
     "env": {
       "browser": true,
       "commonjs": true,

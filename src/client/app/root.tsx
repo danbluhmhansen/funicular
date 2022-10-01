@@ -1,5 +1,6 @@
 import type { MetaFunction, LinksFunction } from "@remix-run/node";
 import {
+  Link,
   Links,
   LiveReload,
   Meta,
@@ -17,10 +18,10 @@ export const meta: MetaFunction = () => ({
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
-// const navigation = [
-//   { name: "Home", path: "/" },
-//   { name: "Characters", path: "/characters" },
-// ];
+const navigation = [
+  { name: "Home", path: "/" },
+  { name: "Characters", path: "/characters" },
+];
 
 export default function App() {
   return (
@@ -30,6 +31,9 @@ export default function App() {
         <Links />
       </head>
       <body>
+        {/*<Navbar>
+          {navigation.map((n) => <Link key={n.path} to={n.path} className="navbar-item">{n.name}</Link>)}
+        </Navbar>*/}
         <Outlet />
         <ScrollRestoration />
         <Scripts />
