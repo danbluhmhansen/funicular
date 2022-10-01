@@ -1,11 +1,13 @@
 #!/usr/bin/env node
-require('esbuild').build({
-  logLevel: 'info',
-  entryPoints: [
-    "Content/pages/home/index.tsx",
-    "Content/pages/shared/layout.tsx",
-  ],
-  bundle: true,
-  outdir: 'wwwroot/dist',
-  outbase: 'Content/pages',
-}).catch(() => process.exit(1));
+const { build } = require("esbuild");
+const glob = require("tiny-glob");
+
+(async () => {
+  let entryPoints = await glob("Content/pages/**/*.tsx");
+  await build({
+    entryPoints,
+    logLevel: 'info',
+    bundle: true,
+    outdir: 'wwwroot/dist',
+  });
+})();

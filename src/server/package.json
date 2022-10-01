@@ -6,10 +6,12 @@
     "extends": "../../package.json"
   },
   "scripts": {
-    "build": "dotnet build",
+    "build": "yarn build:cs && yarn build:js && yarn build:css",
+    "build:cs": "dotnet build",
     "build:js": "./esbuild.js",
     "build:css": "node-sass --omit-source-map-url Content/styles/styles.scss wwwroot/dist/styles.css",
-    "dev": "dotnet watch",
+    "dev:cs": "dotnet watch",
+    "dev:js": "yarn build:js --watch",
     "dev:css": "yarn build:css --watch",
     "restore": "dotnet restore",
     "lint": "dotnet csharpier . && dotnet format"
@@ -25,6 +27,7 @@
     "bulma": "^0.9.4",
     "bulma-prefers-dark": "^0.1.0-beta.1",
     "esbuild": "^0.15.10",
-    "node-sass": "^7.0.3"
+    "node-sass": "^7.0.3",
+    "tiny-glob": "^0.2.9"
   }
 }

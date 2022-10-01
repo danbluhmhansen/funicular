@@ -1520,6 +1520,7 @@ __metadata:
     node-sass: "npm:^7.0.3"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
+    tiny-glob: "npm:^0.2.9"
   languageName: unknown
   linkType: soft
 

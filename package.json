@@ -20,10 +20,9 @@
     "src/*"
   ],
   "scripts": {
-    "dev": "yarn workspaces foreach run dev",
-    "dev:server": "yarn workspace @funicular/server dev",
-    "dev:client": "yarn workspace @funicular/client dev",
-    "build": "yarn workspaces foreach run build",
+    "dev:server": "yarn workspace @funicular/server dev:cs",
+    "dev:client": "yarn workspace @funicular/client dev:remix",
+    "build": "yarn workspaces foreach -pt run build",
     "restore": "yarn workspaces foreach run restore",
     "lint": "yarn workspaces foreach run lint",
     "efDatabaseUpdate": "dotnet ef database update \"$@\" --project src/server",

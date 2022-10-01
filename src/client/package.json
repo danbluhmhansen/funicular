@@ -3,9 +3,10 @@
   "private": true,
   "sideEffects": false,
   "scripts": {
-    "build": "NODE_TLS_REJECT_UNAUTHORIZED='0' remix build",
+    "build": "yarn build:remix && yarn build:css",
+    "build:remix": "NODE_TLS_REJECT_UNAUTHORIZED='0' remix build",
     "build:css": "node-sass --omit-source-map-url styles/styles.scss styles/styles.css",
-    "dev": "NODE_TLS_REJECT_UNAUTHORIZED='0' remix dev",
+    "dev:remix": "NODE_TLS_REJECT_UNAUTHORIZED='0' remix dev",
     "dev:css": "yarn build:css --watch",
     "start": "remix-serve build"
   },
