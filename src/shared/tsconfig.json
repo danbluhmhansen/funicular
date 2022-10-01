@@ -1,6 +1,6 @@
 {
   "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
-  "include": ["Content/**/*"],
+  "include": ["**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"],
   "compilerOptions": {
     "jsx": "react-jsx"

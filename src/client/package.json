@@ -1,13 +1,19 @@
 {
-  "name": "client",
+  "name": "@funicular/client",
   "private": true,
   "sideEffects": false,
   "scripts": {
     "build": "NODE_TLS_REJECT_UNAUTHORIZED='0' remix build",
+    "build:css": "node-sass --omit-source-map-url styles/styles.scss styles/styles.css",
     "dev": "NODE_TLS_REJECT_UNAUTHORIZED='0' remix dev",
-    "css-build": "node-sass --omit-source-map-url styles/styles.scss styles/styles.css",
-    "css-watch": "yarn css-build --watch",
+    "dev:css": "yarn build:css --watch",
     "start": "remix-serve build"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@remix-run/eslint-config",
+      "@remix-run/eslint-config/node"
+    ]
   },
   "dependencies": {
     "@remix-run/node": "^1.7.0",
@@ -20,6 +26,7 @@
   "devDependencies": {
     "@remix-run/dev": "^1.7.0",
     "@remix-run/eslint-config": "^1.7.0",
+    "@tsconfig/remix": "^1.0.2",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "bulma": "^0.9.4",
@@ -29,8 +36,5 @@
     "node-sass": "^7.0.3",
     "prettier": "^2.7.1",
     "typescript": "^4.7.4"
-  },
-  "engines": {
-    "node": ">=14"
   }
 }

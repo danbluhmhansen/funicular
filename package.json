@@ -2,14 +2,27 @@
   "name": "funicular",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "yarn@3.2.2",
+  "packageManager": "yarn@4.0.0-rc.22",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danbluhmhansen/funicular"
+  },
+  "author": {
+    "name": "Dan Bluhm Hansen",
+    "url": "https://github.com/danbluhmhansen"
+  },
+  "engines": {
+    "node": "^14.13.1 || >=16.0.0",
+    "yarn": ">=1.22.0",
+    "npm": "please-use-yarn"
+  },
   "workspaces": [
     "src/*"
   ],
   "scripts": {
     "dev": "yarn workspaces foreach run dev",
-    "dev:server": "yarn workspace server dev",
-    "dev:client": "yarn workspace client dev",
+    "dev:server": "yarn workspace @funicular/server dev",
+    "dev:client": "yarn workspace @funicular/client dev",
     "build": "yarn workspaces foreach run build",
     "restore": "yarn workspaces foreach run restore",
     "lint": "yarn workspaces foreach run lint",
@@ -28,11 +41,7 @@
       "dotnet csharpier",
       "dotnet format src/server --include"
     ],
-    "*.ts": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.tsx": [
+    "*.nothin": [
       "eslint --fix",
       "prettier --write"
     ]

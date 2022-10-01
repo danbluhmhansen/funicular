@@ -1,14 +1,7 @@
 {
-  "name": "@funicular/server",
+  "name": "@funicular/shared",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "dotnet watch",
-    "build": "dotnet build",
-    "build:js": "./esbuild.js",
-    "restore": "dotnet restore",
-    "lint": "dotnet csharpier . && dotnet format"
-  },
   "eslintConfig": {
     "extends": "eslint:recommended",
     "env": {
@@ -30,7 +23,6 @@
   },
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",
-    "esbuild": "^0.15.10",
     "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",
     "prettier": "^2.7.1",

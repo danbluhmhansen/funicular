@@ -1,17 +1,7 @@
-import type { ErrorBoundaryComponent } from "@remix-run/node";
-import { Link } from "@remix-run/react";
-import { useToggle } from "~/hooks/use-toggle";
+import type { ReactElement } from "react";
+import { useToggle } from "../hooks/use-toggle";
 
-export const ErrorBoundary: ErrorBoundaryComponent = ({ error }) => {
-  return <nav className="navbar">{error.name}</nav>;
-};
-
-export interface NavItem {
-  name: string;
-  path: string;
-}
-
-export default function Navbar({ navigation }: { navigation: NavItem[] }) {
+export default function Navbar({ children }: { children: ReactElement[] }) {
   const [active, toggleActive] = useToggle();
 
   return (
@@ -25,13 +15,7 @@ export default function Navbar({ navigation }: { navigation: NavItem[] }) {
       </div>
 
       <div className={"navbar-menu" + (active ? " is-active" : "")}>
-        <div className="navbar-start">
-          {navigation.map((n) => (
-            <Link key={n.path} to={n.path} className="navbar-item">
-              {n.name}
-            </Link>
-          ))}
-        </div>
+        <div className="navbar-start">{children}</div>
 
         <div className="navbar-end">
           <div className="navbar-item">
