@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "eslintConfig": {
-    "extends": "eslint:recommended",
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+      "eslint:recommended",
+      "prettier"
+    ],
     "env": {
       "browser": true,
       "commonjs": true,
@@ -23,6 +27,7 @@
   },
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",
+    "@typescript-eslint/parser": "^5.38.1",
     "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",
     "prettier": "^2.7.1",
