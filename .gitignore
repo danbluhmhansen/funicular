@@ -31,6 +31,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+[Dd]ist/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -465,5 +466,3 @@ $RECYCLE.BIN/
 !.yarn/versions
 
 src/client/styles/styles.css
-
-src/server/wwwroot/dist

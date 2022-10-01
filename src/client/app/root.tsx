@@ -1,3 +1,4 @@
+import { Navbar } from "@funicular/shared";
 import type { MetaFunction, LinksFunction } from "@remix-run/node";
 import {
   Link,
@@ -31,9 +32,13 @@ export default function App() {
         <Links />
       </head>
       <body>
-        {/*<Navbar>
-          {navigation.map((n) => <Link key={n.path} to={n.path} className="navbar-item">{n.name}</Link>)}
-        </Navbar>*/}
+        <Navbar>
+          {navigation.map((n) => (
+            <Link key={n.path} to={n.path} className="navbar-item">
+              {n.name}
+            </Link>
+          ))}
+        </Navbar>
         <Outlet />
         <ScrollRestoration />
         <Scripts />

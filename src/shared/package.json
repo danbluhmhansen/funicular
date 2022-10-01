@@ -2,24 +2,13 @@
   "name": "@funicular/shared",
   "version": "0.1.0",
   "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "eslintConfig": {
-    "parser": "@typescript-eslint/parser",
-    "extends": [
-      "eslint:recommended",
-      "prettier"
-    ],
-    "env": {
-      "browser": true,
-      "commonjs": true,
-      "es6": true
-    },
-    "parserOptions": {
-      "ecmaVersion": "latest",
-      "sourceType": "module",
-      "ecmaFeatures": {
-        "jsx": true
-      }
-    }
+    "extends": "../../package.json"
+  },
+  "scripts": {
+    "build": "tsc --build --force"
   },
   "dependencies": {
     "react": "^18.2.0",

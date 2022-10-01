@@ -1,8 +1,15 @@
 {
-  "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
-  "include": ["**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"],
   "compilerOptions": {
-    "jsx": "react-jsx"
-  }
+    "module": "commonjs",
+    "target": "es5",
+    "jsx": "react-jsx",
+    "outDir": "./dist",
+    "tsBuildInfoFile": "./dist/tsconfig.build.tsbuildinfo"
+  },
+  "extends": "../../tsconfig.json",
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts",
+    "dist"
+  ]
 }

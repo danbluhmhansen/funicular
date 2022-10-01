@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "incremental": true,
+    "sourceMap": true
+  },
+  "extends": "@tsconfig/node18-strictest-esm/tsconfig.json"
+}

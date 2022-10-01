@@ -1,5 +1,5 @@
 {
-  "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
+  "extends": "../../tsconfig.json",
   "include": ["Content/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"],
   "compilerOptions": {

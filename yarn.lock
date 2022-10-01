@@ -1489,13 +1489,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@funicular/client@workspace:src/client"
   dependencies:
+    "@funicular/shared": "workspace:^"
     "@remix-run/dev": "npm:^1.7.0"
     "@remix-run/eslint-config": "npm:^1.7.0"
     "@remix-run/node": "npm:^1.7.0"
     "@remix-run/react": "npm:^1.7.0"
     "@remix-run/serve": "npm:^1.7.0"
     "@tanstack/react-table": "npm:^8.5.13"
-    "@tsconfig/remix": "npm:^1.0.2"
     "@types/react": "npm:^18.0.15"
     "@types/react-dom": "npm:^18.0.6"
     bulma: "npm:^0.9.4"
@@ -1514,22 +1514,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@funicular/server@workspace:src/server"
   dependencies:
-    "@tsconfig/node18-strictest-esm": "npm:^1.0.1"
     esbuild: "npm:^0.15.10"
-    eslint: "npm:^8.20.0"
-    eslint-config-prettier: "npm:^8.5.0"
-    prettier: "npm:^2.7.1"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
-    typescript: "npm:^4.8.4"
   languageName: unknown
   linkType: soft
 
-"@funicular/shared@workspace:src/shared":
+"@funicular/shared@workspace:^, @funicular/shared@workspace:src/shared":
   version: 0.0.0-use.local
   resolution: "@funicular/shared@workspace:src/shared"
   dependencies:
-    "@babel/eslint-parser": "npm:^7.19.1"
     "@tsconfig/node18-strictest-esm": "npm:^1.0.1"
     "@typescript-eslint/parser": "npm:^5.38.1"
     eslint: "npm:^8.20.0"
@@ -2026,13 +2020,6 @@ __metadata:
   version: 1.0.1
   resolution: "@tsconfig/node18-strictest-esm@npm:1.0.1"
   checksum: e60cd8fc182df4a1f982fed1efcefca660b44cae6740531aaf8b6e9d5e86409e7f81ec2d4e2f9f590eb6eb3cdb2024b81cd0863ceed69d12210ee7707dd10dc4
-  languageName: node
-  linkType: hard
-
-"@tsconfig/remix@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@tsconfig/remix@npm:1.0.2"
-  checksum: 930ad56e889edfd28a8aeb82d35fe41d647dd17e59d0e91cad3f6b6b0814d8a8c4c0a9c7284f65c88ed3b8612a99895698c362e8cc257563e031075e15d1d3e0
   languageName: node
   linkType: hard
 
@@ -5497,8 +5484,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "funicular@workspace:."
   dependencies:
+    eslint: "npm:^8.20.0"
+    eslint-config-prettier: "npm:^8.5.0"
     husky: "npm:^8.0.1"
     lint-staged: "npm:^13.0.3"
+    prettier: "npm:^2.7.1"
+    typescript: "npm:^4.8.4"
   languageName: unknown
   linkType: soft
 
