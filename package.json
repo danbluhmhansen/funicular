@@ -41,7 +41,8 @@
     "env": {
       "browser": true,
       "commonjs": true,
-      "es6": true
+      "es6": true,
+      "es2022": true
     },
     "parserOptions": {
       "ecmaVersion": "latest",
@@ -51,6 +52,7 @@
       }
     }
   },
+  "eslintIgnore": ["globals.d.ts"],
   "devDependencies": {
     "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",

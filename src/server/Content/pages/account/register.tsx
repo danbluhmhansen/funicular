@@ -10,8 +10,13 @@ export default function Register() {
   return (
     <>
       <h2 className="title">Register</h2>
-      <form method="post" action="/account/register">
+      <form method="post" action="/account/register?returnUrl=/">
         <h4 className="title">Create a new account.</h4>
+        <input
+          type="hidden"
+          name="__RequestVerificationToken"
+          value={globalThis.antiforgeryToken}
+        />
         {fields.map(({ name, type, placeholder }) => (
           <div key={name} className="field">
             <label htmlFor={name} className="label">

@@ -1,8 +1,12 @@
 ﻿<!DOCTYPE html>
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 @model RegisterViewModel
 @{
     ViewData["Title"] = "Register";
 }
 
 <div id="container"></div>
+<script type="text/javascript">
+    window.antiforgeryToken = '@Html.Raw(Antiforgery.GetAndStoreTokens(Context).RequestToken)';
+</script>
 <script src="~/dist/account/register.js"></script>
