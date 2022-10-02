@@ -9,7 +9,10 @@ const navigation = [
 
 export default function Layout() {
   return (
-    <Navbar>
+    <Navbar
+      primaryButton={{ path: "/account/register", name: "Register" }}
+      secondaryButton={{ path: "/account/login", name: "Login" }}
+    >
       {navigation.map((n) => (
         <a key={n.path} href={n.path} className="navbar-item">
           {n.name}

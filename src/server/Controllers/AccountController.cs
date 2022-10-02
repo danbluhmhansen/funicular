@@ -91,6 +91,7 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
     {
+        Console.WriteLine("TESTING");
         ViewData["ReturnUrl"] = returnUrl;
         if (ModelState.IsValid)
         {
