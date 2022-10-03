@@ -1,16 +1,6 @@
 ﻿<!DOCTYPE html>
-@using System.Collections.Generic
-@using Microsoft.AspNetCore.Http
-@model LoginViewModel
-@inject SignInManager<FunicularUser> SignInManager
-@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
-
 @{
     ViewData["Title"] = "Log in";
 }
-
 <div id="container"></div>
-<script type="text/javascript">
-    window.antiforgeryToken = '@Html.Raw(Antiforgery.GetAndStoreTokens(Context).RequestToken)';
-</script>
 <script src="~/dist/account/login.js"></script>

@@ -2,7 +2,6 @@
 
 using System.Security.Claims;
 
-using Funicular.Server.Data;
 using Funicular.Server.Data.Models;
 using Funicular.Server.ViewModels.Account;
 
@@ -19,7 +18,6 @@ public class AccountController : Controller
 
     // private readonly IEmailSender _emailSender;
     // private readonly ISmsSender _smsSender;
-    private static bool databaseChecked;
 
     public AccountController(UserManager<FunicularUser> userManager, SignInManager<FunicularUser> signInManager)
     {
@@ -393,20 +391,6 @@ public class AccountController : Controller
     }
 
     #region Helpers
-
-    // The following code creates the database and schema if they don't exist.
-    // This is a temporary workaround since deploying database through EF migrations is
-    // not yet supported in this release.
-    // Please see this http://go.microsoft.com/fwlink/?LinkID=615859 for more information on how to do deploy the database
-    // when publishing your application.
-    private static void EnsureDatabaseCreated(FunicularDbContext context)
-    {
-        if (!databaseChecked)
-        {
-            databaseChecked = true;
-            context.Database.EnsureCreated();
-        }
-    }
 
     private void AddErrors(IdentityResult result)
     {

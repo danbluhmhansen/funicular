@@ -1,4 +1,6 @@
 ﻿<!DOCTYPE html>
+@inject SignInManager<FunicularUser> SignInManager
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 <html>
     <head>
         <meta charset="utf-8" />
@@ -10,6 +12,10 @@
         <div id="navbar"></div>
         @RenderBody()
         @RenderSection("scripts", required: false)
+        <script type="text/javascript">
+            window.signedIn = '@Html.Raw(SignInManager.IsSignedIn(User))' === 'True';
+            window.antiforgeryToken = '@Html.Raw(Antiforgery.GetAndStoreTokens(Context).RequestToken)';
+        </script>
         <script src="~/dist/shared/layout.js"></script>
     </body>
 </html>

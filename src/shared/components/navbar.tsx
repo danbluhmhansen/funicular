@@ -1,22 +1,15 @@
 import type { ReactElement } from "react";
 import { useToggle } from "../hooks/use-toggle";
 
-interface NavItem {
-  path: string;
-  name: string;
-}
-
 export function Navbar({
   children,
   primaryButton,
   secondaryButton,
 }: {
   children: ReactElement | ReactElement[] | undefined;
-  primaryButton: NavItem | undefined;
-  secondaryButton: NavItem | undefined;
+  primaryButton: ReactElement | undefined;
+  secondaryButton: ReactElement | undefined;
 }) {
-  const { path: pPath, name: pName } = { ...primaryButton };
-  const { path: sPath, name: sName } = { ...secondaryButton };
   const [active, toggleActive] = useToggle();
 
   return (
@@ -34,16 +27,8 @@ export function Navbar({
           <div className="navbar-end">
             <div className="navbar-item">
               <div className="buttons">
-                {
-                  <a href={pPath} className="button is-primary">
-                    {pName}
-                  </a>
-                }
-                {
-                  <a href={sPath} className="button is-light">
-                    {sName}
-                  </a>
-                }
+                {primaryButton}
+                {secondaryButton}
               </div>
             </div>
           </div>

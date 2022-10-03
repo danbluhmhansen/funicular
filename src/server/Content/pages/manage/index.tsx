@@ -4,7 +4,6 @@ import type ManageIndex from "../../models/manage";
 const model: ManageIndex = globalThis.model;
 
 export default function Index() {
-  console.log(model);
   return (
     <>
       <h2 className="title">Manage your account</h2>
