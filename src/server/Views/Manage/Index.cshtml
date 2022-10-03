@@ -3,5 +3,8 @@
 @{
     ViewData["Title"] = "Manage your account";
 }
+<script type="text/javascript">
+    window.model = JSON.parse('@Json.Serialize(Model)');
+</script>
 <div id="container"></div>
 <script src="~/dist/manage/index.js"></script>

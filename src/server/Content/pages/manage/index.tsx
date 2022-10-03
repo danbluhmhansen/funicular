@@ -1,10 +1,10 @@
 import { createRoot } from "react-dom/client";
+import type ManageIndex from "../../models/manage";
 
-const hasPassword = true;
-const hasPhone = false;
-const hasTwoFactor = false;
+const model: ManageIndex = globalThis.model;
 
 export default function Index() {
+  console.log(model);
   return (
     <>
       <h2 className="title">Manage your account</h2>
@@ -14,7 +14,7 @@ export default function Index() {
           <tr>
             <td className="has-text-right">Password:</td>
             <td>
-              {hasPassword ? (
+              {model.hasPassword ? (
                 <a
                   href="/manage/changepassword"
                   className="button is-link is-small"
@@ -45,7 +45,7 @@ export default function Index() {
           <tr>
             <td className="has-text-right">Phone Number:</td>
             <td>
-              {hasPhone ? (
+              {model.phoneNumber && model.phoneNumber !== "" ? (
                 <>
                   <a
                     href="/manage/addphonenumber"
@@ -73,7 +73,7 @@ export default function Index() {
           <tr>
             <td className="has-text-right">Two-Factor Authentication:</td>
             <td>
-              {hasTwoFactor ? (
+              {model.twoFactor ? (
                 <form
                   method="post"
                   action="/manage/disabletwofactorauthentication"
