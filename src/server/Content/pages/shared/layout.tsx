@@ -1,5 +1,6 @@
 import { Navbar } from "@funicular/shared";
-import { createRoot } from "react-dom/client";
+import AntiforgeryToken from "components/antiforgery-token";
+import Page from "page";
 
 const signedIn = globalThis.signedIn;
 
@@ -23,11 +24,7 @@ function PrimaryButton() {
 function SecondaryButton() {
   return signedIn ? (
     <form method="post" action="/account/logoff">
-      <input
-        type="hidden"
-        name="__RequestVerificationToken"
-        value={globalThis.antiforgeryToken}
-      />
+      <AntiforgeryToken />
       <input type="submit" value="Logout" className="button is-light" />
     </form>
   ) : (
@@ -52,4 +49,4 @@ export default function Layout() {
   );
 }
 
-createRoot(document.querySelector("#navbar") as HTMLElement).render(<Layout />);
+Page(<Layout />, "#navbar");

@@ -1,9 +1,8 @@
-import { createRoot } from "react-dom/client";
+import { Title } from "@funicular/shared";
+import Page from "page";
 
 export default function Index() {
-  return <h1 className="title">Hello, World!</h1>;
+  return <Title size={1}>Hello, World!</Title>;
 }
 
-createRoot(document.querySelector("#container") as HTMLElement).render(
-  <Index />
-);
+Page(<Index />);

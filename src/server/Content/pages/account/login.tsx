@@ -1,17 +1,32 @@
-import { createRoot } from "react-dom/client";
+import { Field, FieldProps, Submit, Title } from "@funicular/shared";
+import AntiforgeryToken from "components/antiforgery-token";
+import Page from "page";
 
 interface Provider {
   name: string;
   display: string;
 }
 
-const fields = [
-  { name: "Email", type: "email", placeholder: "Email", icon: "ti ti-mail" },
+const fields: FieldProps[] = [
   {
-    name: "Password",
+    name: "email",
+    type: "email",
+    label: "Email",
+    icon: {
+      icon: "mail",
+      size: "small",
+    },
+    placeholder: "Email",
+  },
+  {
+    name: "password",
     type: "password",
+    label: "Password",
+    icon: {
+      icon: "lock",
+      size: "small",
+    },
     placeholder: "Password",
-    icon: "ti ti-lock",
   },
 ];
 
@@ -20,33 +35,15 @@ const providers: Provider[] | undefined = undefined;
 export default function Login() {
   return (
     <>
-      <h2 className="title">Log in</h2>
+      <Title size={2}>Log in</Title>
       <div className="columns">
         <div className="column">
-          <form method="post" action="/account/login?returnUrl=/">
-            <h4 className="title">Use a local account to log in.</h4>
-            <input
-              type="hidden"
-              name="__RequestVerificationToken"
-              value={globalThis.antiforgeryToken}
-            />
-            {fields.map(({ name, type, placeholder, icon }) => (
-              <div key={name} className="field">
-                <label htmlFor={name} className="label">
-                  {name}
-                </label>
-                <div className="control has-icons-left has-icons-right">
-                  <span className="icon is-small is-left">
-                    <i className={icon} />
-                  </span>
-                  <input
-                    name={name}
-                    type={type}
-                    placeholder={placeholder}
-                    className="input"
-                  />
-                </div>
-              </div>
+          <form method="post" action="/account/login">
+            <Title size={4}>Use a local account to log in.</Title>
+            <AntiforgeryToken />
+            <input type="hidden" name="returnUrl" value="/" />
+            {fields.map((field) => (
+              <Field key={field.name} {...field} />
             ))}
             <div className="field">
               <div className="control">
@@ -55,9 +52,7 @@ export default function Login() {
                 </label>
               </div>
             </div>
-            <div className="control">
-              <input type="submit" value="Log in" className="button is-link" />
-            </div>
+            <Submit value="Log in" />
             <p>
               <a href="/account/register?returnUrl=/">
                 Register as a new user?
@@ -69,16 +64,12 @@ export default function Login() {
           </form>
         </div>
         <div className="column">
-          <h4 className="title">Use another service to log in.</h4>
+          <Title size={4}>Use another service to log in.</Title>
           {providers ? (
-            <form method="post" action="/account/externallogin?returnUrl=/">
-              {providers.map((p) => (
-                <input
-                  type="submit"
-                  name="provider"
-                  value={p.name}
-                  className="button is-link"
-                />
+            <form method="post" action="/account/externallogin">
+              <input type="hidden" name="returnUrl" value="/" />
+              {providers.map(({ name }) => (
+                <Submit value={name} name="provider" />
               ))}
             </form>
           ) : (
@@ -97,6 +88,4 @@ export default function Login() {
   );
 }
 
-createRoot(document.querySelector("#container") as HTMLElement).render(
-  <Login />
-);
+Page(<Login />);

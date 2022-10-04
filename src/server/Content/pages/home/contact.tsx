@@ -1,10 +1,13 @@
-import { createRoot } from "react-dom/client";
+import { Title } from "@funicular/shared";
+import Page from "page";
 
 export default function Contact() {
   return (
     <>
-      <h2 className="title">Contact.</h2>
-      <h3 className="title">Your contact page.</h3>
+      <Title size={2}>Contact.</Title>
+      <Title size={3} sub>
+        Your contact page.
+      </Title>
       <address>
         One Microsoft Way
         <br />
@@ -24,6 +27,4 @@ export default function Contact() {
   );
 }
 
-createRoot(document.querySelector("#container") as HTMLElement).render(
-  <Contact />
-);
+Page(<Contact />);

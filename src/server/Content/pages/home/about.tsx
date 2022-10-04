@@ -1,15 +1,16 @@
-import { createRoot } from "react-dom/client";
+import { Title } from "@funicular/shared";
+import Page from "page";
 
 export default function About() {
   return (
     <>
-      <h2 className="title">About.</h2>
-      <h3 className="title">Your application description page.</h3>
+      <Title size={2}>About.</Title>
+      <Title size={3} sub>
+        Your application description page.
+      </Title>
       <p>Use this area to provide additional information.</p>
     </>
   );
 }
 
-createRoot(document.querySelector("#container") as HTMLElement).render(
-  <About />
-);
+Page(<About />);

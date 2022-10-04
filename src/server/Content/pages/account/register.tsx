@@ -1,58 +1,55 @@
-import { createRoot } from "react-dom/client";
+import { Field, FieldProps, Submit, Title } from "@funicular/shared";
+import AntiforgeryToken from "components/antiforgery-token";
+import Page from "page";
 
-const fields = [
-  { name: "Email", type: "email", placeholder: "Email", icon: "ti ti-mail" },
+const fields: FieldProps[] = [
   {
-    name: "Password",
-    type: "password",
-    placeholder: "Password",
-    icon: "ti ti-lock",
+    name: "email",
+    type: "email",
+    label: "Email",
+    icon: {
+      icon: "mail",
+      size: "small",
+    },
+    placeholder: "Email",
   },
   {
-    name: "ConfirmPassword",
+    name: "password",
     type: "password",
+    label: "Password",
+    icon: {
+      icon: "lock",
+      size: "small",
+    },
     placeholder: "Password",
-    icon: "ti ti-lock",
+  },
+  {
+    name: "confirmPassword",
+    type: "password",
+    label: "Confirm password",
+    icon: {
+      icon: "lock",
+      size: "small",
+    },
+    placeholder: "Password",
   },
 ];
 
 export default function Register() {
   return (
     <>
-      <h2 className="title">Register</h2>
-      <form method="post" action="/account/register?returnUrl=/">
-        <h4 className="title">Create a new account.</h4>
-        <input
-          type="hidden"
-          name="__RequestVerificationToken"
-          value={globalThis.antiforgeryToken}
-        />
-        {fields.map(({ name, type, placeholder, icon }) => (
-          <div key={name} className="field">
-            <label htmlFor={name} className="label">
-              {name}
-            </label>
-            <div className="control has-icons-left has-icons-right">
-              <span className="icon is-small is-left">
-                <i className={icon} />
-              </span>
-              <input
-                name={name}
-                type={type}
-                placeholder={placeholder}
-                className="input"
-              />
-            </div>
-          </div>
+      <Title size={2}>Register</Title>
+      <form method="post" action="/account/register">
+        <Title size={4}>Create a new account.</Title>
+        <AntiforgeryToken />
+        <input type="hidden" name="returnUrl" value="/" />
+        {fields.map((field) => (
+          <Field key={field.name} {...field} />
         ))}
-        <div className="control">
-          <input type="submit" value="Register" className="button is-link" />
-        </div>
+        <Submit value="Register" />
       </form>
     </>
   );
 }
 
-createRoot(document.querySelector("#container") as HTMLElement).render(
-  <Register />
-);
+Page(<Register />);

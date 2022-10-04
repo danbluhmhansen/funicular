@@ -1,4 +1,5 @@
-import { createRoot } from "react-dom/client";
+import { Title } from "@funicular/shared";
+import Page from "page";
 import type ManageIndex from "../../models/manage";
 
 const model: ManageIndex = globalThis.model;
@@ -6,8 +7,10 @@ const model: ManageIndex = globalThis.model;
 export default function Index() {
   return (
     <>
-      <h2 className="title">Manage your account</h2>
-      <h4 className="subtitle">Change your account settings</h4>
+      <Title size={2}>Manage your account</Title>
+      <Title size={4} sub>
+        Change your account settings
+      </Title>
       <table className="table">
         <tbody>
           <tr>
@@ -103,6 +106,4 @@ export default function Index() {
   );
 }
 
-createRoot(document.querySelector("#container") as HTMLElement).render(
-  <Index />
-);
+Page(<Index />);
