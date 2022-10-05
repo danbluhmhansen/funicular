@@ -24,6 +24,22 @@ const navigation = [
   { name: "Characters", path: "/characters" },
 ];
 
+function PrimaryButton() {
+  return (
+    <Link to="/" className="button is-primary">
+      Register
+    </Link>
+  );
+}
+
+function SecondaryButton() {
+  return (
+    <Link to="/" className="button is-light">
+      Login
+    </Link>
+  );
+}
+
 export default function App() {
   return (
     <html lang="en">
@@ -32,7 +48,10 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Navbar>
+        <Navbar
+          primaryButton={<PrimaryButton />}
+          secondaryButton={<SecondaryButton />}
+        >
           {navigation.map((n) => (
             <Link key={n.path} to={n.path} className="navbar-item">
               {n.name}

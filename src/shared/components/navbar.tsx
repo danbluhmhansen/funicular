@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import type { ReactNode } from "react";
 import { useToggle } from "../hooks/use-toggle";
 
 export function Navbar({
@@ -6,9 +6,9 @@ export function Navbar({
   primaryButton,
   secondaryButton,
 }: {
-  children: ReactElement | ReactElement[] | undefined;
-  primaryButton: ReactElement | undefined;
-  secondaryButton: ReactElement | undefined;
+  children?: ReactNode;
+  primaryButton?: ReactNode;
+  secondaryButton?: ReactNode;
 }) {
   const [active, toggleActive] = useToggle();
 
@@ -23,7 +23,7 @@ export function Navbar({
       </div>
       <div className={"navbar-menu" + (active ? " is-active" : "")}>
         <div className="navbar-start">{children}</div>
-        {primaryButton && secondaryButton && (
+        {(primaryButton || secondaryButton) && (
           <div className="navbar-end">
             <div className="navbar-item">
               <div className="buttons">
