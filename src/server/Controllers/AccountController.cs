@@ -34,7 +34,7 @@ public class AccountController : Controller
     public IActionResult Login(string returnUrl = null)
     {
         ViewData["ReturnUrl"] = returnUrl;
-        return View();
+        return View(new LoginViewModel());
     }
 
     //
@@ -79,7 +79,7 @@ public class AccountController : Controller
     public IActionResult Register(string returnUrl = null)
     {
         ViewData["ReturnUrl"] = returnUrl;
-        return View();
+        return View(new RegisterViewModel());
     }
 
     //

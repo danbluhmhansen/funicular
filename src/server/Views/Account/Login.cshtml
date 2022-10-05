@@ -1,6 +1,10 @@
 ﻿<!DOCTYPE html>
+@model LoginViewModel
 @{
     ViewData["Title"] = "Log in";
 }
+<script type="text/javascript">
+    window.model = JSON.parse('@Json.Serialize(Model)');
+</script>
 <div id="container"></div>
 <script src="~/dist/account/login.js"></script>

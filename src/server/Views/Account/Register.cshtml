@@ -1,6 +1,10 @@
 ﻿<!DOCTYPE html>
+@model RegisterViewModel
 @{
     ViewData["Title"] = "Register";
 }
+<script type="text/javascript">
+    window.model = JSON.parse('@Json.Serialize(Model)');
+</script>
 <div id="container"></div>
 <script src="~/dist/account/register.js"></script>

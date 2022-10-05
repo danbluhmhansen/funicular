@@ -1,11 +1,14 @@
 import { Field, FieldProps, Submit, Title } from "@funicular/shared";
 import AntiforgeryToken from "components/antiforgery-token";
+import type AccountLogin from "models/account/login";
 import Page from "page";
 
 interface Provider {
   name: string;
   display: string;
 }
+
+const model: AccountLogin = globalThis.model;
 
 const fields: FieldProps[] = [
   {
@@ -16,6 +19,7 @@ const fields: FieldProps[] = [
       icon: "mail",
       size: "small",
     },
+    defaultValue: model.email,
     placeholder: "Email",
   },
   {
@@ -26,7 +30,14 @@ const fields: FieldProps[] = [
       icon: "lock",
       size: "small",
     },
+    defaultValue: model.password,
     placeholder: "Password",
+  },
+  {
+    name: "rememberMe",
+    type: "checkbox",
+    label: "Remember me?",
+    defaultValue: model.rememberMe + "",
   },
 ];
 
@@ -45,13 +56,6 @@ export default function Login() {
             {fields.map((field) => (
               <Field key={field.name} {...field} />
             ))}
-            <div className="field">
-              <div className="control">
-                <label className="checkbox">
-                  <input name="RememberMe" type="checkbox" /> Remember me?
-                </label>
-              </div>
-            </div>
             <Submit value="Log in" />
             <p>
               <a href="/account/register?returnUrl=/">

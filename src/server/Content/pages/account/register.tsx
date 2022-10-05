@@ -1,6 +1,9 @@
 import { Field, FieldProps, Submit, Title } from "@funicular/shared";
 import AntiforgeryToken from "components/antiforgery-token";
+import type AccountRegister from "models/account/register";
 import Page from "page";
+
+const model: AccountRegister = globalThis.model;
 
 const fields: FieldProps[] = [
   {
@@ -11,6 +14,7 @@ const fields: FieldProps[] = [
       icon: "mail",
       size: "small",
     },
+    defaultValue: model.email,
     placeholder: "Email",
   },
   {
@@ -21,6 +25,7 @@ const fields: FieldProps[] = [
       icon: "lock",
       size: "small",
     },
+    defaultValue: model.password,
     placeholder: "Password",
   },
   {
@@ -31,6 +36,7 @@ const fields: FieldProps[] = [
       icon: "lock",
       size: "small",
     },
+    defaultValue: model.confirmPassword,
     placeholder: "Password",
   },
 ];
