@@ -44,6 +44,8 @@ const fields: FieldProps[] = [
 const providers: Provider[] | undefined = undefined;
 
 export default function Login() {
+  const params = new URLSearchParams(window.location.search);
+  const returnUrl = params.get("returnUrl") ?? "/manage";
   return (
     <>
       <Title size={2}>Log in</Title>
@@ -52,13 +54,13 @@ export default function Login() {
           <form method="post" action="/account/login">
             <Title size={4}>Use a local account to log in.</Title>
             <AntiforgeryToken />
-            <input type="hidden" name="returnUrl" value="/" />
+            <input type="hidden" name="returnUrl" value={returnUrl} />
             {fields.map((field) => (
               <Field key={field.name} {...field} />
             ))}
             <Submit value="Log in" />
             <p>
-              <a href="/account/register?returnUrl=/">
+              <a href={"/account/register?returnUrl=" + returnUrl}>
                 Register as a new user?
               </a>
             </p>
@@ -71,7 +73,7 @@ export default function Login() {
           <Title size={4}>Use another service to log in.</Title>
           {providers ? (
             <form method="post" action="/account/externallogin">
-              <input type="hidden" name="returnUrl" value="/" />
+              <input type="hidden" name="returnUrl" value={returnUrl} />
               {providers.map(({ name }) => (
                 <Submit value={name} name="provider" />
               ))}

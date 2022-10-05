@@ -42,13 +42,15 @@ const fields: FieldProps[] = [
 ];
 
 export default function Register() {
+  const params = new URLSearchParams(window.location.search);
+  const returnUrl = params.get("returnUrl") ?? "/manage";
   return (
     <>
       <Title size={2}>Register</Title>
       <form method="post" action="/account/register">
         <Title size={4}>Create a new account.</Title>
         <AntiforgeryToken />
-        <input type="hidden" name="returnUrl" value="/" />
+        <input type="hidden" name="returnUrl" value={returnUrl} />
         {fields.map((field) => (
           <Field key={field.name} {...field} />
         ))}
