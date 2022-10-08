@@ -3,10 +3,12 @@ import { useToggle } from "../hooks/use-toggle";
 
 export function Navbar({
   children,
+  brand,
   primaryButton,
   secondaryButton,
 }: {
   children?: ReactNode;
+  brand?: ReactNode;
   primaryButton?: ReactNode;
   secondaryButton?: ReactNode;
 }) {
@@ -15,6 +17,7 @@ export function Navbar({
   return (
     <nav className="navbar">
       <div className="navbar-brand">
+        {brand}
         <a className="navbar-burger" onClick={toggleActive}>
           <span />
           <span />

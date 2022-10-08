@@ -19,27 +19,35 @@ export const meta: MetaFunction = () => ({
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
-const navigation = [
-  { name: "Home", path: "/" },
-  { name: "Characters", path: "/characters" },
-];
+const navigation = [{ name: "Characters", path: "/characters" }];
 
-function PrimaryButton() {
+function Nav() {
   return (
-    <Link to="/" className="button is-primary">
-      Register
-    </Link>
+    <Navbar
+      brand={
+        <Link to="/" className="navbar-item">
+          Funicular
+        </Link>
+      }
+      primaryButton={
+        <Link to="/" className="button is-primary">
+          Register
+        </Link>
+      }
+      secondaryButton={
+        <Link to="/login" reloadDocument className="button is-light">
+          Login
+        </Link>
+      }
+    >
+      {navigation.map((n) => (
+        <Link key={n.path} to={n.path} className="navbar-item">
+          {n.name}
+        </Link>
+      ))}
+    </Navbar>
   );
 }
-
-function SecondaryButton() {
-  return (
-    <Link to="/" className="button is-light">
-      Login
-    </Link>
-  );
-}
-
 export default function App() {
   return (
     <html lang="en">
@@ -48,16 +56,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Navbar
-          primaryButton={<PrimaryButton />}
-          secondaryButton={<SecondaryButton />}
-        >
-          {navigation.map((n) => (
-            <Link key={n.path} to={n.path} className="navbar-item">
-              {n.name}
-            </Link>
-          ))}
-        </Navbar>
+        <Nav />
         <Outlet />
         <ScrollRestoration />
         <Scripts />
