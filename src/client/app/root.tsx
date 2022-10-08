@@ -1,6 +1,7 @@
 import { Navbar } from "@funicular/shared";
 import type { MetaFunction, LinksFunction } from "@remix-run/node";
 import {
+  Form,
   Link,
   Links,
   LiveReload,
@@ -34,9 +35,11 @@ function PrimaryButton() {
 
 function SecondaryButton() {
   return (
-    <Link to="/" className="button is-light">
-      Login
-    </Link>
+    <Form method="post" action="/auth/login">
+      <button type="submit" className="button is-light">
+        Login
+      </button>
+    </Form>
   );
 }
 

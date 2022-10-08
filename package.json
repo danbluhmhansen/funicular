@@ -52,7 +52,9 @@
       }
     }
   },
-  "eslintIgnore": ["globals.d.ts"],
+  "eslintIgnore": [
+    "globals.d.ts"
+  ],
   "devDependencies": {
     "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",
