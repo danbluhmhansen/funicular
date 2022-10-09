@@ -20,7 +20,10 @@ export const meta: MetaFunction = () => ({
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
-const navigation = [{ name: "Characters", path: "/characters" }];
+const navigation = [
+  { name: "Characters", path: "/characters" },
+  { name: "Test", path: "/test" },
+];
 
 function Nav() {
   return (

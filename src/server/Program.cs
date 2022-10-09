@@ -77,7 +77,7 @@ services
     })
     .AddValidation(options =>
     {
-        options.AddAudiences("resource_server");
+        // options.AddAudiences("resource_server");
         options.UseLocalServer();
         options.UseAspNetCore();
     });
