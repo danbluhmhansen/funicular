@@ -1501,6 +1501,7 @@ __metadata:
     bulma: "npm:^0.9.4"
     bulma-prefers-dark: "npm:^0.1.0-beta.1"
     node-sass: "npm:^7.0.3"
+    openid-client: "npm:^5.1.10"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     typescript: "npm:^4.7.4"
@@ -6715,6 +6716,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jose@npm:^4.1.4":
+  version: 4.10.0
+  resolution: "jose@npm:4.10.0"
+  checksum: 19f32e33eee776362ca9f81502c18d8bb61b6eea4b405aee70b7a0ca30f798e10c6a4c96c0ffd7302d159ca956e73e93ff15fb9626f41c9e96ddc5627c8046e7
+  languageName: node
+  linkType: hard
+
 "js-base64@npm:^2.4.9":
   version: 2.6.4
   resolution: "js-base64@npm:2.6.4"
@@ -8385,6 +8393,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"object-hash@npm:^2.0.1":
+  version: 2.2.0
+  resolution: "object-hash@npm:2.2.0"
+  checksum: 40373e057e54ed3385e3097f36dd40922940932dc0c06a3f5540b82dff473333db28135162065863d075962cbc88068c4221b3b8459702fcddcecaaadb22b6ba
+  languageName: node
+  linkType: hard
+
 "object-inspect@npm:^1.12.2, object-inspect@npm:^1.9.0":
   version: 1.12.2
   resolution: "object-inspect@npm:1.12.2"
@@ -8472,6 +8487,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"oidc-token-hash@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "oidc-token-hash@npm:5.0.1"
+  checksum: 2e88b814ac039af315fa502dfc1fd590dc23a4f4b144fabfa5de66e5577c57a171fa8f69a93d2da8fb58f6fd8028a3930ba0218b612a2bc6a15d8467c0dd2fe8
+  languageName: node
+  linkType: hard
+
 "on-finished@npm:2.4.1":
   version: 2.4.1
   resolution: "on-finished@npm:2.4.1"
@@ -8532,6 +8554,18 @@ __metadata:
     is-docker: "npm:^2.1.1"
     is-wsl: "npm:^2.2.0"
   checksum: 287db1bc10b3927b247d7c125d3ef998c410f57f434619a9d93f3e1384ff025ef12c18c1cfde1cb8f23f1326fb2bfe2634c789737bb65c18183015b5de81f594
+  languageName: node
+  linkType: hard
+
+"openid-client@npm:^5.1.10":
+  version: 5.1.10
+  resolution: "openid-client@npm:5.1.10"
+  dependencies:
+    jose: "npm:^4.1.4"
+    lru-cache: "npm:^6.0.0"
+    object-hash: "npm:^2.0.1"
+    oidc-token-hash: "npm:^5.0.1"
+  checksum: ca364d6f18f9a0b89cc7721ff36b8c113b340dc239189b902241412a0a072190a7364c6d36b01bf78556816ab02991d85fabe1707119914b128a37fd13cf4ddd
   languageName: node
   linkType: hard
 

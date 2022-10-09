@@ -1,6 +1,7 @@
 import { Navbar } from "@funicular/shared";
 import type { MetaFunction, LinksFunction } from "@remix-run/node";
 import {
+  Form,
   Link,
   Links,
   LiveReload,
@@ -35,9 +36,11 @@ function Nav() {
         </Link>
       }
       secondaryButton={
-        <Link to="/login" reloadDocument className="button is-light">
-          Login
-        </Link>
+        <Form method="post" action="/auth/login">
+          <button type="submit" className="button is-light">
+            Login
+          </button>
+        </Form>
       }
     >
       {navigation.map((n) => (
@@ -48,6 +51,7 @@ function Nav() {
     </Navbar>
   );
 }
+
 export default function App() {
   return (
     <html lang="en">
