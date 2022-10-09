@@ -45,7 +45,7 @@ const providers: Provider[] | undefined = undefined;
 
 export default function Login() {
   const params = new URLSearchParams(window.location.search);
-  const returnUrl = params.get("returnUrl") ?? "/manage";
+  const returnUrl = params.get("ReturnUrl") ?? "/manage";
   return (
     <>
       <Title size={2}>Log in</Title>
