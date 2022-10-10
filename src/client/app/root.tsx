@@ -33,18 +33,6 @@ function Nav() {
           Funicular
         </Link>
       }
-      primaryButton={
-        <Link to="/" className="button is-primary">
-          Register
-        </Link>
-      }
-      secondaryButton={
-        <Form method="post" action="/auth/login">
-          <button type="submit" className="button is-light">
-            Login
-          </button>
-        </Form>
-      }
     >
       {navigation.map((n) => (
         <Link key={n.path} to={n.path} className="navbar-item">

@@ -11,25 +11,22 @@ export async function action({ request }: ActionArgs) {
   const client = await AuthClient();
   const session = await getSession(request.headers.get("Cookie"));
 
-  const params = new URLSearchParams(await request.text());
+  const callbackParams = new URLSearchParams(await request.text());
   const tokenSet = await client.callback(
     "http://localhost:3000/auth/callback",
     {
-      code: params.get("code") ?? "",
-      iss: params.get("iss"),
+      code: callbackParams.get("code") ?? "",
+      iss: callbackParams.get("iss"),
     },
     {
       code_verifier: session.get("code_verifier"),
       nonce: session.get("nonce"),
     }
   );
-
-  console.log();
-  console.log(tokenSet);
-  console.log();
-
   session.set("access_token", tokenSet.access_token);
-  return redirect("/", {
+
+  const stateParams = new URLSearchParams(callbackParams.get("state") ?? "");
+  return redirect(stateParams.get("returnUrl") ?? "/", {
     headers: {
       "Set-Cookie": await commitSession(session),
     },

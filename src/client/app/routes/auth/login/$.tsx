@@ -1,10 +1,10 @@
-import type { ActionArgs } from "@remix-run/node";
+import type { LoaderArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { generators } from "openid-client";
 import { AuthClient } from "~/lib/auth";
 import { commitSession, getSession } from "~/sessions";
 
-export async function action({ request }: ActionArgs) {
+export async function loader({ request, params }: LoaderArgs) {
   const client = await AuthClient();
   const session = await getSession(request.headers.get("Cookie"));
 
@@ -20,6 +20,7 @@ export async function action({ request }: ActionArgs) {
       code_challenge_method: "S256",
       nonce,
       response_mode: "form_post",
+      state: `returnUrl=/${params["*"]}`,
     }),
     {
       headers: {

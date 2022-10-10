@@ -1,20 +1,10 @@
 import { Title } from "@funicular/shared";
 import type { LoaderArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { getSession } from "~/sessions";
+import { authFetch } from "~/lib/auth";
 
 export async function loader({ request }: LoaderArgs) {
-  const session = await getSession(request.headers.get("Cookie"));
-  const accessToken = session.get("access_token");
-
-  const response = await fetch(`${process.env["SERVER_URL"]}/test`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  return await response.json();
+  return await authFetch(request, `${process.env["SERVER_URL"]}/test`, "test");
 }
 
 export default function Index() {
