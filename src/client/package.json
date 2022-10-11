@@ -5,7 +5,7 @@
   "scripts": {
     "build": "yarn build:remix && yarn build:css",
     "build:remix": "NODE_TLS_REJECT_UNAUTHORIZED='0' remix build",
-    "build:css": "node-sass --omit-source-map-url styles/styles.scss styles/styles.css",
+    "build:css": "node-sass --omit-source-map-url styles/styles.scss app/styles/styles.css",
     "dev:remix": "NODE_TLS_REJECT_UNAUTHORIZED='0' remix dev",
     "dev:css": "yarn build:css --watch",
     "start": "remix-serve build"

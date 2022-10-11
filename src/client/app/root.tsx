@@ -1,7 +1,5 @@
-import { Navbar } from "@funicular/shared";
 import type { MetaFunction, LinksFunction, LoaderArgs } from "@remix-run/node";
 import {
-  Form,
   Link,
   Links,
   LiveReload,
@@ -11,8 +9,9 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import styles from "../styles/styles.css";
+import styles from "./styles/styles.css";
 import { getSession } from "./sessions";
+import { Navbar } from "./components/navbar";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",

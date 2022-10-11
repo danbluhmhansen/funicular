@@ -21,7 +21,6 @@
   ],
   "scripts": {
     "build": "yarn workspaces foreach -pt run build",
-    "build:shared": "yarn workspace @funicular/shared build",
     "dev:server": "yarn workspace @funicular/server dev:cs",
     "dev:client": "yarn workspace @funicular/client dev:remix",
     "restore": "yarn workspaces foreach run restore",

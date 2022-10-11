@@ -465,4 +465,4 @@ $RECYCLE.BIN/
 !.yarn/sdks
 !.yarn/versions
 
-src/client/styles/styles.css
+src/client/app/styles/styles.css

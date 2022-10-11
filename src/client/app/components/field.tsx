@@ -1,4 +1,5 @@
-import { Icon, IconProps } from "./icon";
+import type { IconProps } from "./icon";
+import { Icon } from "./icon";
 
 export interface FieldProps {
   name: string;
