@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageVersion Include="Bogus" Version="34.0.2" />
+    <PackageVersion Include="FluentValidation" Version="11.2.2" />
     <PackageVersion Include="GraphQL.Server.Transports.AspNetCore" Version="7.1.1" />
     <PackageVersion Include="GraphQL.Server.Ui.Playground" Version="7.1.1" />
     <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.9" />

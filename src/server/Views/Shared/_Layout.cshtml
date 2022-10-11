@@ -10,7 +10,7 @@
     <body>
         <nav class="navbar" role="navigation" aria-label="main navigation">
           <div class="navbar-brand">
-              <a asp-controller="Home" asp-action="Index" class="navbar-item">Funicular.Server</a>
+              <a asp-controller="Home" asp-action="Index" class="navbar-item">Funicular</a>
               <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
                   <span aria-hidden="true"></span>
                   <span aria-hidden="true"></span>
@@ -20,7 +20,6 @@
 
           <div id="navbarBasicExample" class="navbar-menu">
             <div class="navbar-start">
-                <a asp-controller="Home" asp-action="Index" class="navbar-item">Home</a>
                 <a asp-controller="Home" asp-action="About" class="navbar-item">About</a>
                 <a asp-controller="Home" asp-action="Contact" class="navbar-item">Contact</a>
             </div>
@@ -33,7 +32,7 @@
             @RenderBody()
             <hr />
             <footer>
-                <p>&copy; 2015 - Funicular.Server</p>
+                <p>&copy; 2015 - Funicular</p>
             </footer>
         </div>
         @RenderSection("scripts", required: false)

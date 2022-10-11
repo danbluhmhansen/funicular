@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Bogus" />
+    <PackageReference Include="FluentValidation" />
     <PackageReference Include="GraphQL.Server.Transports.AspNetCore" />
     <PackageReference Include="GraphQL.Server.Ui.Playground" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />

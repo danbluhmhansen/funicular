@@ -2,7 +2,10 @@
 
 using System.Security.Claims;
 
+using FluentValidation;
+
 using Funicular.Server.Data.Models;
+using Funicular.Server.Extensions;
 using Funicular.Server.ViewModels.Account;
 
 using Microsoft.AspNetCore.Authorization;
@@ -42,40 +45,40 @@ public class AccountController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = default!)
+    public async Task<IActionResult> Login(
+        LoginViewModel model,
+        [FromServices] IValidator<LoginViewModel> validator,
+        string returnUrl = default!
+    )
     {
         ViewData["ReturnUrl"] = returnUrl;
-        if (ModelState.IsValid)
+
+        var validationResult = await validator.ValidateAsync(model);
+        if (!validationResult.IsValid)
         {
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-            var result = await signInManager.PasswordSignInAsync(
-                model.Email,
-                model.Password,
-                model.RememberMe,
-                lockoutOnFailure: false
-            );
-            if (result.Succeeded)
-            {
-                return RedirectToLocal(returnUrl);
-            }
-            if (result.RequiresTwoFactor)
-            {
-                return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, model.RememberMe });
-            }
-            if (result.IsLockedOut)
-            {
-                return View("Lockout");
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                return View(model);
-            }
+            validationResult.AddToModelState(ModelState);
+            return View(model);
         }
 
-        // If we got this far, something failed, redisplay form
-        return View(model);
+        // This doesn't count login failures towards account lockout
+        // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+        var result = await signInManager.PasswordSignInAsync(
+            model.Email,
+            model.Password,
+            model.RememberMe,
+            lockoutOnFailure: false
+        );
+        if (result.Succeeded)
+            return RedirectToLocal(returnUrl);
+        if (result.RequiresTwoFactor)
+            return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, model.RememberMe });
+        if (result.IsLockedOut)
+            return View("Lockout");
+        else
+        {
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            return View(model);
+        }
     }
 
     ///<summary>GET: /Account/Register</summary>
@@ -91,27 +94,36 @@ public class AccountController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = default!)
+    public async Task<IActionResult> Register(
+        RegisterViewModel model,
+        [FromServices] IValidator<RegisterViewModel> validator,
+        string returnUrl = default!
+    )
     {
         ViewData["ReturnUrl"] = returnUrl;
-        if (ModelState.IsValid)
+
+        var validationResult = await validator.ValidateAsync(model);
+        if (!validationResult.IsValid)
         {
-            var user = new FunicularUser { UserName = model.Email, Email = model.Email };
-            var result = await userManager.CreateAsync(user, model.Password);
-            if (result.Succeeded)
-            {
-                // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
-                // Send an email with this link
-                //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Context.Request.Scheme);
-                //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                //    "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
-                await signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToLocal(returnUrl);
-            }
-            AddErrors(result);
+            validationResult.AddToModelState(ModelState);
+            return View(model);
         }
 
+        var user = new FunicularUser { UserName = model.Email, Email = model.Email };
+        var result = await userManager.CreateAsync(user, model.Password);
+        if (result.Succeeded)
+        {
+            // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
+            // Send an email with this link
+            //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Context.Request.Scheme);
+            //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
+            //    "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+            await signInManager.SignInAsync(user, isPersistent: false);
+            return RedirectToLocal(returnUrl);
+        }
+
+        AddErrors(result);
         // If we got this far, something failed, redisplay form
         return View(model);
     }

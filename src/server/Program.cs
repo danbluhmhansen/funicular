@@ -1,8 +1,12 @@
+using FluentValidation;
+
 using Funicular.Server.Data;
 using Funicular.Server.Data.Models;
 using Funicular.Server.Graph;
 using Funicular.Server.Graph.Models;
 using Funicular.Server.Services;
+using Funicular.Server.Validation;
+using Funicular.Server.ViewModels.Account;
 
 using GraphQL;
 
@@ -85,6 +89,9 @@ services
 services.AddCors(
     options => options.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin())
 );
+
+services.AddScoped<IValidator<LoginViewModel>, LoginModelValidator>();
+services.AddScoped<IValidator<RegisterViewModel>, RegisterModelValidator>();
 
 services.AddScoped<OrderByGraphType>();
 services.AddScoped<CharacterType>();

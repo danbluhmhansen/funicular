@@ -16,25 +16,27 @@
             <div class="field">
                 <label asp-for="Email" class="label"></label>
                 <div class="control has-icons-left">
-                    <input asp-for="Email" class="input" />
+                    <input asp-for="Email" placeholder="Email" class="input" />
                     <span class="icon is-small is-left">
                         <i class="ti ti-mail"></i>
                     </span>
                 </div>
+                <span asp-validation-for="Email" class="has-text-danger"></span>
             </div>
             <div class="field">
                 <label asp-for="Password" class="label"></label>
                 <div class="control has-icons-left">
-                    <input asp-for="Password" class="input" />
+                    <input asp-for="Password" type="password" placeholder="Password" class="input" />
                     <span class="icon is-small is-left">
                         <i class="ti ti-lock"></i>
                     </span>
                 </div>
+                <span asp-validation-for="Password" class="has-text-danger"></span>
             </div>
             <div class="field">
                 <div class="control">
                     <input asp-for="RememberMe" />
-                    <label asp-for="RememberMe" class="checkbox"></label>
+                    <label asp-for="RememberMe" class="checkbox">Remember me?</label>
                 </div>
             </div>
             <div class="control">
