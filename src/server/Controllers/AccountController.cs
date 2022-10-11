@@ -32,7 +32,11 @@ public class AccountController : Controller
     /// <summary>GET: /Account/Login</summary>
     [HttpGet]
     [AllowAnonymous]
-    public IActionResult Login() => View(new LoginViewModel());
+    public IActionResult Login(string? returnUrl = default)
+    {
+        ViewData["ReturnUrl"] = returnUrl;
+        return View();
+    }
 
     /// <summary>POST: /Account/Login</summary>
     [HttpPost]
@@ -40,8 +44,7 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = default!)
     {
-        returnUrl ??= string.Empty;
-        Console.WriteLine(returnUrl);
+        ViewData["ReturnUrl"] = returnUrl;
         if (ModelState.IsValid)
         {
             // This doesn't count login failures towards account lockout
@@ -53,11 +56,17 @@ public class AccountController : Controller
                 lockoutOnFailure: false
             );
             if (result.Succeeded)
+            {
                 return RedirectToLocal(returnUrl);
+            }
             if (result.RequiresTwoFactor)
+            {
                 return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, model.RememberMe });
+            }
             if (result.IsLockedOut)
+            {
                 return View("Lockout");
+            }
             else
             {
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
@@ -72,7 +81,11 @@ public class AccountController : Controller
     ///<summary>GET: /Account/Register</summary>
     [HttpGet]
     [AllowAnonymous]
-    public IActionResult Register() => View(new RegisterViewModel());
+    public IActionResult Register(string? returnUrl = default)
+    {
+        ViewData["ReturnUrl"] = returnUrl;
+        return View();
+    }
 
     ///<summary>POST: /Account/Register</summary>
     [HttpPost]
@@ -80,7 +93,7 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = default!)
     {
-        returnUrl ??= string.Empty;
+        ViewData["ReturnUrl"] = returnUrl;
         if (ModelState.IsValid)
         {
             var user = new FunicularUser { UserName = model.Email, Email = model.Email };

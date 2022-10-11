@@ -2,32 +2,18 @@
   "name": "@funicular/server",
   "version": "0.1.0",
   "private": true,
-  "eslintConfig": {
-    "extends": "../../package.json"
-  },
   "scripts": {
     "build": "yarn build:cs && yarn build:js && yarn build:css",
     "build:cs": "dotnet build",
-    "build:js": "./esbuild.js",
-    "build:css": "node-sass --omit-source-map-url Content/styles/styles.scss wwwroot/dist/styles.css",
+    "build:css": "node-sass --omit-source-map-url Styles/styles.scss wwwroot/dist/styles.css",
     "dev:cs": "dotnet watch",
-    "dev:js": "yarn build:js --watch",
     "dev:css": "yarn build:css --watch",
     "restore": "dotnet restore",
     "lint": "dotnet csharpier . && dotnet format"
   },
-  "dependencies": {
-    "@funicular/shared": "workspace:^",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
   "devDependencies": {
-    "@types/react": "^18.0.21",
-    "@types/react-dom": "^18.0.6",
     "bulma": "^0.9.4",
     "bulma-prefers-dark": "^0.1.0-beta.1",
-    "esbuild": "^0.15.10",
-    "node-sass": "^7.0.3",
-    "tiny-glob": "^0.2.9"
+    "node-sass": "^7.0.3"
   }
 }

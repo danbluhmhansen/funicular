@@ -1,10 +1,41 @@
-﻿<!DOCTYPE html>
-@model RegisterViewModel
+﻿@model RegisterViewModel
 @{
     ViewData["Title"] = "Register";
 }
-<script type="text/javascript">
-    window.model = JSON.parse('@Json.Serialize(Model)');
-</script>
-<div id="container"></div>
-<script src="~/dist/account/register.js"></script>
+
+<h2 class="title">@ViewData["Title"].</h2>
+
+<form asp-controller="Account" asp-action="Register" asp-route-returnUrl="@ViewData["returnUrl"]" method="post" role="form">
+    <h4 class="subtitle">Create a new account.</h4>
+    <hr />
+    <div class="field">
+        <label asp-for="Email" class="label"></label>
+        <div class="control has-icons-left">
+            <input asp-for="Email" class="input" />
+            <span class="icon is-small is-left">
+                <i class="ti ti-mail"></i>
+            </span>
+        </div>
+    </div>
+    <div class="field">
+        <label asp-for="Password" class="label"></label>
+        <div class="control has-icons-left">
+            <input asp-for="Password" class="input" />
+            <span class="icon is-small is-left">
+                <i class="ti ti-lock"></i>
+            </span>
+        </div>
+    </div>
+    <div class="field">
+        <label asp-for="ConfirmPassword" class="label"></label>
+        <div class="control has-icons-left">
+            <input asp-for="ConfirmPassword" class="input" />
+            <span class="icon is-small is-left">
+                <i class="ti ti-lock"></i>
+            </span>
+        </div>
+    </div>
+    <div class="control">
+        <button type="submit" class="button is-link">Register</button>
+    </div>
+</form>

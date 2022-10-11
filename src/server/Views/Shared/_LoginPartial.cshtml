@@ -1,23 +1,18 @@
 ﻿@using Microsoft.AspNetCore.Identity
-
 @inject SignInManager<FunicularUser> SignInManager
 @inject UserManager<FunicularUser> UserManager
 
 @if (SignInManager.IsSignedIn(User)) {
     <form asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm" class="navbar-right">
-        <ul class="nav navbar-nav navbar-right">
-            <li>
-                <a asp-controller="Manage" asp-action="Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
-            </li>
-            <li>
-                <button type="submit" class="btn btn-link navbar-btn navbar-link">Log off</button>
-            </li>
-        </ul>
+        <a asp-controller="Manage" asp-action="Index" title="Manage" class="button is-primary">Hello @UserManager.GetUserName(User)!</a>
+        <button type="submit" class="button is-light">Log off</button>
     </form>
 }
 else {
-    <ul class="nav navbar-nav navbar-right">
-        <li><a asp-controller="Account" asp-action="Register">Register</a></li>
-        <li><a asp-controller="Account" asp-action="Login">Log in</a></li>
-    </ul>
+    <div class="navbar-item">
+        <div class="buttons">
+            <a asp-controller="Account" asp-action="Register" class="button is-primary"><strong>Register</strong></a>
+            <a asp-controller="Account" asp-action="Login" class="button is-light">Log in</a>
+        </div>
+    </div>
 }
