@@ -1,12 +1,19 @@
 {
-  "name": "server",
+  "name": "@funicular/server",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "yarn@3.2.2",
   "scripts": {
-    "dev": "dotnet watch",
-    "build": "dotnet build",
+    "build": "yarn build:cs && yarn build:js && yarn build:css",
+    "build:cs": "dotnet build",
+    "build:css": "node-sass --omit-source-map-url Styles/styles.scss wwwroot/dist/styles.css",
+    "dev:cs": "dotnet watch",
+    "dev:css": "yarn build:css --watch",
     "restore": "dotnet restore",
     "lint": "dotnet csharpier . && dotnet format"
+  },
+  "devDependencies": {
+    "bulma": "^0.9.4",
+    "bulma-prefers-dark": "^0.1.0-beta.1",
+    "node-sass": "^7.0.3"
   }
 }

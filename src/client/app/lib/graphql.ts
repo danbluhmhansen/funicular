@@ -7,7 +7,7 @@ export async function fetchGraphQl({
   query: string;
   variables: Record<string, any>;
 }): Promise<GraphQlResponse> {
-  const response = await fetch(`${process.env.SERVER_URL}/graphql`, {
+  const response = await fetch(`${process.env["SERVER_URL"]}/graphql`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

@@ -15,6 +15,10 @@ using Microsoft.EntityFrameworkCore;
 
 using MoreLinq;
 
+using OpenIddict.Abstractions;
+
+using static OpenIddict.Abstractions.OpenIddictConstants;
+
 internal class DataSeedWorker : IHostedService
 {
     public DataSeedWorker(IServiceProvider services)
@@ -30,9 +34,38 @@ internal class DataSeedWorker : IHostedService
         var services = scope.ServiceProvider;
 
         var db = services.GetRequiredService<FunicularDbContext>();
+        var appManager = services.GetRequiredService<IOpenIddictApplicationManager>();
+
+        const string appClientId = "default";
+        if (await appManager.FindByClientIdAsync(appClientId, cancellationToken) is null)
+            await appManager.CreateAsync(
+                new OpenIddictApplicationDescriptor()
+                {
+                    ClientId = appClientId,
+                    ClientSecret = "fb485b1e-d4c6-427a-967b-8a0ebedb8c75",
+                    ConsentType = ConsentTypes.Explicit,
+                    DisplayName = "Funicular",
+                    Permissions =
+                    {
+                        Permissions.Endpoints.Authorization,
+                        Permissions.Endpoints.Logout,
+                        Permissions.Endpoints.Token,
+                        Permissions.GrantTypes.AuthorizationCode,
+                        Permissions.GrantTypes.RefreshToken,
+                        Permissions.ResponseTypes.Code,
+                        Permissions.Scopes.Email,
+                        Permissions.Scopes.Profile,
+                        Permissions.Scopes.Roles,
+                    },
+                    PostLogoutRedirectUris = { new Uri("http://localhost:3000") },
+                    RedirectUris = { new Uri("http://localhost:3000/auth/callback") },
+                    Requirements = { Requirements.Features.ProofKeyForCodeExchange },
+                    Type = ClientTypes.Confidential,
+                },
+                cancellationToken
+            );
 
         if (!await db.CharacterFields.AnyAsync(cancellationToken))
-        {
             db.CharacterFields.AddRange(
                 new DynamicField[]
                 {
@@ -44,7 +77,6 @@ internal class DataSeedWorker : IHostedService
                     new("Charisma", "int"),
                 }
             );
-        }
 
         if (!await db.Characters.AnyAsync(cancellationToken))
         {

@@ -8,17 +8,20 @@
 
   <ItemGroup>
     <PackageReference Include="Bogus" />
-    <PackageReference Include="GraphQL" />
-    <PackageReference Include="GraphQL.MicrosoftDI" />
     <PackageReference Include="GraphQL.Server.Transports.AspNetCore" />
     <PackageReference Include="GraphQL.Server.Ui.Playground" />
-    <PackageReference Include="GraphQL.SystemTextJson" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="morelinq" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="OpenIddict.AspNetCore" />
+    <PackageReference Include="OpenIddict.EntityFrameworkCore" />
+    <PackageReference Include="OpenIddict.Quartz" />
+    <PackageReference Include="Quartz.Extensions.Hosting" />
+    <PackageReference Include="System.Linq.Async" />
   </ItemGroup>
 
 </Project>

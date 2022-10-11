@@ -4,11 +4,12 @@ using System;
 
 using Funicular.Server.Data.Models;
 
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-internal class FunicularDbContext : DbContext
+internal class FunicularDbContext : IdentityDbContext<FunicularUser>
 {
-    public FunicularDbContext(DbContextOptions options) : base(options) { }
+    public FunicularDbContext(DbContextOptions<FunicularDbContext> options) : base(options) { }
 
     protected FunicularDbContext() { }
 

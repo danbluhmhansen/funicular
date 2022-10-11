@@ -1,15 +1,18 @@
-import type { MetaFunction, LinksFunction } from "@remix-run/node";
+import { Navbar } from "@funicular/shared";
+import type { MetaFunction, LinksFunction, LoaderArgs } from "@remix-run/node";
 import {
+  Form,
+  Link,
   Links,
   LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
-import type { NavItem } from "./components/navbar";
-import Navbar from "./components/navbar";
 import styles from "../styles/styles.css";
+import { getSession } from "./sessions";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -19,12 +22,19 @@ export const meta: MetaFunction = () => ({
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
-const navigation: NavItem[] = [
-  { name: "Home", path: "/" },
+export async function loader({ request }: LoaderArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+  const accessToken = session.get("access_token");
+  return !accessToken ? false : true;
+}
+
+const navigation = [
   { name: "Characters", path: "/characters" },
+  { name: "Test", path: "/test" },
 ];
 
 export default function App() {
+  const signedIn: boolean = useLoaderData();
   return (
     <html lang="en">
       <head>
@@ -32,7 +42,26 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Navbar navigation={navigation} />
+        <Navbar
+          brand={
+            <Link to="/" className="navbar-item">
+              Funicular
+            </Link>
+          }
+          primaryButton={
+            signedIn ? (
+              <Link to="/auth/logout" className="button is-primary">
+                Log out
+              </Link>
+            ) : undefined
+          }
+        >
+          {navigation.map((n) => (
+            <Link key={n.path} to={n.path} className="navbar-item">
+              {n.name}
+            </Link>
+          ))}
+        </Navbar>
         <Outlet />
         <ScrollRestoration />
         <Scripts />
