@@ -17,8 +17,5 @@
       "~/*": ["./app/*"]
     },
     "noEmit": true
-  },
-  "references": [
-    { "path": "../shared" }
-  ]
+  }
 }

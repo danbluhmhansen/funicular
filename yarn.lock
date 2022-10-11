@@ -1475,7 +1475,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@funicular/client@workspace:src/client"
   dependencies:
-    "@funicular/shared": "workspace:^"
     "@remix-run/dev": "npm:^1.7.0"
     "@remix-run/eslint-config": "npm:^1.7.0"
     "@remix-run/node": "npm:^1.7.0"
@@ -1501,21 +1500,6 @@ __metadata:
     bulma: "npm:^0.9.4"
     bulma-prefers-dark: "npm:^0.1.0-beta.1"
     node-sass: "npm:^7.0.3"
-  languageName: unknown
-  linkType: soft
-
-"@funicular/shared@workspace:^, @funicular/shared@workspace:src/shared":
-  version: 0.0.0-use.local
-  resolution: "@funicular/shared@workspace:src/shared"
-  dependencies:
-    "@tsconfig/node18-strictest-esm": "npm:^1.0.1"
-    "@typescript-eslint/parser": "npm:^5.38.1"
-    eslint: "npm:^8.20.0"
-    eslint-config-prettier: "npm:^8.5.0"
-    prettier: "npm:^2.7.1"
-    react: "npm:^18.2.0"
-    react-dom: "npm:^18.2.0"
-    typescript: "npm:^4.8.4"
   languageName: unknown
   linkType: soft
 
@@ -2000,13 +1984,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsconfig/node18-strictest-esm@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@tsconfig/node18-strictest-esm@npm:1.0.1"
-  checksum: e60cd8fc182df4a1f982fed1efcefca660b44cae6740531aaf8b6e9d5e86409e7f81ec2d4e2f9f590eb6eb3cdb2024b81cd0863ceed69d12210ee7707dd10dc4
-  languageName: node
-  linkType: hard
-
 "@types/acorn@npm:^4.0.0":
   version: 4.0.6
   resolution: "@types/acorn@npm:4.0.6"
@@ -2248,7 +2225,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^5.38.0, @typescript-eslint/parser@npm:^5.38.1":
+"@typescript-eslint/parser@npm:^5.38.0":
   version: 5.38.1
   resolution: "@typescript-eslint/parser@npm:5.38.1"
   dependencies:
