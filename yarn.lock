@@ -1471,6 +1471,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@funicular/blazor@workspace:src/blazor":
+  version: 0.0.0-use.local
+  resolution: "@funicular/blazor@workspace:src/blazor"
+  dependencies:
+    bulma: "npm:^0.9.4"
+    bulma-prefers-dark: "npm:^0.1.0-beta.1"
+    node-sass: "npm:^7.0.3"
+  languageName: unknown
+  linkType: soft
+
 "@funicular/client@workspace:src/client":
   version: 0.0.0-use.local
   resolution: "@funicular/client@workspace:src/client"

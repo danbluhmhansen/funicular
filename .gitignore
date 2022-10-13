@@ -466,3 +466,4 @@ $RECYCLE.BIN/
 !.yarn/versions
 
 src/client/app/styles/styles.css
+src/blazor/wwwroot/styles/styles.css

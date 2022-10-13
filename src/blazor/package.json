@@ -1,0 +1,13 @@
+{
+  "name": "@funicular/blazor",
+  "private": true,
+  "sideEffects": false,
+  "scripts": {
+    "build": "node-sass --omit-source-map-url styles/styles.scss wwwroot/styles/styles.css"
+  },
+  "devDependencies": {
+    "bulma": "^0.9.4",
+    "bulma-prefers-dark": "^0.1.0-beta.1",
+    "node-sass": "^7.0.3"
+  }
+}
