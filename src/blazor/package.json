@@ -3,6 +3,7 @@
   "private": true,
   "sideEffects": false,
   "scripts": {
+    "dev": "dotnet watch",
     "build": "node-sass --omit-source-map-url styles/styles.scss wwwroot/styles/styles.css"
   },
   "devDependencies": {

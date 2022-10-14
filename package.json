@@ -22,7 +22,7 @@
   "scripts": {
     "build": "yarn workspaces foreach -pt run build",
     "dev:server": "yarn workspace @funicular/server dev:cs",
-    "dev:client": "yarn workspace @funicular/client dev:remix",
+    "dev:client": "yarn workspace @funicular/blazor dev",
     "restore": "yarn workspaces foreach run restore",
     "lint": "yarn workspaces foreach run lint",
     "efDatabaseUpdate": "dotnet ef database update \"$@\" --project src/server",

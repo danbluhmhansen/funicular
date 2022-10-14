@@ -9,6 +9,16 @@
         <th>Name</th>
       </tr>
     </thead>
+    <tfoot>
+      <tr>
+        <th colspan="2">
+          <nav class="pagination">
+            <a class="pagination-previous" @onclick="PreviousPage">Previous</a>
+            <a class="pagination-next" @onclick="NextPage">Next page</a>
+          </nav>
+        </th>
+      </tr>
+    </tfoot>
     <tbody>
       @foreach (var character in characters)
       {
