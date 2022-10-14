@@ -21,8 +21,8 @@
   ],
   "scripts": {
     "build": "yarn workspaces foreach -pt run build",
-    "dev:server": "yarn workspace @funicular/server dev:cs",
-    "dev:client": "yarn workspace @funicular/blazor dev",
+    "dev:server": "yarn workspace server dev:cs",
+    "dev:client": "yarn workspace client dev",
     "restore": "yarn workspaces foreach run restore",
     "lint": "yarn workspaces foreach run lint",
     "efDatabaseUpdate": "dotnet ef database update \"$@\" --project src/server",

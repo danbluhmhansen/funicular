@@ -1,38 +1,14 @@
 {
-  "name": "@funicular/client",
+  "name": "client",
   "private": true,
   "sideEffects": false,
   "scripts": {
-    "build": "yarn build:remix && yarn build:css",
-    "build:remix": "NODE_TLS_REJECT_UNAUTHORIZED='0' remix build",
-    "build:css": "node-sass --omit-source-map-url styles/styles.scss app/styles/styles.css",
-    "dev:remix": "NODE_TLS_REJECT_UNAUTHORIZED='0' remix dev",
-    "dev:css": "yarn build:css --watch",
-    "start": "remix-serve build"
-  },
-  "eslintConfig": {
-    "extends": [
-      "@remix-run/eslint-config",
-      "@remix-run/eslint-config/node"
-    ]
-  },
-  "dependencies": {
-    "@remix-run/node": "^1.7.0",
-    "@remix-run/react": "^1.7.0",
-    "@remix-run/serve": "^1.7.0",
-    "@tanstack/react-table": "^8.5.13",
-    "openid-client": "^5.1.10",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "dev": "dotnet watch",
+    "build": "node-sass --omit-source-map-url Styles/Styles.scss wwwroot/styles/styles.css"
   },
   "devDependencies": {
-    "@remix-run/dev": "^1.7.0",
-    "@remix-run/eslint-config": "^1.7.0",
-    "@types/react": "^18.0.15",
-    "@types/react-dom": "^18.0.6",
     "bulma": "^0.9.4",
     "bulma-prefers-dark": "^0.1.0-beta.1",
-    "node-sass": "^7.0.3",
-    "typescript": "^4.7.4"
+    "node-sass": "^7.0.3"
   }
 }
