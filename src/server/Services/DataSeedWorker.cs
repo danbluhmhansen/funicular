@@ -42,7 +42,6 @@ internal class DataSeedWorker : IHostedService
                 new OpenIddictApplicationDescriptor()
                 {
                     ClientId = appClientId,
-                    ClientSecret = "fb485b1e-d4c6-427a-967b-8a0ebedb8c75",
                     ConsentType = ConsentTypes.Explicit,
                     DisplayName = "Funicular",
                     Permissions =
@@ -57,10 +56,10 @@ internal class DataSeedWorker : IHostedService
                         Permissions.Scopes.Profile,
                         Permissions.Scopes.Roles,
                     },
-                    PostLogoutRedirectUris = { new Uri("http://localhost:3000") },
-                    RedirectUris = { new Uri("http://localhost:3000/auth/callback") },
+                    PostLogoutRedirectUris = { new Uri("https://localhost:7001/authentication/logout-callback") },
+                    RedirectUris = { new Uri("https://localhost:7001/authentication/login-callback") },
                     Requirements = { Requirements.Features.ProofKeyForCodeExchange },
-                    Type = ClientTypes.Confidential,
+                    Type = ClientTypes.Public,
                 },
                 cancellationToken
             );

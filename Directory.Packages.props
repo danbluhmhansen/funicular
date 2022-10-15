@@ -16,8 +16,12 @@
     <PackageVersion Include="FluentValidation" Version="11.2.2" />
     <PackageVersion Include="GraphQL.Server.Transports.AspNetCore" Version="7.1.1" />
     <PackageVersion Include="GraphQL.Server.Ui.Playground" Version="7.1.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="6.0.10" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.6" PrivateAssets="all" />
     <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.9" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageVersion Include="morelinq" Version="3.3.2" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.7" />
     <PackageVersion Include="OpenIddict.AspNetCore" Version="4.0.0-preview3.22422.72" />

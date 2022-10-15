@@ -1,0 +1,36 @@
+﻿<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="">Funicular</a>
+
+    <a class="navbar-burger" @onclick="ToggleNavMenu">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+
+  <div class='navbar-menu @(active ? " is-active" : "")'>
+    <div class="navbar-start">
+      <a href="/Characters" class="navbar-item">Characters</a>
+    </div>
+
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <AuthorizeView>
+            <Authorized>
+              <a href="/authentication/profile" class="button is-primary">
+                <strong>Hello, @context.User.Identity?.Name!</strong>
+              </a>
+              <a @onclick="BeginSignOutAsync" class="button is-light">Log out</a>
+            </Authorized>
+            <NotAuthorized>
+              <a href="/authentication/register" class="button is-primary"><strong>Register</strong></a>
+              <a href="/authentication/login" class="button is-light">Log in</a>
+            </NotAuthorized>
+          </AuthorizeView>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
