@@ -31,7 +31,7 @@ public class UserinfoController : Controller
             return Challenge(
                 authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
                 properties: new AuthenticationProperties(
-                    new Dictionary<string, string>
+                    new Dictionary<string, string?>
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidToken,
                         [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =

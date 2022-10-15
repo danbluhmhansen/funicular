@@ -387,7 +387,7 @@ public class AccountController : Controller
             model.RememberBrowser
         );
         if (result.Succeeded)
-            return RedirectToLocal(model.ReturnUrl);
+            return RedirectToLocal(model.ReturnUrl ?? "/");
         if (result.IsLockedOut)
             return View("Lockout");
         else

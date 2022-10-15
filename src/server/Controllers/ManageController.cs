@@ -141,9 +141,9 @@ public class ManageController : Controller
     //
     // GET: /Manage/VerifyPhoneNumber
     [HttpGet]
-    public async Task<IActionResult> VerifyPhoneNumber(string phoneNumber)
+    public IActionResult VerifyPhoneNumber(string phoneNumber)
     {
-        var code = await userManager.GenerateChangePhoneNumberTokenAsync(await GetCurrentUserAsync(), phoneNumber);
+        // var code = await userManager.GenerateChangePhoneNumberTokenAsync(await GetCurrentUserAsync(), phoneNumber);
         // Send an SMS to verify the phone number
         return phoneNumber is null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
     }

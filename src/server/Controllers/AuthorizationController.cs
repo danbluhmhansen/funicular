@@ -79,7 +79,7 @@ public class AuthorizationController : Controller
                 return Forbid(
                     authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
                     properties: new AuthenticationProperties(
-                        new Dictionary<string, string>
+                        new Dictionary<string, string?>
                         {
                             [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.LoginRequired,
                             [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
@@ -113,7 +113,7 @@ public class AuthorizationController : Controller
                     return Forbid(
                         authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
                         properties: new AuthenticationProperties(
-                            new Dictionary<string, string>
+                            new Dictionary<string, string?>
                             {
                                 [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidRequest,
                                 [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
@@ -155,7 +155,7 @@ public class AuthorizationController : Controller
 
         // Retrieve the application details from the database.
         var application =
-            await applicationManager.FindByClientIdAsync(request.ClientId)
+            await applicationManager.FindByClientIdAsync(request.ClientId ?? string.Empty)
             ?? throw new InvalidOperationException(
                 "Details concerning the calling client application cannot be found."
             );
@@ -164,7 +164,7 @@ public class AuthorizationController : Controller
         var authorizations = await authorizationManager
             .FindAsync(
                 subject: await userManager.GetUserIdAsync(user),
-                client: await applicationManager.GetIdAsync(application),
+                client: await applicationManager.GetIdAsync(application) ?? string.Empty,
                 status: Statuses.Valid,
                 type: AuthorizationTypes.Permanent,
                 scopes: request.GetScopes()
@@ -179,7 +179,7 @@ public class AuthorizationController : Controller
                 return Forbid(
                     authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
                     properties: new AuthenticationProperties(
-                        new Dictionary<string, string>
+                        new Dictionary<string, string?>
                         {
                             [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                             [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
@@ -219,7 +219,7 @@ public class AuthorizationController : Controller
                 authorization ??= await authorizationManager.CreateAsync(
                     principal: new ClaimsPrincipal(identity),
                     subject: await userManager.GetUserIdAsync(user),
-                    client: await applicationManager.GetIdAsync(application),
+                    client: await applicationManager.GetIdAsync(application) ?? string.Empty,
                     type: AuthorizationTypes.Permanent,
                     scopes: identity.GetScopes()
                 );
@@ -236,7 +236,7 @@ public class AuthorizationController : Controller
                 return Forbid(
                     authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
                     properties: new AuthenticationProperties(
-                        new Dictionary<string, string>
+                        new Dictionary<string, string?>
                         {
                             [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                             [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
@@ -272,7 +272,7 @@ public class AuthorizationController : Controller
 
         // Retrieve the application details from the database.
         var application =
-            await applicationManager.FindByClientIdAsync(request.ClientId)
+            await applicationManager.FindByClientIdAsync(request.ClientId ?? string.Empty)
             ?? throw new InvalidOperationException(
                 "Details concerning the calling client application cannot be found."
             );
@@ -281,7 +281,7 @@ public class AuthorizationController : Controller
         var authorizations = await authorizationManager
             .FindAsync(
                 subject: await userManager.GetUserIdAsync(user),
-                client: await applicationManager.GetIdAsync(application),
+                client: await applicationManager.GetIdAsync(application) ?? string.Empty,
                 status: Statuses.Valid,
                 type: AuthorizationTypes.Permanent,
                 scopes: request.GetScopes()
@@ -295,7 +295,7 @@ public class AuthorizationController : Controller
             return Forbid(
                 authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
                 properties: new AuthenticationProperties(
-                    new Dictionary<string, string>
+                    new Dictionary<string, string?>
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                         [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
@@ -330,7 +330,7 @@ public class AuthorizationController : Controller
         authorization ??= await authorizationManager.CreateAsync(
             principal: new ClaimsPrincipal(identity),
             subject: await userManager.GetUserIdAsync(user),
-            client: await applicationManager.GetIdAsync(application),
+            client: await applicationManager.GetIdAsync(application) ?? string.Empty,
             type: AuthorizationTypes.Permanent,
             scopes: identity.GetScopes()
         );
@@ -369,7 +369,7 @@ public class AuthorizationController : Controller
         {
             // Retrieve the application details from the database using the client_id stored in the principal.
             var application =
-                await applicationManager.FindByClientIdAsync(result.Principal.GetClaim(Claims.ClientId))
+                await applicationManager.FindByClientIdAsync(result.Principal.GetClaim(Claims.ClientId) ?? string.Empty)
                 ?? throw new InvalidOperationException(
                     "Details concerning the calling client application cannot be found."
                 );
@@ -511,7 +511,7 @@ public class AuthorizationController : Controller
                 return Forbid(
                     authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
                     properties: new AuthenticationProperties(
-                        new Dictionary<string, string>
+                        new Dictionary<string, string?>
                         {
                             [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
                             [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
@@ -526,7 +526,7 @@ public class AuthorizationController : Controller
                 return Forbid(
                     authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
                     properties: new AuthenticationProperties(
-                        new Dictionary<string, string>
+                        new Dictionary<string, string?>
                         {
                             [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
                             [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
@@ -571,12 +571,12 @@ public class AuthorizationController : Controller
             ).Principal;
 
             // Retrieve the user profile corresponding to the authorization code/refresh token.
-            var user = await userManager.FindByIdAsync(principal.GetClaim(Claims.Subject));
+            var user = await userManager.FindByIdAsync(principal?.GetClaim(Claims.Subject));
             if (user is null)
                 return Forbid(
                     authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
                     properties: new AuthenticationProperties(
-                        new Dictionary<string, string>
+                        new Dictionary<string, string?>
                         {
                             [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
                             [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
@@ -590,7 +590,7 @@ public class AuthorizationController : Controller
                 return Forbid(
                     authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
                     properties: new AuthenticationProperties(
-                        new Dictionary<string, string>
+                        new Dictionary<string, string?>
                         {
                             [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
                             [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
@@ -599,10 +599,11 @@ public class AuthorizationController : Controller
                     )
                 );
 
-            principal.SetDestinations(GetDestinations);
+            if (principal is not null)
+                principal.SetDestinations(GetDestinations);
 
             // Returning a SignInResult will ask OpenIddict to issue the appropriate access/identity tokens.
-            return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            return SignIn(principal ?? new(), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
         throw new InvalidOperationException("The specified grant type is not supported.");
@@ -620,7 +621,7 @@ public class AuthorizationController : Controller
             case Claims.Name:
                 yield return Destinations.AccessToken;
 
-                if (claim.Subject.HasScope(Scopes.Profile))
+                if (claim.Subject?.HasScope(Scopes.Profile) == true)
                     yield return Destinations.IdentityToken;
 
                 yield break;
@@ -628,7 +629,7 @@ public class AuthorizationController : Controller
             case Claims.Email:
                 yield return Destinations.AccessToken;
 
-                if (claim.Subject.HasScope(Scopes.Email))
+                if (claim.Subject?.HasScope(Scopes.Email) == true)
                     yield return Destinations.IdentityToken;
 
                 yield break;
@@ -636,7 +637,7 @@ public class AuthorizationController : Controller
             case Claims.Role:
                 yield return Destinations.AccessToken;
 
-                if (claim.Subject.HasScope(Scopes.Roles))
+                if (claim.Subject?.HasScope(Scopes.Roles) == true)
                     yield return Destinations.IdentityToken;
 
                 yield break;

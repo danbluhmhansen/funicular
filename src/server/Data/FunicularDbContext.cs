@@ -16,11 +16,8 @@ internal class FunicularDbContext : IdentityDbContext<FunicularUser>
     public DbSet<Character> Characters => Set<Character>();
     public DbSet<DynamicField> CharacterFields => Set<DynamicField>();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder!!)
     {
-        if (modelBuilder is null)
-            throw new ArgumentNullException(nameof(modelBuilder));
-
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<DynamicField>().HasKey(field => field.Name);

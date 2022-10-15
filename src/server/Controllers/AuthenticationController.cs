@@ -48,7 +48,7 @@ public class AuthenticationController : Controller
         // Such identities cannot be used as-is to build an authentication cookie in ASP.NET Core (as the
         // antiforgery stack requires at least a name claim to bind CSRF cookies to the user's identity) but
         // the access/refresh tokens can be retrieved using result.Properties.GetTokens() to make API calls.
-        if (result.Principal.Identity is not ClaimsIdentity { IsAuthenticated: true })
+        if (result.Principal?.Identity is not ClaimsIdentity { IsAuthenticated: true })
             throw new InvalidOperationException("The external authorization data cannot be used for authentication.");
 
         // Build an identity based on the external claims and that will be used to create the authentication cookie.
@@ -66,11 +66,9 @@ public class AuthenticationController : Controller
                             { Type: Claims.Subject }
                             or { Type: "id", Issuer: "https://github.com/" or "https://twitter.com/" }
                                 => new Claim(ClaimTypes.NameIdentifier, claim.Value, claim.ValueType, claim.Issuer),
-
                             // Map the standard "name" claim to ClaimTypes.Name.
                             { Type: Claims.Name }
                                 => new Claim(ClaimTypes.Name, claim.Value, claim.ValueType, claim.Issuer),
-
                             _ => claim
                         }
                 )
@@ -80,10 +78,8 @@ public class AuthenticationController : Controller
                         {
                             // Preserve the basic claims that are necessary for the application to work correctly.
                             { Type: ClaimTypes.NameIdentifier or ClaimTypes.Name } => true,
-
                             // Applications that use multiple client registrations can filter claims based on the issuer.
                             { Type: "bio", Issuer: "https://github.com/" } => true,
-
                             // Don't preserve the other claims.
                             _ => false
                         }
@@ -100,35 +96,36 @@ public class AuthenticationController : Controller
         );
 
         // Build the authentication properties based on the properties that were added when the challenge was triggered.
-        var properties = new AuthenticationProperties(result.Properties.Items);
+        AuthenticationProperties properties = new(result.Properties?.Items ?? new Dictionary<string, string?>());
 
         // If needed, the tokens returned by the authorization server can be stored in the authentication cookie.
         // To make cookies less heavy, tokens that are not used are filtered out before creating the cookie.
-        properties.StoreTokens(
-            result.Properties
-                .GetTokens()
-                .Where(
-                    token =>
-                        token switch
-                        {
-                            // Preserve the access and refresh tokens returned in the token response, if available.
+        if (result.Properties is not null)
+            properties.StoreTokens(
+                result.Properties
+                    .GetTokens()
+                    .Where(
+                        token =>
+                            token switch
                             {
-                                Name: OpenIddictClientAspNetCoreConstants.Tokens.BackchannelAccessToken
-                                    or OpenIddictClientAspNetCoreConstants.Tokens.RefreshToken
-                            }
-                                => true,
+                                // Preserve the access and refresh tokens returned in the token response, if available.
+                                {
+                                    Name: OpenIddictClientAspNetCoreConstants.Tokens.BackchannelAccessToken
+                                        or OpenIddictClientAspNetCoreConstants.Tokens.RefreshToken
+                                }
+                                    => true,
 
-                            // Ignore the other tokens.
-                            _ => false
-                        }
-                )
-        );
+                                // Ignore the other tokens.
+                                _ => false
+                            }
+                    )
+            );
 
         // Note: "return SignIn(...)" cannot be directly used in this case, as the cookies handler doesn't allow
         // redirecting from an endpoint that doesn't match the path set in CookieAuthenticationOptions.LoginPath.
         // For more information about this restriction, visit https://github.com/dotnet/aspnetcore/issues/36934.
         await HttpContext.SignInAsync(IdentityConstants.ExternalScheme, new ClaimsPrincipal(identity), properties);
 
-        return Redirect(properties.RedirectUri);
+        return Redirect(properties.RedirectUri ?? "/");
     }
 }
