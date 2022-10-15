@@ -1,7 +1,11 @@
 namespace Funicular.Client.Pages;
 
-using System.Net.Http.Json;
 using System.Threading.Tasks;
+
+using Funicular.Client.Models;
+
+using GraphQL;
+using GraphQL.Client.Abstractions;
 
 using Microsoft.AspNetCore.Components;
 
@@ -16,7 +20,7 @@ public partial class Characters : ComponentBase
     public int PageSize { get; set; }
 
     [Inject]
-    public HttpClient? HttpClient { get; set; }
+    public IGraphQLClient? GraphClient { get; set; }
 
     [Inject]
     public NavigationManager? Navigation { get; set; }
@@ -25,81 +29,54 @@ public partial class Characters : ComponentBase
     private int? pageCount;
     private IEnumerable<Character>? characters;
 
+    private IEnumerable<int> Pages =>
+        pageCount.HasValue ? Enumerable.Range(1, pageCount.Value + 1) : Enumerable.Empty<int>();
+
+    private bool HasPreviousPage => PageIndex is not 0;
+    private bool HasNextPage => PageIndex + 1 < pageCount;
+
     protected override async Task OnParametersSetAsync()
     {
-        if (HttpClient is null)
+        if (GraphClient is null)
             return;
 
         if (PageSize is 0)
             PageSize = 10;
 
-        var response = await HttpClient.PostAsJsonAsync(
-            "/graphql",
-            new GraphQuery
-            {
-                Query =
-                    @"
+        var response = await GraphClient.SendQueryAsync(
+            new GraphQLRequest(
+                @"
 query CharactersQuery($skip: Int, $top: Int, $orderby: [Orderby]) {
     characters(count: true, skip: $skip, top: $top, orderby: $orderby) {
         id
         name
+        strength
+        dexterity
+        constitution
+        intelligence
+        wisdom
+        charisma
     }
 }",
-                Variables = new Dictionary<string, object> { { "skip", PageIndex * PageSize }, { "top", PageSize }, },
-            }
+                new { skip = PageIndex * PageSize, top = PageSize }
+            ),
+            () => new { Characters = new List<Character>() }
         );
 
-        var graph = await response.Content.ReadFromJsonAsync<Graph>();
-        count = graph?.Extensions.Count;
+        count = response?.Extensions?["count"] as int?;
         pageCount = count / PageSize;
-        characters = graph?.Data.Characters;
+        characters = response?.Data.Characters;
     }
-
-    private IEnumerable<int> Pages() =>
-        pageCount.HasValue ? Enumerable.Range(1, pageCount.Value + 1) : Enumerable.Empty<int>();
 
     private void PreviousPage()
     {
-        if (Navigation is not null && PageIndex is not 0)
+        if (Navigation is not null && HasPreviousPage)
             Navigation.NavigateTo(Navigation.GetUriWithQueryParameter(nameof(PageIndex), PageIndex - 1));
     }
 
     private void NextPage()
     {
-        if (Navigation is not null && PageIndex < pageCount)
+        if (Navigation is not null && HasNextPage)
             Navigation.NavigateTo(Navigation.GetUriWithQueryParameter(nameof(PageIndex), PageIndex + 1));
     }
-}
-
-public class Foo
-{
-    public string Test { get; set; }
-}
-
-public class GraphQuery
-{
-    public string Query { get; set; }
-    public IDictionary<string, object> Variables { get; set; }
-}
-
-public class Character
-{
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-}
-
-public class GraphData
-{
-    public IEnumerable<Character> Characters { get; set; }
-}
-
-public class GraphExtensions
-{
-    public int Count { get; set; }
-}
-
-public class Graph
-{
-    public GraphData Data { get; set; }
-    public GraphExtensions Extensions { get; set; }
 }

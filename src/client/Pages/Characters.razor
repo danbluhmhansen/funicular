@@ -5,16 +5,21 @@
   <table class="table">
     <thead>
       <tr>
-        <th>Id</th>
         <th>Name</th>
+        <th>Strength</th>
+        <th>Dexterity</th>
+        <th>Constitution</th>
+        <th>Intelligence</th>
+        <th>Wisdom</th>
+        <th>Charisma</th>
       </tr>
     </thead>
     <tfoot>
       <tr>
-        <th colspan="2">
+        <th colspan="7">
           <nav class="pagination">
-            <a class="pagination-previous" @onclick="PreviousPage">Previous</a>
-            <a class="pagination-next" @onclick="NextPage">Next page</a>
+            <a class='pagination-previous @(!HasPreviousPage ? "is-disabled" : "")' @onclick="PreviousPage">Previous</a>
+            <a class='pagination-next @(!HasNextPage ? "is-disabled" : "")' @onclick="NextPage">Next page</a>
           </nav>
         </th>
       </tr>
@@ -23,8 +28,13 @@
       @foreach (var character in characters)
       {
         <tr>
-          <td>@character.Id</td>
           <td>@character.Name</td>
+          <td>@character?.Data?["strength"].GetInt32()</td>
+          <td>@character?.Data?["dexterity"].GetInt32()</td>
+          <td>@character?.Data?["constitution"].GetInt32()</td>
+          <td>@character?.Data?["intelligence"].GetInt32()</td>
+          <td>@character?.Data?["wisdom"].GetInt32()</td>
+          <td>@character?.Data?["charisma"].GetInt32()</td>
         </tr>
       }
     </tbody>
