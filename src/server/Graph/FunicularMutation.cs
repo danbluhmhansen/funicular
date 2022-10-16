@@ -84,7 +84,9 @@ internal class FunicularMutation : ObjectGraphType
                                 .AsNoTracking()
                                 .FirstOrDefaultAsync(character => character.Id == id, context.CancellationToken)
                             : default;
-                    var character = existing ?? new(id, string.Empty, default);
+                    var character =
+                        existing
+                        ?? new(id, string.Empty, JsonSerializer.SerializeToElement(new Dictionary<string, object?>()));
 
                     if (context.HasArgument("name"))
                         character = character with { Name = context.GetArgument<string>("name") };
@@ -92,7 +94,7 @@ internal class FunicularMutation : ObjectGraphType
                     var dynamicFields = this.dynamicFields.Where(field => context.HasArgument(field.Name));
                     if (dynamicFields.Any())
                     {
-                        var json = character.Json.HasValue ? JsonObject.Create(character.Json.Value) ?? new() : new();
+                        var json = JsonObject.Create(character.Json) ?? new();
                         foreach (var field in dynamicFields)
                             json[field.Name] = GetDynamicField(context, field);
                         character = character with { Json = JsonDocument.Parse(json.ToJsonString()).RootElement };

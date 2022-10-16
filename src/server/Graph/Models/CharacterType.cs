@@ -21,17 +21,13 @@ internal class CharacterType : ObjectGraphType<Character>
                 => Field<IntGraphType>(field.Name)
                     .Resolve(
                         context =>
-                            context.Source.Json.HasValue
-                                ? context.Source.Json.Value.GetProperty(field.Name).GetInt32()
-                                : 0
+                            context.Source.Json.TryGetProperty(field.Name, out var value) ? value.GetInt32() : null
                     ),
             "string"
                 => Field<StringGraphType>(field.Name)
                     .Resolve(
                         context =>
-                            context.Source.Json.HasValue
-                                ? context.Source.Json.Value.GetProperty(field.Name).GetString()
-                                : null
+                            context.Source.Json.TryGetProperty(field.Name, out var value) ? value.GetString() : null
                     ),
             _ => throw new NotSupportedException(),
         };

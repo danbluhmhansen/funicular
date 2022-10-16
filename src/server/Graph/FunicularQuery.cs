@@ -47,20 +47,12 @@ internal class FunicularQuery : ObjectGraphType<object>
             case "int":
                 var intArgument = context.GetArgument<int?>(fieldName.ToCamelCase());
                 return intArgument.HasValue
-                    ? query.Where(
-                        character =>
-                            character.Json.HasValue
-                            && character.Json.Value.GetProperty(fieldName).GetInt32() == intArgument.Value
-                    )
+                    ? query.Where(character => character.Json.GetProperty(fieldName).GetInt32() == intArgument.Value)
                     : query;
             case "string":
                 var stringArgument = context.GetArgument<string?>(fieldName.ToCamelCase());
                 return !string.IsNullOrWhiteSpace(stringArgument)
-                    ? query.Where(
-                        character =>
-                            character.Json.HasValue
-                            && character.Json.Value.GetProperty(fieldName).GetString() == stringArgument
-                    )
+                    ? query.Where(character => character.Json.GetProperty(fieldName).GetString() == stringArgument)
                     : query;
             default:
                 throw new NotSupportedException();
@@ -105,26 +97,16 @@ internal class FunicularQuery : ObjectGraphType<object>
                         foreach ((var field, var desc) in context.GetArgument<IEnumerable<OrderBy>>("orderby"))
                         {
                             var pascalField = field.ToPascalCase();
-                            var dynamicField = dynamicFields.FirstOrDefault(
-                                dynamicField => dynamicField.Name == pascalField
-                            );
+                            var dynamicField = dynamicFields.First(dynamicField => dynamicField.Name == pascalField);
                             Expression<Func<Character, object?>> keySelector = pascalField switch
                             {
                                 nameof(Character.Id) => character => character.Id,
                                 nameof(Character.Name) => character => character.Name,
                                 _
-                                    => dynamicField!.Type switch
+                                    => dynamicField.Type switch
                                     {
-                                        "int"
-                                            => character =>
-                                                character.Json.HasValue
-                                                    ? character.Json.Value.GetProperty(field).GetInt32()
-                                                    : 0,
-                                        "string"
-                                            => character =>
-                                                character.Json.HasValue
-                                                    ? character.Json.Value.GetProperty(field).GetString()
-                                                    : null,
+                                        "int" => character => character.Json.GetProperty(pascalField).GetInt32(),
+                                        "string" => character => character.Json.GetProperty(pascalField).GetString(),
                                         _ => throw new NotSupportedException(),
                                     },
                             };
