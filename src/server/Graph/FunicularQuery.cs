@@ -22,6 +22,13 @@ internal class FunicularQuery : ObjectGraphType<object>
     {
         Name = "Query";
 
+        Field<ListGraphType<DynamicFieldType>, List<object>>("characterFields")
+            .Resolve()
+            .WithService<FunicularDbContext>()
+            .ResolveAsync(
+                async (context, db) => await db.CharacterFields.OfType<object>().ToListAsync(context.CancellationToken)
+            );
+
         charactersFieldBuilder = Field<ListGraphType<CharacterType>, List<object>>("characters")
             .Argument<BooleanGraphType>("count")
             .Argument<IntGraphType>("top")

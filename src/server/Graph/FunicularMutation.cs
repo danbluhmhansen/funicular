@@ -20,6 +20,49 @@ internal class FunicularMutation : ObjectGraphType
     {
         Name = "Mutation";
 
+        base.Field<DynamicFieldType>("saveCharacterField")
+            .Argument<NonNullGraphType<StringGraphType>>("name")
+            .Argument<StringGraphType>("type")
+            .Argument<BooleanGraphType>("required")
+            .Resolve()
+            .WithService<FunicularDbContext>()
+            .ResolveAsync(
+                async (context, db) =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var update = await db.CharacterFields.AnyAsync(e => e.Name == name);
+                    DynamicField entity =
+                        new(
+                            name,
+                            context.HasArgument("type") ? context.GetArgument<string>("type") : "string",
+                            context.HasArgument("required") && context.GetArgument<bool>("required")
+                        );
+                    if (update)
+                        db.CharacterFields.Update(entity);
+                    else
+                        db.CharacterFields.Add(entity);
+                    return entity;
+                }
+            );
+
+        Field<DynamicFieldType>("dropCharacterField")
+            .Argument<NonNullGraphType<StringGraphType>>("name")
+            .Resolve()
+            .WithService<FunicularDbContext>()
+            .ResolveAsync(
+                async (context, db) =>
+                {
+                    var name = context.GetArgument<string>("name");
+                    var entity = await db.CharacterFields.FindAsync(new object[] { name }, context.CancellationToken);
+                    if (entity is not null)
+                    {
+                        db.CharacterFields.Remove(entity);
+                        return entity;
+                    }
+                    return default;
+                }
+            );
+
         saveCharactersFieldBuilder = Field<CharacterType>("saveCharacter")
             .Argument<IdGraphType>("id")
             .Argument<StringGraphType>("name");
@@ -38,7 +81,7 @@ internal class FunicularMutation : ObjectGraphType
                         db.Characters.Remove(character);
                         return character;
                     }
-                    return null;
+                    return default;
                 }
             );
     }

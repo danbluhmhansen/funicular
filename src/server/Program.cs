@@ -94,6 +94,7 @@ services.AddScoped<IValidator<LoginViewModel>, LoginModelValidator>();
 services.AddScoped<IValidator<RegisterViewModel>, RegisterModelValidator>();
 
 services.AddScoped<OrderByGraphType>();
+services.AddScoped<DynamicFieldType>();
 services.AddScoped<CharacterType>();
 services.AddScoped<FunicularQuery>();
 services.AddScoped<FunicularMutation>();
@@ -135,7 +136,10 @@ app.UseWhen(
                 var mutation = context.RequestServices.GetRequiredService<FunicularMutation>();
                 var db = context.RequestServices.GetRequiredService<FunicularDbContext>();
                 await foreach (
-                    var field in db.CharacterFields.AsAsyncEnumerable().WithCancellation(context.RequestAborted)
+                    var field in db.CharacterFields
+                        .AsNoTracking()
+                        .AsAsyncEnumerable()
+                        .WithCancellation(context.RequestAborted)
                 )
                 {
                     characterType.DynamicField(field);
