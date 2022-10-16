@@ -1,7 +1,5 @@
 namespace Funicular.Server.Data;
 
-using System;
-
 using Funicular.Server.Data.Models;
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -16,7 +14,7 @@ internal class FunicularDbContext : IdentityDbContext<FunicularUser>
     public DbSet<Character> Characters => Set<Character>();
     public DbSet<DynamicField> CharacterFields => Set<DynamicField>();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder!!)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
