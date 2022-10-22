@@ -4,6 +4,7 @@ using Funicular.Server.Data;
 using Funicular.Server.Data.Models;
 using Funicular.Server.Graph;
 using Funicular.Server.Models.Account;
+using Funicular.Server.Services;
 using Funicular.Server.Validation;
 
 using Microsoft.AspNetCore.Identity;
@@ -19,7 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var services = builder.Services;
 
-services.AddControllersWithViews();
+services.AddControllers();
 services.AddRazorPages();
 
 services.AddDbContext<FunicularDbContext>(options =>
@@ -61,7 +62,13 @@ services
         options.UseAspNetCore();
     });
 
-services.AddGraphQLServer().AddQueryType<FunicularQuery>();
+services
+    .AddGraphQLServer()
+    .RegisterDbContext<FunicularDbContext>()
+    .AddQueryType<FunicularQuery>()
+    .AddQueryableCursorPagingProvider(defaultProvider: true)
+    .AddFiltering()
+    .AddSorting();
 
 services.AddScoped<IValidator<Login>, LoginModelValidator>();
 services.AddScoped<IValidator<Register>, RegisterModelValidator>();
@@ -70,6 +77,9 @@ services.Configure<OpenIddictServerOptions>(configuration.GetSection(nameof(Open
 services.Configure<OpenIddictServerAspNetCoreOptions>(
     configuration.GetSection(nameof(OpenIddictServerAspNetCoreOptions))
 );
+
+if (builder.Environment.IsDevelopment())
+    services.AddHostedService<DataSeedWorker>();
 
 var app = builder.Build();
 

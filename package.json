@@ -17,7 +17,7 @@
     "npm": "please-use-yarn"
   },
   "scripts": {
-    "build": "dotnet build",
+    "build": "dotnet build src/Server",
     "build:css": "tailwindcss --input src/Client/app.css --output src/Client/wwwroot/dist/app.css",
     "dev": "dotnet watch --project src/Server",
     "dev:css": "tailwindcss --watch --input src/Client/app.css --output src/Client/wwwroot/dist/app.css",

@@ -18,6 +18,17 @@
           "HotChocolate.Types.Scalars.Upload": "12.15.0"
         }
       },
+      "HotChocolate.Data.EntityFramework": {
+        "type": "Direct",
+        "requested": "[12.15.0, )",
+        "resolved": "12.15.0",
+        "contentHash": "zrI71AxKxjyF7GW/T4zk36T+aFpCb0bpmvdK/o97jTxo11HOvxauSq8rLVU70rlXFxe/iFeE4iNLMbMpFoGV7Q==",
+        "dependencies": {
+          "HotChocolate": "12.15.0",
+          "HotChocolate.Data": "12.15.0",
+          "Microsoft.EntityFrameworkCore": "6.0.0"
+        }
+      },
       "Microsoft.AspNetCore.Components.WebAssembly.Server": {
         "type": "Direct",
         "requested": "[6.0.10, )",
@@ -150,6 +161,15 @@
           "HotChocolate.Language": "12.15.0",
           "Microsoft.Bcl.AsyncInterfaces": "1.1.0",
           "System.Collections.Immutable": "1.7.0"
+        }
+      },
+      "HotChocolate.Data": {
+        "type": "Transitive",
+        "resolved": "12.15.0",
+        "contentHash": "CbYxpPWsBzPGcKQWmHflr5eD8I5ZSbMIhYT4Wo3UAXwr6H12Xw+0RBqxKyN4/TkT/FPyEKKci4wPxSz36zH1Ig==",
+        "dependencies": {
+          "HotChocolate.Execution": "12.15.0",
+          "HotChocolate.Types.CursorPagination": "12.15.0"
         }
       },
       "HotChocolate.Execution": {
