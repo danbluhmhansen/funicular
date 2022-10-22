@@ -1,12 +1,8 @@
-namespace Funicular.Server.Controllers;
+namespace Funicular.Server.Graph;
 
 using Funicular.Shared;
 
-using Microsoft.AspNetCore.Mvc;
-
-[ApiController]
-[Route("[controller]")]
-public class WeatherForecastController : ControllerBase
+public class FunicularQuery
 {
     private static readonly string[] Summaries = new[]
     {
@@ -22,8 +18,7 @@ public class WeatherForecastController : ControllerBase
         "Scorching"
     };
 
-    [HttpGet]
-    public IEnumerable<WeatherForecast> Get() =>
+    public IEnumerable<WeatherForecast> GetWeatherForecasts() =>
         Enumerable
             .Range(1, 5)
             .Select(

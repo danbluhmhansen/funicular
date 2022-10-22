@@ -2,6 +2,7 @@ using FluentValidation;
 
 using Funicular.Server.Data;
 using Funicular.Server.Data.Models;
+using Funicular.Server.Graph;
 using Funicular.Server.Models.Account;
 using Funicular.Server.Validation;
 
@@ -60,6 +61,8 @@ services
         options.UseAspNetCore();
     });
 
+services.AddGraphQLServer().AddQueryType<FunicularQuery>();
+
 services.AddScoped<IValidator<Login>, LoginModelValidator>();
 services.AddScoped<IValidator<Register>, RegisterModelValidator>();
 
@@ -88,6 +91,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.MapGraphQL();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
