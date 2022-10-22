@@ -2,13 +2,8 @@ using FluentValidation;
 
 using Funicular.Server.Data;
 using Funicular.Server.Data.Models;
-using Funicular.Server.Graph;
-using Funicular.Server.Graph.Models;
-using Funicular.Server.Services;
+using Funicular.Server.Models.Account;
 using Funicular.Server.Validation;
-using Funicular.Server.ViewModels.Account;
-
-using GraphQL;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,14 +14,15 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var configuration = builder.Configuration;
 var services = builder.Services;
 
 services.AddControllersWithViews();
+services.AddRazorPages();
 
 services.AddDbContext<FunicularDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default"));
+    options.UseNpgsql(configuration.GetConnectionString("Default"));
     options.UseOpenIddict();
 });
 
@@ -81,78 +77,35 @@ services
     })
     .AddValidation(options =>
     {
-        // options.AddAudiences("resource_server");
         options.UseLocalServer();
         options.UseAspNetCore();
     });
 
-services.AddCors(
-    options => options.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin())
-);
-
-services.AddScoped<IValidator<LoginViewModel>, LoginModelValidator>();
-services.AddScoped<IValidator<RegisterViewModel>, RegisterModelValidator>();
-
-services.AddScoped<OrderByGraphType>();
-services.AddScoped<DynamicFieldType>();
-services.AddScoped<CharacterType>();
-services.AddScoped<FunicularQuery>();
-services.AddScoped<FunicularMutation>();
-
-services.AddGraphQL(
-    options => options.AddSystemTextJson().AddSchema<FunicularSchema>(GraphQL.DI.ServiceLifetime.Scoped)
-);
-
-if (builder.Environment.IsDevelopment())
-    services.AddHostedService<DataSeedWorker>();
+services.AddScoped<IValidator<Login>, LoginModelValidator>();
+services.AddScoped<IValidator<Register>, RegisterModelValidator>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseGraphQLPlayground();
+    app.UseWebAssemblyDebugging();
 }
-
-app.UseStaticFiles();
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
 
 app.UseHttpsRedirection();
 
+app.UseBlazorFrameworkFiles();
+app.UseStaticFiles();
+
 app.UseRouting();
 
-app.UseCors();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.UseWhen(
-    context => context.Request.Path.Equals("/graphql"),
-    b =>
-        b.Use(
-            async (context, next) =>
-            {
-                var characterType = context.RequestServices.GetRequiredService<CharacterType>();
-                var query = context.RequestServices.GetRequiredService<FunicularQuery>();
-                var mutation = context.RequestServices.GetRequiredService<FunicularMutation>();
-                var db = context.RequestServices.GetRequiredService<FunicularDbContext>();
-                await foreach (
-                    var field in db.CharacterFields
-                        .AsNoTracking()
-                        .AsAsyncEnumerable()
-                        .WithCancellation(context.RequestAborted)
-                )
-                {
-                    characterType.DynamicField(field);
-                    query.AddDynamicFields(field);
-                    mutation.AddDynamicFields(field);
-                }
-                query.InitializeCharacters();
-                mutation.InitializeSaveCharacters();
-                await next();
-            }
-        )
-);
-
-app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+app.MapRazorPages();
+app.MapControllers();
+app.MapFallbackToFile("index.html");
 
 app.Run();

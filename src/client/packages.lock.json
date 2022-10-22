@@ -2,87 +2,24 @@
   "version": 2,
   "dependencies": {
     "net6.0": {
-      "GraphQL.Client": {
-        "type": "Direct",
-        "requested": "[5.1.0, )",
-        "resolved": "5.1.0",
-        "contentHash": "ygsFiS/+DSQBmfP1kjmVk8igODFGNihy81EzTqrq7RmwHgyS34+5Nm9Jkd4mgpFsC8a8UZaWerTilKGqDyePHg==",
-        "dependencies": {
-          "GraphQL.Client.Abstractions": "5.1.0",
-          "GraphQL.Client.Abstractions.Websocket": "5.1.0",
-          "System.Reactive": "5.0.0"
-        }
-      },
-      "GraphQL.Client.Serializer.SystemTextJson": {
-        "type": "Direct",
-        "requested": "[5.1.0, )",
-        "resolved": "5.1.0",
-        "contentHash": "SP5p1QWAsja0uZSlC0RNWAzUdEe97IWFZ2zAXM9TSTpDWG7QNr3xFt8bPx8aL6IFuVv6IrqsSoGzONIwKhIVXQ==",
-        "dependencies": {
-          "GraphQL.Client.Abstractions.Websocket": "5.1.0"
-        }
-      },
       "Microsoft.AspNetCore.Components.WebAssembly": {
-        "type": "Direct",
-        "requested": "[6.0.6, )",
-        "resolved": "6.0.6",
-        "contentHash": "IREjJUTPY0qb24w/Q/PuPATwbamqO5VyNASMkcihhTD8ZQeEFoPzfmHGPNegDHcD/16UXwbuxwMHMxic9oa/3w==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Components.Web": "6.0.6",
-          "Microsoft.Extensions.Configuration.Binder": "6.0.0",
-          "Microsoft.Extensions.Configuration.Json": "6.0.0",
-          "Microsoft.Extensions.Logging": "6.0.0",
-          "Microsoft.JSInterop.WebAssembly": "6.0.6"
-        }
-      },
-      "Microsoft.AspNetCore.Components.WebAssembly.Authentication": {
         "type": "Direct",
         "requested": "[6.0.10, )",
         "resolved": "6.0.10",
-        "contentHash": "S7GDcgzV4enUhkmeoTG7XAo+GoJbU8XqKjHEgv2kcLG/sp+M93CKXyT4psKFcuCvA1QyOob6cPgnGbj4hvLsUA==",
+        "contentHash": "QvWeUeLfuEEfxEwNixo7D4l1GQbc7qYrRDrm728nW7T/M1nNNvuQJWVKLGXJloafVGFeTOALxFEXDlzhavUP3Q==",
         "dependencies": {
-          "Microsoft.AspNetCore.Components.Authorization": "6.0.10",
-          "Microsoft.AspNetCore.Components.Web": "6.0.10"
+          "Microsoft.AspNetCore.Components.Web": "6.0.10",
+          "Microsoft.Extensions.Configuration.Binder": "6.0.0",
+          "Microsoft.Extensions.Configuration.Json": "6.0.0",
+          "Microsoft.Extensions.Logging": "6.0.0",
+          "Microsoft.JSInterop.WebAssembly": "6.0.10"
         }
       },
       "Microsoft.AspNetCore.Components.WebAssembly.DevServer": {
         "type": "Direct",
-        "requested": "[6.0.6, )",
-        "resolved": "6.0.6",
-        "contentHash": "h/TyqevqEnGpNCD0jNC2FTcdLqKeOjV3hlyMa1ZJMNh858d8ic+nHf1ykfNPk8s+tNXz68QMTsDHYMo87VpKXA=="
-      },
-      "Microsoft.Extensions.Http": {
-        "type": "Direct",
-        "requested": "[6.0.0, )",
-        "resolved": "6.0.0",
-        "contentHash": "15+pa2G0bAMHbHewaQIdr/y6ag2H3yh4rd9hTXavtWDzQBkvpe2RMqFg8BxDpcQWssmjmBApGPcw93QRz6YcMg==",
-        "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "6.0.0",
-          "Microsoft.Extensions.Logging": "6.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "6.0.0",
-          "Microsoft.Extensions.Options": "6.0.0"
-        }
-      },
-      "GraphQL.Client.Abstractions": {
-        "type": "Transitive",
-        "resolved": "5.1.0",
-        "contentHash": "IwZUs8WZtSUorZMKaqxykA/PFtn59gVcwbmkPecjnts2mk+sj/x2owlVbv5SnS2f9Za54zFPG2U3YOGZwBk3NQ==",
-        "dependencies": {
-          "GraphQL.Primitives": "5.1.0"
-        }
-      },
-      "GraphQL.Client.Abstractions.Websocket": {
-        "type": "Transitive",
-        "resolved": "5.1.0",
-        "contentHash": "4Pctkq7yrhzDYDrR/BGhsp6HEM4i9JHaBQ2KQIeIzDjHGY55YueIRujGcFziJ8KGFRJvQxnpjrGX2+FPRANNCQ==",
-        "dependencies": {
-          "GraphQL.Client.Abstractions": "5.1.0"
-        }
-      },
-      "GraphQL.Primitives": {
-        "type": "Transitive",
-        "resolved": "5.1.0",
-        "contentHash": "NQmodHoO343gQW9/LbBWteRWlQhLxHV661s3Su8lHl2bPHZ0eauWBkjzWuVY9mLDo54mEDhQv5dTCkFnW21meA=="
+        "requested": "[6.0.10, )",
+        "resolved": "6.0.10",
+        "contentHash": "Y9nqDxlcvIPrYCZ+NJFk5uxdGQk+3tZSr2gLXRXnE9hSipDaJ2WAmWtofb7ll762ZkBnt8xixkTEV9AAlb5+RQ=="
       },
       "Microsoft.AspNetCore.Authorization": {
         "type": "Transitive",
@@ -107,15 +44,6 @@
         "type": "Transitive",
         "resolved": "6.0.10",
         "contentHash": "krpTqAgPWTPTHYVW3EK8iJpKoJlauDt7oYeSasVGYCb7PMEPd7KfpTJR0efJZN4m4oVHViHXEcFZuWD7dIiAKA=="
-      },
-      "Microsoft.AspNetCore.Components.Authorization": {
-        "type": "Transitive",
-        "resolved": "6.0.10",
-        "contentHash": "pd9jT42tZAbLC5zW16jdGRLSmo9VPQG9drpFgDeEeuTC5IuQhTXLLXlhj3OSE3vzRD/+DnKUMxbjlXEuQMojaw==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Authorization": "6.0.10",
-          "Microsoft.AspNetCore.Components": "6.0.10"
-        }
       },
       "Microsoft.AspNetCore.Components.Forms": {
         "type": "Transitive",
@@ -269,10 +197,10 @@
       },
       "Microsoft.JSInterop.WebAssembly": {
         "type": "Transitive",
-        "resolved": "6.0.6",
-        "contentHash": "p96ywS1vgXrncnar4hQv5briKlgGfp4NhvZvKVknuMDzyoNythKAVUUv2PVlGRDioiI6UCxQQWVUEh5XmumBJg==",
+        "resolved": "6.0.10",
+        "contentHash": "hJoApv3ZBQ4hEfqLaMq+Vs8O9rjwpT8LS1BZOLmDf3pt++JnHMRh6N3n37QQ7RNwqkXurB4KYscffFO6OEa4Tg==",
         "dependencies": {
-          "Microsoft.JSInterop": "6.0.6"
+          "Microsoft.JSInterop": "6.0.10"
         }
       },
       "System.Diagnostics.DiagnosticSource": {
@@ -287,11 +215,6 @@
         "type": "Transitive",
         "resolved": "6.0.3",
         "contentHash": "ryTgF+iFkpGZY1vRQhfCzX0xTdlV3pyaTTqRu2ETbEv+HlV7O6y7hyQURnghNIXvctl5DuZ//Dpks6HdL/Txgw=="
-      },
-      "System.Reactive": {
-        "type": "Transitive",
-        "resolved": "5.0.0",
-        "contentHash": "erBZjkQHWL9jpasCE/0qKAryzVBJFxGHVBAvgRN1bzM0q2s1S4oYREEEL0Vb+1kA/6BKb5FjUZMp5VXmy+gzkQ=="
       },
       "System.Runtime.CompilerServices.Unsafe": {
         "type": "Transitive",
@@ -314,6 +237,9 @@
           "System.Runtime.CompilerServices.Unsafe": "6.0.0",
           "System.Text.Encodings.Web": "6.0.0"
         }
+      },
+      "funicular.shared": {
+        "type": "Project"
       }
     },
     "net6.0/browser-wasm": {
