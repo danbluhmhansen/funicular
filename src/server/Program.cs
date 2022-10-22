@@ -8,9 +8,10 @@ using Funicular.Server.Validation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-using Quartz;
+using OpenIddict.Server;
+using OpenIddict.Server.AspNetCore;
 
-using static OpenIddict.Abstractions.OpenIddictConstants;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,31 +50,9 @@ services
     })
     .AddServer(options =>
     {
-        options
-            .SetAuthorizationEndpointUris("/connect/authorize")
-            .SetDeviceEndpointUris("/connect/device")
-            .SetIntrospectionEndpointUris("/connect/introspect")
-            .SetLogoutEndpointUris("/connect/logout")
-            .SetTokenEndpointUris("/connect/token")
-            .SetUserinfoEndpointUris("/connect/userinfo")
-            .SetVerificationEndpointUris("/connect/verify");
-
-        options.AllowAuthorizationCodeFlow().AllowDeviceCodeFlow().AllowPasswordFlow().AllowRefreshTokenFlow();
-
-        options.RegisterScopes(Scopes.Email, Scopes.Profile, Scopes.Roles);
-
-        options.AddDevelopmentEncryptionCertificate().AddDevelopmentSigningCertificate();
-
-        options.RequireProofKeyForCodeExchange();
-
-        options
-            .UseAspNetCore()
-            .EnableStatusCodePagesIntegration()
-            .EnableAuthorizationEndpointPassthrough()
-            .EnableLogoutEndpointPassthrough()
-            .EnableTokenEndpointPassthrough()
-            .EnableUserinfoEndpointPassthrough()
-            .EnableVerificationEndpointPassthrough();
+        if (builder.Environment.IsDevelopment())
+            options.AddDevelopmentEncryptionCertificate().AddDevelopmentSigningCertificate();
+        options.UseAspNetCore();
     })
     .AddValidation(options =>
     {
@@ -83,6 +62,11 @@ services
 
 services.AddScoped<IValidator<Login>, LoginModelValidator>();
 services.AddScoped<IValidator<Register>, RegisterModelValidator>();
+
+services.Configure<OpenIddictServerOptions>(configuration.GetSection(nameof(OpenIddictServerOptions)));
+services.Configure<OpenIddictServerAspNetCoreOptions>(
+    configuration.GetSection(nameof(OpenIddictServerAspNetCoreOptions))
+);
 
 var app = builder.Build();
 
