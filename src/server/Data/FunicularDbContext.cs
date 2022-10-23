@@ -1,7 +1,6 @@
 namespace Funicular.Server.Data;
 
 using Funicular.Server.Data.Models;
-using Funicular.Shared;
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Client\Funicular.Client.csproj" />
-    <ProjectReference Include="..\Shared\Funicular.Shared.csproj" />
   </ItemGroup>
 
 

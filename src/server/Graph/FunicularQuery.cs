@@ -1,7 +1,7 @@
 namespace Funicular.Server.Graph;
 
 using Funicular.Server.Data;
-using Funicular.Shared;
+using Funicular.Server.Data.Models;
 
 public class FunicularQuery
 {

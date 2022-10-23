@@ -1,6 +1,4 @@
 ﻿@page "/fetchdata"
-@using Funicular.Shared
-@inject HttpClient Http
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -28,7 +26,7 @@ else
             @foreach (var forecast in forecasts)
             {
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.Date.DateTime.ToShortDateString()</td>
                     <td>@forecast.TemperatureC</td>
                     <td>@forecast.TemperatureF</td>
                     <td>@forecast.Summary</td>
@@ -36,13 +34,4 @@ else
             }
         </tbody>
     </table>
-}
-
-@code {
-    private WeatherForecast[]? forecasts;
-
-    protected override async Task OnInitializedAsync()
-    {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecasts");
-    }
 }

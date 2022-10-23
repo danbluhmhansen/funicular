@@ -13,6 +13,12 @@
       "commands": [
         "dotnet-csharpier"
       ]
+    },
+    "strawberryshake.tools": {
+      "version": "13.0.0-preview.51",
+      "commands": [
+        "dotnet-graphql"
+      ]
     }
   }
 }

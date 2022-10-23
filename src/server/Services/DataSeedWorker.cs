@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Funicular.Server.Data;
-using Funicular.Shared;
+using Funicular.Server.Data.Models;
 
 using Microsoft.EntityFrameworkCore;
 

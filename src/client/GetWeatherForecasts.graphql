@@ -1,0 +1,10 @@
+query GetWeatherForecasts {
+    weatherForecasts {
+        nodes {
+            date
+            temperatureC
+            temperatureF
+            summary
+        }
+    }
+}
