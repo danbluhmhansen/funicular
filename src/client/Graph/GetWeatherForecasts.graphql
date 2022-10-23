@@ -1,0 +1,10 @@
+query GetWeatherForecasts($first: Int) {
+  weatherForecasts(first: $first) {
+    nodes {
+      date
+      temperatureC
+      temperatureF
+      summary
+    }
+  }
+}

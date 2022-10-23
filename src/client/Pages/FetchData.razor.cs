@@ -15,7 +15,7 @@ public partial class FetchData : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await Client.GetWeatherForecasts.ExecuteAsync();
-        forecasts = result.Data.WeatherForecasts.Nodes;
+        var result = await Client.GetWeatherForecasts.ExecuteAsync(10);
+        forecasts = result.Data?.WeatherForecasts?.Nodes;
     }
 }
