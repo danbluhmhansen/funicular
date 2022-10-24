@@ -1,4 +1,5 @@
 ﻿@page "/fetchdata"
+@inject FunicularClient Client
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -34,4 +35,14 @@ else
             }
         </tbody>
     </table>
+}
+
+@code {
+    private IReadOnlyList<IGetWeatherForecasts_WeatherForecasts_Nodes>? forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Client.GetWeatherForecasts.ExecuteAsync(10);
+        forecasts = result.Data?.WeatherForecasts?.Nodes;
+    }
 }

@@ -8,6 +8,10 @@ using Funicular.Server.Data.Models;
 
 using Microsoft.EntityFrameworkCore;
 
+using OpenIddict.Abstractions;
+
+using static OpenIddict.Abstractions.OpenIddictConstants;
+
 public class DataSeedWorker : IHostedService
 {
     public DataSeedWorker(IServiceProvider serviceProvider)
@@ -34,8 +38,36 @@ public class DataSeedWorker : IHostedService
     {
         await using var scope = serviceProvider.CreateAsyncScope();
         var services = scope.ServiceProvider;
-        var db = services.GetRequiredService<FunicularDbContext>();
 
+        var applicationManager = services.GetRequiredService<IOpenIddictApplicationManager>();
+        if (await applicationManager.CountAsync(cancellationToken) < 1)
+            await applicationManager.CreateAsync(
+                new OpenIddictApplicationDescriptor
+                {
+                    ClientId = "default",
+                    ConsentType = ConsentTypes.Explicit,
+                    DisplayName = "Funicular",
+                    Permissions =
+                    {
+                        Permissions.Endpoints.Authorization,
+                        Permissions.Endpoints.Logout,
+                        Permissions.Endpoints.Token,
+                        Permissions.GrantTypes.AuthorizationCode,
+                        Permissions.GrantTypes.RefreshToken,
+                        Permissions.ResponseTypes.Code,
+                        Permissions.Scopes.Email,
+                        Permissions.Scopes.Profile,
+                        Permissions.Scopes.Roles,
+                    },
+                    PostLogoutRedirectUris = { new("https://localhost:7000/authentication/logout-callback"), },
+                    RedirectUris = { new("https://localhost:7000/authentication/login-callback"), },
+                    Requirements = { Requirements.Features.ProofKeyForCodeExchange, },
+                    Type = ClientTypes.Public,
+                },
+                cancellationToken
+            );
+
+        var db = services.GetRequiredService<FunicularDbContext>();
         if (!await db.WeatherForecasts.AnyAsync(cancellationToken))
         {
             var today = DateTime.Today;

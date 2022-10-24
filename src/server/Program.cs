@@ -1,11 +1,7 @@
-using FluentValidation;
-
 using Funicular.Server.Data;
 using Funicular.Server.Data.Models;
 using Funicular.Server.Graph;
-using Funicular.Server.Models.Account;
 using Funicular.Server.Services;
-using Funicular.Server.Validation;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +10,8 @@ using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
 
 using Quartz;
+
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,8 +50,33 @@ services
     })
     .AddServer(options =>
     {
+        options
+            .SetAuthorizationEndpointUris("/connect/authorize")
+            .SetDeviceEndpointUris("/connect/device")
+            .SetIntrospectionEndpointUris("/connect/introspect")
+            .SetLogoutEndpointUris("/connect/logout")
+            .SetTokenEndpointUris("/connect/token")
+            .SetUserinfoEndpointUris("/connect/userinfo")
+            .SetVerificationEndpointUris("/connect/verify");
+
+        options.AllowAuthorizationCodeFlow().AllowDeviceCodeFlow().AllowPasswordFlow().AllowRefreshTokenFlow();
+
+        options.RegisterScopes(Scopes.Email, Scopes.Profile, Scopes.Roles);
+
         if (builder.Environment.IsDevelopment())
             options.AddDevelopmentEncryptionCertificate().AddDevelopmentSigningCertificate();
+
+        options.RequireProofKeyForCodeExchange();
+
+        options
+            .UseAspNetCore()
+            .EnableStatusCodePagesIntegration()
+            .EnableAuthorizationEndpointPassthrough()
+            .EnableLogoutEndpointPassthrough()
+            .EnableTokenEndpointPassthrough()
+            .EnableUserinfoEndpointPassthrough()
+            .EnableVerificationEndpointPassthrough();
+
         options.UseAspNetCore();
     })
     .AddValidation(options =>
@@ -69,9 +92,6 @@ services
     .AddQueryableCursorPagingProvider(defaultProvider: true)
     .AddFiltering()
     .AddSorting();
-
-services.AddScoped<IValidator<Login>, LoginModelValidator>();
-services.AddScoped<IValidator<Register>, RegisterModelValidator>();
 
 services.Configure<OpenIddictServerOptions>(configuration.GetSection(nameof(OpenIddictServerOptions)));
 services.Configure<OpenIddictServerAspNetCoreOptions>(
@@ -100,6 +120,9 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapGraphQL();
 app.MapRazorPages();
