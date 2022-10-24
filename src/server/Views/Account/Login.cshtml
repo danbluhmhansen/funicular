@@ -1,0 +1,81 @@
+﻿@using System.Collections.Generic
+@using Microsoft.AspNetCore.Http
+@model LoginViewModel
+@inject SignInManager<FunicularUser> SignInManager
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<article class="prose">
+    <h2>@ViewData["Title"].</h2>
+</article>
+<div class="grid grid-cols-2 gap-4">
+    <div>
+        <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+            <article class="prose">
+                <h4>Use a local account to log in.</h4>
+            </article>
+            <div class="divider"></div>
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-control">
+                <label asp-for="Email" class="label"></label>
+                <input asp-for="Email" class="input input-bordered" />
+            </div>
+            <div class="form-control">
+                <label asp-for="Password" class="label"></label>
+                <input asp-for="Password" class="input input-bordered" />
+            </div>
+            <div class="form-control">
+                <label asp-for="RememberMe" class="label cursor-pointer">
+                    <span class="label-text">Remember me?</span> 
+                    <input asp-for="RememberMe" class="toggle" />
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Log in" class="btn btn-primary" />
+            </div>
+            <p>
+                <a
+                    asp-action="Register"
+                    asp-route-returnUrl="@ViewData["ReturnUrl"]"
+                    class="link"
+                >
+                    Register as a new user?
+                </a>
+            </p>
+            <p><a asp-action="ForgotPassword" class="link">Forgot your password?</a></p>
+        </form>
+    </div>
+    <div>
+        <article class="prose">
+            <h4>Use another service to log in.</h4>
+        </article>
+        <div class="divider"></div>
+        @{
+            var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            if (loginProviders.Count == 0)
+            {
+                <article class="prose">
+                    <p>
+                        There are no external authentication services configured. See <a href="http://go.microsoft.com/fwlink/?LinkID=532715">this article</a>
+                        for details on setting up this ASP.NET application to support logging in via external services.
+                    </p>
+                </article>
+            }
+            else
+            {
+                <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
+                    <div>
+                        <p>
+                            @foreach (var provider in loginProviders)
+                            {
+                                <button type="submit" class="btn btn-default" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.Name</button>
+                            }
+                        </p>
+                    </div>
+                </form>
+            }
+        }
+    </div>
+</div>

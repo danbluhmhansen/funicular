@@ -18,8 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var services = builder.Services;
 
-services.AddControllers();
-services.AddRazorPages();
+services.AddControllersWithViews();
 
 services.AddDbContext<FunicularDbContext>(options =>
 {
@@ -125,8 +124,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGraphQL();
-app.MapRazorPages();
-app.MapControllers();
+app.MapDefaultControllerRoute();
 app.MapFallbackToFile("index.html");
 
 app.Run();

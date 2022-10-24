@@ -18,9 +18,9 @@
   },
   "scripts": {
     "build": "dotnet build src/Server",
-    "build:css": "tailwindcss --input src/Client/app.css --output src/Client/wwwroot/dist/app.css",
+    "build:css": "tailwindcss --input src/Client/Styles/tailwind.css --output src/Client/wwwroot/dist/app.css",
     "dev": "dotnet watch --project src/Server",
-    "dev:css": "tailwindcss --watch --input src/Client/app.css --output src/Client/wwwroot/dist/app.css",
+    "dev:css": "tailwindcss --watch --input src/Client/Styles/tailwind.css --output src/Client/wwwroot/dist/app.css",
     "efDatabaseUpdate": "dotnet ef database update \"$@\" --project src/Server",
     "efDatabaseDrop": "dotnet ef database drop \"$@\" --project src/Server",
     "efMigrationsAdd": "dotnet ef migrations add \"$@\" --project src/Server",
