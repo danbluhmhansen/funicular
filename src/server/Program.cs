@@ -91,7 +91,9 @@ services
     .AddGraphQLServer()
     .RegisterDbContext<FunicularDbContext>()
     .AddQueryType<FunicularQuery>()
+    .AddMutationType<FunicularMutation>()
     .AddQueryableCursorPagingProvider(defaultProvider: true)
+    .AddProjections()
     .AddFiltering()
     .AddSorting();
 
