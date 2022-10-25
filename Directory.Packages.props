@@ -12,7 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Include="Bogus" Version="34.0.2" />
     <PackageVersion Include="FluentValidation" Version="11.2.2" />
     <PackageVersion Include="HotChocolate.AspNetCore" Version="13.0.0-preview.70" />
     <PackageVersion Include="HotChocolate.Data.EntityFramework" Version="13.0.0-preview.70" />
@@ -33,9 +32,6 @@
     <PackageVersion Include="StrawberryShake.CodeGeneration.CSharp.Analyzers" Version="13.0.0-preview.24" />
     <PackageVersion Include="StrawberryShake.Transport.Http" Version="13.0.0-preview.51" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
-    <PackageVersion Include="tomware.OpenIddict.UI.Api" Version="1.7.0" />
-    <PackageVersion Include="tomware.OpenIddict.UI.Identity.Api" Version="1.7.0" />
-    <PackageVersion Include="tomware.OpenIddict.UI.Identity.Infrastructure" Version="1.7.0" />
   </ItemGroup>
 
 </Project>
