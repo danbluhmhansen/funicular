@@ -3,36 +3,29 @@
     ViewData["Title"] = "Register";
 }
 
-<h2>@ViewData["Title"].</h2>
+<article class="prose">
+    <h2>@ViewData["Title"].</h2>
+</article>
 
-<form asp-controller="Account" asp-action="Register" asp-route-returnUrl="@ViewData["returnUrl"]" method="post" class="form-horizontal" role="form">
-    <h4>Create a new account.</h4>
-    <hr />
+<form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+    <article class="prose">
+        <h4>Create a new account.</h4>
+    </article>
+    <div class="divider"></div>
     <div asp-validation-summary="All" class="text-danger"></div>
-    <div class="form-group">
-        <label asp-for="Email" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
+    <div class="form-control">
+        <label asp-for="Email" class="label"></label>
+        <input asp-for="Email" class="input input-bordered" />
+    </div>
+    <div class="form-control">
+        <label asp-for="Password" class="label"></label>
+        <input asp-for="Password" class="input input-bordered" />
+    </div>
+    <div class="form-control">
+        <label asp-for="ConfirmPassword" class="label"></label>
+        <input asp-for="ConfirmPassword" class="input input-bordered" />
     </div>
     <div class="form-group">
-        <label asp-for="Password" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="Password" class="form-control" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label asp-for="ConfirmPassword" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="ConfirmPassword" class="form-control" />
-            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <button type="submit" class="btn btn-default">Register</button>
-        </div>
+        <input type="submit" value="Register" class="btn btn-primary" />
     </div>
 </form>
