@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
+using OpenIddict.Validation.AspNetCore;
 
 using Quartz;
 
@@ -25,6 +26,8 @@ services.AddDbContext<FunicularDbContext>(options =>
     options.UseNpgsql(configuration.GetConnectionString("Default"));
     options.UseOpenIddict();
 });
+
+services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
 
 services
     .AddIdentity<FunicularUser, IdentityRole>()
@@ -123,7 +126,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGraphQL();
+app.MapGraphQL().RequireAuthorization();
 app.MapDefaultControllerRoute();
 app.MapFallbackToFile("index.html");
 

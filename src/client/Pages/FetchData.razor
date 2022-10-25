@@ -1,4 +1,6 @@
 ﻿@page "/fetchdata"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 @inject FunicularClient Client
 
 <PageTitle>Weather forecast</PageTitle>

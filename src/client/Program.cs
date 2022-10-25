@@ -1,6 +1,8 @@
 using Funicular.Client;
+using Funicular.Client.Graph;
 
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -9,14 +11,14 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 var services = builder.Services;
 
-services.AddHttpClient("Server", client => client.BaseAddress = new(builder.HostEnvironment.BaseAddress));
-
-// .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
-services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("Server"));
-
 services
-    .AddFunicularClient()
-    .ConfigureHttpClient(client => client.BaseAddress = new(builder.HostEnvironment.BaseAddress + "graphql"));
+    .AddHttpClient(
+        FunicularClient.ClientName,
+        client => client.BaseAddress = new(builder.HostEnvironment.BaseAddress + "graphql")
+    )
+    .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
+
+services.AddFunicularClient();
 
 services.AddOidcAuthentication(options =>
 {
