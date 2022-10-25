@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "src": {
+    "Funicular.Client": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
