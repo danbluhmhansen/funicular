@@ -1,13 +1,11 @@
 namespace Funicular.Server.Graph;
 
 using Funicular.Server.Attributes;
-using Funicular.Server.Data;
+using Funicular.Server.Commands;
 using Funicular.Server.Data.Models;
 
 using HotChocolate.Data.Filters.Expressions;
 using HotChocolate.Resolvers;
-
-using Microsoft.EntityFrameworkCore;
 
 public class FunicularMutation
 {
@@ -15,11 +13,17 @@ public class FunicularMutation
         DateTime date,
         [DefaultValue(0)] Optional<int> temperatureC,
         [DefaultValue("")] Optional<string> summary,
-        FunicularDbContext db,
+        IExecutable<WeatherForecast> executable,
+        AddEntity addEntity,
         CancellationToken cancellationToken = default
     )
     {
-        var existing = await db.WeatherForecasts.FindAsync(new object[] { date }, cancellationToken);
+        if (executable is not QueryableExecutable<WeatherForecast> query)
+            throw new NotSupportedException();
+
+        var existing =
+            await query.WithSource(query.Source.Where(_ => _.Date == date)).FirstOrDefaultAsync(cancellationToken)
+            as WeatherForecast;
         var entity = existing ?? new(date, 0, string.Empty);
 
         if (temperatureC.HasValue)
@@ -28,7 +32,7 @@ public class FunicularMutation
             entity = entity with { Summary = summary };
 
         if (existing is null)
-            db.WeatherForecasts.Add(entity);
+            addEntity.Add(entity);
 
         return entity;
     }
@@ -39,13 +43,16 @@ public class FunicularMutation
         [DefaultValue(0)] Optional<int> temperatureC,
         [DefaultValue("")] Optional<string> summary,
         IResolverContext context,
-        FunicularDbContext db,
+        IExecutable<WeatherForecast> executable,
         CancellationToken cancellationToken = default
     )
     {
-        IEnumerable<WeatherForecast> entities = await db.WeatherForecasts
-            .Filter(context)
-            .ToListAsync(cancellationToken);
+        if (executable is not QueryableExecutable<WeatherForecast> query)
+            throw new NotSupportedException();
+
+        var entities =
+            await query.Filter(context).ToListAsync(cancellationToken) as IEnumerable<WeatherForecast>
+            ?? Enumerable.Empty<WeatherForecast>();
         entities = entities.Select(entity =>
         {
             if (date.HasValue)
@@ -62,12 +69,18 @@ public class FunicularMutation
     [UseFiltering]
     public async Task<IEnumerable<WeatherForecast>> DropWeatherForecastsAsync(
         IResolverContext context,
-        FunicularDbContext db,
+        IExecutable<WeatherForecast> executable,
+        RemoveEntity removeEntity,
         CancellationToken cancellationToken = default
     )
     {
-        var entities = await db.WeatherForecasts.Filter(context).ToListAsync(cancellationToken);
-        db.WeatherForecasts.RemoveRange(entities);
+        if (executable is not QueryableExecutable<WeatherForecast> query)
+            throw new NotSupportedException();
+
+        var entities =
+            await query.Filter(context).ToListAsync(cancellationToken) as IEnumerable<WeatherForecast>
+            ?? Enumerable.Empty<WeatherForecast>();
+        removeEntity.RemoveRange(entities);
         return entities;
     }
 }

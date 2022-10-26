@@ -1,3 +1,4 @@
+using Funicular.Server.Commands;
 using Funicular.Server.Data;
 using Funicular.Server.Data.Models;
 using Funicular.Server.Graph;
@@ -87,15 +88,26 @@ services
         options.UseAspNetCore();
     });
 
+services.AddScoped<IExecutable<WeatherForecast>>(
+    sp => new EntityFrameworkExecutable<WeatherForecast>(sp.GetRequiredService<FunicularDbContext>().WeatherForecasts)
+);
+
 services
     .AddGraphQLServer()
-    .RegisterDbContext<FunicularDbContext>()
+    .RegisterService<IExecutable<WeatherForecast>>()
+    .RegisterService<AddEntity>()
+    .RegisterService<UpdateEntity>()
+    .RegisterService<RemoveEntity>()
     .AddQueryType<FunicularQuery>()
     .AddMutationType<FunicularMutation>()
     .AddQueryableCursorPagingProvider(defaultProvider: true)
     .AddProjections()
     .AddFiltering()
     .AddSorting();
+
+services.AddScoped<AddEntity>();
+services.AddScoped<UpdateEntity>();
+services.AddScoped<RemoveEntity>();
 
 services.Configure<OpenIddictServerOptions>(configuration.GetSection(nameof(OpenIddictServerOptions)));
 services.Configure<OpenIddictServerAspNetCoreOptions>(
