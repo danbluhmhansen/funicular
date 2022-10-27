@@ -6,4 +6,8 @@ public class FunicularQuery
 {
     [UsePaging(DefaultPageSize = 100, MaxPageSize = 100), UseFiltering, UseSorting]
     public IExecutable<WeatherForecast> GetWeatherForecasts(IExecutable<WeatherForecast> executable) => executable;
+
+    // [UsePaging, UseFiltering, UseSorting]
+    [UsePaging, UseSorting]
+    public IExecutable<Character> GetCharacters(IExecutable<Character> executable) => executable;
 }

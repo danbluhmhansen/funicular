@@ -13,7 +13,15 @@ using OpenIddict.Validation.AspNetCore;
 
 using Quartz;
 
+using StronglyTypedIds;
+
 using static OpenIddict.Abstractions.OpenIddictConstants;
+
+[assembly: StronglyTypedIdDefaults(
+    converters: StronglyTypedIdConverter.TypeConverter
+        | StronglyTypedIdConverter.SystemTextJson
+        | StronglyTypedIdConverter.EfCoreValueConverter
+)]
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,12 +96,11 @@ services
         options.UseAspNetCore();
     });
 
-services.AddScoped<IExecutable<WeatherForecast>>(
-    sp => new EntityFrameworkExecutable<WeatherForecast>(sp.GetRequiredService<FunicularDbContext>().WeatherForecasts)
-);
+services.AddScoped(typeof(IExecutable<>), typeof(FunicularExecutable<>));
 
 services
     .AddGraphQLServer()
+    .RegisterService<IExecutable<Character>>()
     .RegisterService<IExecutable<WeatherForecast>>()
     .RegisterService<AddEntity>()
     .RegisterService<UpdateEntity>()
@@ -103,7 +110,10 @@ services
     .AddQueryableCursorPagingProvider(defaultProvider: true)
     .AddProjections()
     .AddFiltering()
-    .AddSorting();
+    .AddSorting()
+    .BindRuntimeType<CharacterId, UuidType>()
+    .AddTypeConverter<CharacterId, Guid>(_ => _.Value)
+    .AddTypeConverter<Guid, CharacterId>(_ => new(_));
 
 services.AddScoped<AddEntity>();
 services.AddScoped<UpdateEntity>();

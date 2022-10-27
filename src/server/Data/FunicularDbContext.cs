@@ -11,7 +11,15 @@ public class FunicularDbContext : IdentityDbContext<FunicularUser>
 
     protected FunicularDbContext() { }
 
+    public DbSet<Character> Characters => Set<Character>();
     public DbSet<WeatherForecast> WeatherForecasts => Set<WeatherForecast>();
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder builder)
+    {
+        base.ConfigureConventions(builder);
+
+        builder.Properties<CharacterId>().HaveConversion<CharacterId.EfCoreValueConverter>();
+    }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

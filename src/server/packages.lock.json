@@ -114,6 +114,12 @@
           "Quartz.Extensions.DependencyInjection": "3.5.0"
         }
       },
+      "StronglyTypedId": {
+        "type": "Direct",
+        "requested": "[1.0.0-beta06, )",
+        "resolved": "1.0.0-beta06",
+        "contentHash": "f8ujS/QA3Yhy6ULozBgNfmdX3mhWtHrjHa6TdXFTWDWMfym8MJX1aOTTyiFhUezwUvG2MDD/PXfAWuy4Hm0oeA=="
+      },
       "System.Linq.Async": {
         "type": "Direct",
         "requested": "[6.0.1, )",
@@ -1105,11 +1111,11 @@
       "funicular.client": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.AspNetCore.Components.WebAssembly": "6.0.10",
-          "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "6.0.10",
-          "Microsoft.Extensions.DependencyInjection": "6.0.1",
-          "Microsoft.Extensions.Http": "6.0.0",
-          "StrawberryShake.Transport.Http": "13.0.0-preview.51"
+          "Microsoft.AspNetCore.Components.WebAssembly": "[6.0.10, )",
+          "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "[6.0.10, )",
+          "Microsoft.Extensions.DependencyInjection": "[6.0.1, )",
+          "Microsoft.Extensions.Http": "[6.0.0, )",
+          "StrawberryShake.Transport.Http": "[13.0.0-preview.51, )"
         }
       },
       "Microsoft.AspNetCore.Components.WebAssembly": {

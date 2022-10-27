@@ -19,6 +19,28 @@ public class DataSeedWorker : IHostedService
         this.serviceProvider = serviceProvider;
     }
 
+    private static readonly int[] StandardArray = new[] { 8, 10, 12, 13, 14, 15, };
+
+    private static readonly string[] Names = new[]
+    {
+        "Nhedar Duhrar",
+        "Medem Shuhlem",
+        "Bekrork Keentail",
+        "Ragrodd Heartjumper",
+        "Gligal Bask",
+        "Fan Burgosk",
+        "Adrem Wolfthorne",
+        "Stran Mirthbrand",
+        "Thahviohko Jovruthrib",
+        "Sok-Vof Hezdahk",
+        "Mergondar Gruldavyede",
+        "Gorvad Gronama",
+        "Hey Wiaon",
+        "Fen Ying",
+        "Varfumi Fabrindin",
+        "Pirvar Sanzolbil",
+    };
+
     private static readonly string[] Summaries = new[]
     {
         "Freezing",
@@ -68,6 +90,10 @@ public class DataSeedWorker : IHostedService
             );
 
         var db = services.GetRequiredService<FunicularDbContext>();
+
+        if (!await db.Characters.AnyAsync(cancellationToken))
+            db.Characters.AddRange(Names.Select(name => new Character(CharacterId.New(), name)));
+
         if (!await db.WeatherForecasts.AnyAsync(cancellationToken))
         {
             var today = DateTime.Today;
@@ -83,8 +109,10 @@ public class DataSeedWorker : IHostedService
                             )
                     )
             );
-            await db.SaveChangesAsync(cancellationToken);
         }
+
+        if (db.ChangeTracker.HasChanges())
+            await db.SaveChangesAsync(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
