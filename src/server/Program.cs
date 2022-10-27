@@ -4,6 +4,8 @@ using Funicular.Server.Data.Models;
 using Funicular.Server.Graph;
 using Funicular.Server.Services;
 
+using HotChocolate.Data.Filters;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -111,6 +113,7 @@ services
     .AddProjections()
     .AddFiltering()
     .AddSorting()
+    .AddConvention<IFilterConvention, FunicularFilterConventionExtensions>()
     .BindRuntimeType<CharacterId, UuidType>()
     .AddTypeConverter<CharacterId, Guid>(_ => _.Value)
     .AddTypeConverter<Guid, CharacterId>(_ => new(_));

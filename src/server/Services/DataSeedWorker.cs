@@ -1,5 +1,6 @@
 namespace Funicular.Server.Services;
 
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,6 +8,8 @@ using Funicular.Server.Data;
 using Funicular.Server.Data.Models;
 
 using Microsoft.EntityFrameworkCore;
+
+using MoreLinq;
 
 using OpenIddict.Abstractions;
 
@@ -92,7 +95,27 @@ public class DataSeedWorker : IHostedService
         var db = services.GetRequiredService<FunicularDbContext>();
 
         if (!await db.Characters.AnyAsync(cancellationToken))
-            db.Characters.AddRange(Names.Select(name => new Character(CharacterId.New(), name)));
+            db.Characters.AddRange(
+                Names.Select(name =>
+                {
+                    var standardArray = StandardArray.Shuffle().ToArray();
+                    return new Character(
+                        CharacterId.New(),
+                        name,
+                        JsonSerializer.SerializeToDocument(
+                            new Dictionary<string, object?>
+                            {
+                                ["strength"] = standardArray[0],
+                                ["dexterity"] = standardArray[1],
+                                ["constitution"] = standardArray[2],
+                                ["intelligence"] = standardArray[3],
+                                ["wisdom"] = standardArray[4],
+                                ["charisma"] = standardArray[5],
+                            }
+                        )
+                    );
+                })
+            );
 
         if (!await db.WeatherForecasts.AnyAsync(cancellationToken))
         {
