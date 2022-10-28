@@ -1,0 +1,43 @@
+@page "/characters"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject FunicularClient Client
+
+<PageTitle>Characters</PageTitle>
+
+<article class="prose">
+    <h1>Characters</h1>
+</article>
+
+@if (data == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table w-full">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var character in data)
+            {
+                <tr>
+                    <td>@character.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IReadOnlyList<IGetCharacters_Characters_Nodes>? data;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Client.GetCharacters.ExecuteAsync();
+        data = result.Data?.Characters?.Nodes;
+    }
+}

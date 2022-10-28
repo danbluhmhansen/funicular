@@ -1,9 +1,19 @@
 ﻿schema {
   query: FunicularQuery
+  mutation: FunicularMutation
 }
+
+scalar UUID
 
 type FunicularQuery {
   weatherForecasts("Returns the first _n_ elements from the list." first: Int "Returns the elements in the list that come after the specified cursor." after: String "Returns the last _n_ elements from the list." last: Int "Returns the elements in the list that come before the specified cursor." before: String where: WeatherForecastFilterInput order: [WeatherForecastSortInput!]): WeatherForecastsConnection
+  characters("Returns the first _n_ elements from the list." first: Int "Returns the elements in the list that come after the specified cursor." after: String "Returns the last _n_ elements from the list." last: Int "Returns the elements in the list that come before the specified cursor." before: String where: CharacterFilterInput order: [CharacterSortInput!]): CharactersConnection
+}
+
+type FunicularMutation {
+  saveWeatherForecast(date: DateTime! temperatureC: Int! = 0 summary: String = ""): WeatherForecast!
+  setWeatherForecasts(date: DateTime! = "2022-10-28T17:57:18.900Z" temperatureC: Int! = 0 summary: String = "" where: WeatherForecastFilterInput): [WeatherForecast!]!
+  dropWeatherForecasts(where: WeatherForecastFilterInput): [WeatherForecast!]!
 }
 
 input WeatherForecastFilterInput {
@@ -22,6 +32,18 @@ input WeatherForecastSortInput {
   temperatureF: SortEnumType
 }
 
+input CharacterFilterInput {
+  and: [CharacterFilterInput!]
+  or: [CharacterFilterInput!]
+  id: UuidOperationFilterInput
+  name: StringOperationFilterInput
+}
+
+input CharacterSortInput {
+  id: SortEnumType
+  name: SortEnumType
+}
+
 "A connection to a list of items."
 type WeatherForecastsConnection {
   "Information to aid in pagination."
@@ -30,6 +52,16 @@ type WeatherForecastsConnection {
   edges: [WeatherForecastsEdge!]
   "A flattened list of the nodes."
   nodes: [WeatherForecast!]
+}
+
+"A connection to a list of items."
+type CharactersConnection {
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of edges."
+  edges: [CharactersEdge!]
+  "A flattened list of the nodes."
+  nodes: [Character!]
 }
 
 input DateTimeOperationFilterInput {
@@ -82,6 +114,21 @@ enum SortEnumType {
   DESC
 }
 
+input UuidOperationFilterInput {
+  eq: UUID
+  neq: UUID
+  in: [UUID]
+  nin: [UUID]
+  gt: UUID
+  ngt: UUID
+  gte: UUID
+  ngte: UUID
+  lt: UUID
+  nlt: UUID
+  lte: UUID
+  nlte: UUID
+}
+
 "Information about pagination in a connection."
 type PageInfo {
   "Indicates whether more edges exist following the set defined by the clients arguments."
@@ -109,5 +156,21 @@ type WeatherForecastsEdge {
   node: WeatherForecast!
 }
 
+type Character {
+  id: UUID!
+  name: String!
+  json: Json
+}
+
+"An edge in a connection."
+type CharactersEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+  "The item at the end of the edge."
+  node: Character!
+}
+
 "The `DateTime` scalar represents an ISO-8601 compliant date time type."
 scalar DateTime
+
+scalar Json
