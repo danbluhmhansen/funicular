@@ -2,6 +2,10 @@ query GetCharacters {
     characters {
         nodes {
             name
+            ints {
+                key
+                value
+            }
         }
     }
 }

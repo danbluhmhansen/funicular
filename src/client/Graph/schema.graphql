@@ -12,7 +12,7 @@ type FunicularQuery {
 
 type FunicularMutation {
   saveWeatherForecast(date: DateTime! temperatureC: Int! = 0 summary: String = ""): WeatherForecast!
-  setWeatherForecasts(date: DateTime! = "2022-10-28T17:57:18.900Z" temperatureC: Int! = 0 summary: String = "" where: WeatherForecastFilterInput): [WeatherForecast!]!
+  setWeatherForecasts(date: DateTime! = "2022-10-29T17:52:33.081Z" temperatureC: Int! = 0 summary: String = "" where: WeatherForecastFilterInput): [WeatherForecast!]!
   dropWeatherForecasts(where: WeatherForecastFilterInput): [WeatherForecast!]!
 }
 
@@ -37,6 +37,7 @@ input CharacterFilterInput {
   or: [CharacterFilterInput!]
   id: UuidOperationFilterInput
   name: StringOperationFilterInput
+  ints: IDictionaryOfStringAndInt32FilterInput
 }
 
 input CharacterSortInput {
@@ -129,6 +130,13 @@ input UuidOperationFilterInput {
   nlte: UUID
 }
 
+input IDictionaryOfStringAndInt32FilterInput {
+  and: [IDictionaryOfStringAndInt32FilterInput!]
+  or: [IDictionaryOfStringAndInt32FilterInput!]
+  keys: ListStringOperationFilterInput
+  values: ListIntOperationFilterInput
+}
+
 "Information about pagination in a connection."
 type PageInfo {
   "Indicates whether more edges exist following the set defined by the clients arguments."
@@ -159,7 +167,7 @@ type WeatherForecastsEdge {
 type Character {
   id: UUID!
   name: String!
-  json: Json
+  ints: [KeyValuePairOfStringAndInt32!]!
 }
 
 "An edge in a connection."
@@ -173,4 +181,21 @@ type CharactersEdge {
 "The `DateTime` scalar represents an ISO-8601 compliant date time type."
 scalar DateTime
 
-scalar Json
+input ListStringOperationFilterInput {
+  all: StringOperationFilterInput
+  none: StringOperationFilterInput
+  some: StringOperationFilterInput
+  any: Boolean
+}
+
+input ListIntOperationFilterInput {
+  all: IntOperationFilterInput
+  none: IntOperationFilterInput
+  some: IntOperationFilterInput
+  any: Boolean
+}
+
+type KeyValuePairOfStringAndInt32 {
+  key: String!
+  value: Int!
+}

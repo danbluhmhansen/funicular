@@ -19,6 +19,12 @@ else
         <thead>
             <tr>
                 <th>Name</th>
+                <th>Strength</th>
+                <th>Dexterity</th>
+                <th>Consitution</th>
+                <th>Intelligence</th>
+                <th>Wisdom</th>
+                <th>Charisma</th>
             </tr>
         </thead>
         <tbody>
@@ -26,6 +32,12 @@ else
             {
                 <tr>
                     <td>@character.Name</td>
+                    <td>@(character.Ints.FirstOrDefault(_ => _.Key == "strength")?.Value ?? 0)</td>
+                    <td>@(character.Ints.FirstOrDefault(_ => _.Key == "dexterity")?.Value ?? 0)</td>
+                    <td>@(character.Ints.FirstOrDefault(_ => _.Key == "constitution")?.Value ?? 0)</td>
+                    <td>@(character.Ints.FirstOrDefault(_ => _.Key == "intelligence")?.Value ?? 0)</td>
+                    <td>@(character.Ints.FirstOrDefault(_ => _.Key == "wisdom")?.Value ?? 0)</td>
+                    <td>@(character.Ints.FirstOrDefault(_ => _.Key == "charism")?.Value ?? 0)</td>
                 </tr>
             }
         </tbody>

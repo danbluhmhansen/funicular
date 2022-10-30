@@ -25,6 +25,8 @@ public class FunicularDbContext : IdentityDbContext<FunicularUser>
     {
         base.OnModelCreating(builder);
 
+        builder.Entity<Character>().Property(_ => _.Ints).HasColumnType("jsonb");
+
         builder.Entity<WeatherForecast>(b =>
         {
             b.HasKey(_ => _.Date);

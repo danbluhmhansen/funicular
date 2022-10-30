@@ -1,6 +1,5 @@
 namespace Funicular.Server.Services;
 
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,8 +21,6 @@ public class DataSeedWorker : IHostedService
         this.serviceProvider = serviceProvider;
     }
 
-    private static readonly int[] StandardArray = new[] { 8, 10, 12, 13, 14, 15, };
-
     private static readonly string[] Names = new[]
     {
         "Nhedar Duhrar",
@@ -43,6 +40,20 @@ public class DataSeedWorker : IHostedService
         "Varfumi Fabrindin",
         "Pirvar Sanzolbil",
     };
+
+    private static readonly IEnumerable<string> AbilityNames = new[]
+    {
+        "strength",
+        "dexterity",
+        "constitution",
+        "intelligence",
+        "wisdom",
+        "charisma",
+    };
+    private static readonly IEnumerable<int> StandardArray = new[] { 8, 10, 12, 13, 14, 15, };
+
+    private static IDictionary<string, int> RandomAbilityScores =>
+        AbilityNames.Zip(StandardArray.Shuffle()).ToDictionary();
 
     private static readonly string[] Summaries = new[]
     {
@@ -95,27 +106,7 @@ public class DataSeedWorker : IHostedService
         var db = services.GetRequiredService<FunicularDbContext>();
 
         if (!await db.Characters.AnyAsync(cancellationToken))
-            db.Characters.AddRange(
-                Names.Select(name =>
-                {
-                    var standardArray = StandardArray.Shuffle().ToArray();
-                    return new Character(
-                        CharacterId.New(),
-                        name,
-                        JsonSerializer.SerializeToDocument(
-                            new Dictionary<string, object?>
-                            {
-                                ["strength"] = standardArray[0],
-                                ["dexterity"] = standardArray[1],
-                                ["constitution"] = standardArray[2],
-                                ["intelligence"] = standardArray[3],
-                                ["wisdom"] = standardArray[4],
-                                ["charisma"] = standardArray[5],
-                            }
-                        )
-                    );
-                })
-            );
+            db.Characters.AddRange(Names.Select(name => new Character(CharacterId.New(), name, RandomAbilityScores)));
 
         if (!await db.WeatherForecasts.AnyAsync(cancellationToken))
         {

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Text.Json;
+using System.Collections.Generic;
 
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -18,7 +18,7 @@ public partial class Characters : Migration
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Json = table.Column<JsonDocument>(type: "jsonb", nullable: false)
+                    Ints = table.Column<IDictionary<string, int>>(type: "jsonb", nullable: false)
                 },
             constraints: table =>
             {
