@@ -3,14 +3,14 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>Funicular.Server</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bogus" />
-    <PackageReference Include="FluentValidation" />
-    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" />
-    <PackageReference Include="GraphQL.Server.Ui.Playground" />
+    <PackageReference Include="HotChocolate.AspNetCore" />
+    <PackageReference Include="HotChocolate.Data.EntityFramework" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
@@ -22,7 +22,12 @@
     <PackageReference Include="OpenIddict.EntityFrameworkCore" />
     <PackageReference Include="OpenIddict.Quartz" />
     <PackageReference Include="Quartz.Extensions.Hosting" />
+    <PackageReference Include="StronglyTypedId" />
     <PackageReference Include="System.Linq.Async" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Client\Funicular.Client.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,42 +3,29 @@
     ViewData["Title"] = "Register";
 }
 
-<h2 class="title">@ViewData["Title"].</h2>
+<article class="prose">
+    <h2>@ViewData["Title"].</h2>
+</article>
 
-<form asp-controller="Account" asp-action="Register" asp-route-returnUrl="@ViewData["returnUrl"]" method="post" role="form">
-    <h4 class="subtitle">Create a new account.</h4>
-    <hr />
-    <div class="field">
+<form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+    <article class="prose">
+        <h4>Create a new account.</h4>
+    </article>
+    <div class="divider"></div>
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-control">
         <label asp-for="Email" class="label"></label>
-        <div class="control has-icons-left">
-            <input asp-for="Email" placeholder="Email" class="input" />
-            <span class="icon is-small is-left">
-                <i class="ti ti-mail"></i>
-            </span>
-        </div>
-        <span asp-validation-for="Email" class="has-text-danger"></span>
+        <input asp-for="Email" class="input input-bordered" />
     </div>
-    <div class="field">
+    <div class="form-control">
         <label asp-for="Password" class="label"></label>
-        <div class="control has-icons-left">
-            <input asp-for="Password" type="password" placeholder="Password" class="input" />
-            <span class="icon is-small is-left">
-                <i class="ti ti-lock"></i>
-            </span>
-        </div>
-        <span asp-validation-for="Password" class="has-text-danger"></span>
+        <input asp-for="Password" class="input input-bordered" />
     </div>
-    <div class="field">
-        <label asp-for="ConfirmPassword" class="label">Confirm password</label>
-        <div class="control has-icons-left">
-            <input asp-for="ConfirmPassword" type="password" placeholder="Password" class="input" />
-            <span class="icon is-small is-left">
-                <i class="ti ti-lock"></i>
-            </span>
-        </div>
-        <span asp-validation-for="ConfirmPassword" class="has-text-danger"></span>
+    <div class="form-control">
+        <label asp-for="ConfirmPassword" class="label"></label>
+        <input asp-for="ConfirmPassword" class="input input-bordered" />
     </div>
-    <div class="control">
-        <button type="submit" class="button is-link">Register</button>
+    <div class="form-group">
+        <input type="submit" value="Register" class="btn btn-primary" />
     </div>
 </form>

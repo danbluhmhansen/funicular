@@ -28,10 +28,11 @@ public class UserinfoController : Controller
     {
         var user = await userManager.FindByIdAsync(User.GetClaim(Claims.Subject));
         if (user is null)
+        {
             return Challenge(
                 authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
                 properties: new AuthenticationProperties(
-                    new Dictionary<string, string?>
+                    new Dictionary<string, string>
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidToken,
                         [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
@@ -39,6 +40,7 @@ public class UserinfoController : Controller
                     }
                 )
             );
+        }
 
         var claims = new Dictionary<string, object>(StringComparer.Ordinal)
         {
@@ -59,7 +61,9 @@ public class UserinfoController : Controller
         }
 
         if (User.HasScope(Scopes.Roles))
+        {
             claims[Claims.Role] = await userManager.GetRolesAsync(user);
+        }
 
         // Note: the complete list of standard claims supported by the OpenID Connect specification
         // can be found here: http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims

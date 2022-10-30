@@ -1,5 +1,8 @@
 namespace Funicular.Server.Data.Models;
 
-using System.Text.Json;
+using StronglyTypedIds;
 
-internal record Character(Guid Id, string Name, JsonElement Json);
+[StronglyTypedId]
+public partial struct CharacterId { }
+
+public record Character(CharacterId Id, string Name, IDictionary<string, int> Ints);

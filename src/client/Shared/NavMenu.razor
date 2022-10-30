@@ -1,36 +1,38 @@
-﻿<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a class="navbar-item" href="">Funicular</a>
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject SignOutSessionStateManager SignOutManager
+@inject NavigationManager Navigation
 
-    <a class="navbar-burger" @onclick="ToggleNavMenu">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-
-  <div class='navbar-menu @(active ? " is-active" : "")'>
+<nav class="navbar">
     <div class="navbar-start">
-      <a href="/Characters" class="navbar-item">Characters</a>
-    </div>
-
-    <div class="navbar-end">
-      <div class="navbar-item">
-        <div class="buttons">
-          <AuthorizeView>
-            <Authorized>
-              <a href="/authentication/profile" class="button is-primary">
-                <strong>Hello, @context.User.Identity?.Name!</strong>
-              </a>
-              <a @onclick="BeginSignOutAsync" class="button is-light">Log out</a>
-            </Authorized>
-            <NotAuthorized>
-              <a href="/authentication/register" class="button is-primary"><strong>Register</strong></a>
-              <a href="/authentication/login" class="button is-light">Log in</a>
-            </NotAuthorized>
-          </AuthorizeView>
+        <div class="tabs">
+            <NavLink href="" Match="NavLinkMatch.All" ActiveClass="tab-active" class="tab">Funicular</NavLink>
+            <NavLink href="counter" ActiveClass="tab-active" class="tab">Counter</NavLink>
+            <NavLink href="fetchdata" ActiveClass="tab-active" class="tab">Fetch data</NavLink>
+            <NavLink href="characters" ActiveClass="tab-active" class="tab">Characters</NavLink>
         </div>
-      </div>
     </div>
-  </div>
+    <div class="navbar-end">
+        <div class="btn-group">
+            <AuthorizeView>
+                <Authorized>
+                    <a href="/authentication/profile" class="btn btn-primary btn-sm">
+                        <strong>Hello, @context.User.Identity?.Name!</strong>
+                    </a>
+                    <a @onclick="BeginSignOutAsync" class="btn btn-sm">Log out</a>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="/authentication/register" class="btn btn-primary btn-sm"><strong>Register</strong></a>
+                    <a href="/authentication/login" class="btn btn-sm">Log in</a>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    </div>
 </nav>
+
+@code {
+    private async Task BeginSignOutAsync()
+    {
+        if (SignOutManager is not null) await SignOutManager.SetSignOutState();
+        Navigation?.NavigateTo("authentication/logout");
+    }
+}

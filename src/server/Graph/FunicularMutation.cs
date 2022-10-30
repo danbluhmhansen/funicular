@@ -1,151 +1,86 @@
 namespace Funicular.Server.Graph;
 
-using System.Text.Json;
-using System.Text.Json.Nodes;
-
-using Funicular.Server.Data;
+using Funicular.Server.Attributes;
+using Funicular.Server.Commands;
 using Funicular.Server.Data.Models;
-using Funicular.Server.Graph.Models;
 
-using GraphQL;
-using GraphQL.Builders;
-using GraphQL.MicrosoftDI;
-using GraphQL.Types;
+using HotChocolate.Data.Filters.Expressions;
+using HotChocolate.Resolvers;
 
-using Microsoft.EntityFrameworkCore;
-
-internal class FunicularMutation : ObjectGraphType
+public class FunicularMutation
 {
-    public FunicularMutation()
+    public async Task<WeatherForecast> SaveWeatherForecastAsync(
+        DateTime date,
+        [DefaultValue(0)] Optional<int> temperatureC,
+        [DefaultValue("")] Optional<string> summary,
+        IExecutable<WeatherForecast> executable,
+        AddEntity addEntity,
+        CancellationToken cancellationToken = default
+    )
     {
-        Name = "Mutation";
+        if (executable is not QueryableExecutable<WeatherForecast> query)
+            throw new NotSupportedException();
 
-        base.Field<DynamicFieldType>("saveCharacterField")
-            .Argument<NonNullGraphType<StringGraphType>>("name")
-            .Argument<StringGraphType>("type")
-            .Argument<BooleanGraphType>("required")
-            .Resolve()
-            .WithService<FunicularDbContext>()
-            .ResolveAsync(
-                async (context, db) =>
-                {
-                    var name = context.GetArgument<string>("name");
-                    var update = await db.CharacterFields.AnyAsync(e => e.Name == name);
-                    DynamicField entity =
-                        new(
-                            name,
-                            context.HasArgument("type") ? context.GetArgument<string>("type") : "string",
-                            context.HasArgument("required") && context.GetArgument<bool>("required")
-                        );
-                    if (update)
-                        db.CharacterFields.Update(entity);
-                    else
-                        db.CharacterFields.Add(entity);
-                    return entity;
-                }
-            );
+        var existing =
+            await query.WithSource(query.Source.Where(_ => _.Date == date)).FirstOrDefaultAsync(cancellationToken)
+            as WeatherForecast;
+        var entity = existing ?? new(date, 0, string.Empty);
 
-        Field<DynamicFieldType>("dropCharacterField")
-            .Argument<NonNullGraphType<StringGraphType>>("name")
-            .Resolve()
-            .WithService<FunicularDbContext>()
-            .ResolveAsync(
-                async (context, db) =>
-                {
-                    var name = context.GetArgument<string>("name");
-                    var entity = await db.CharacterFields.FindAsync(new object[] { name }, context.CancellationToken);
-                    if (entity is not null)
-                    {
-                        db.CharacterFields.Remove(entity);
-                        return entity;
-                    }
-                    return default;
-                }
-            );
+        if (temperatureC.HasValue)
+            entity = entity with { TemperatureC = temperatureC };
+        if (summary.HasValue)
+            entity = entity with { Summary = summary };
 
-        saveCharactersFieldBuilder = Field<CharacterType>("saveCharacter")
-            .Argument<IdGraphType>("id")
-            .Argument<StringGraphType>("name");
+        if (existing is null)
+            addEntity.Add(entity);
 
-        Field<CharacterType>("dropCharacter")
-            .Argument<NonNullGraphType<IdGraphType>>("id")
-            .Resolve()
-            .WithService<FunicularDbContext>()
-            .ResolveAsync(
-                async (context, db) =>
-                {
-                    var id = context.GetArgument<Guid>("id");
-                    var character = await db.Characters.FindAsync(new object[] { id }, context.CancellationToken);
-                    if (character is not null)
-                    {
-                        db.Characters.Remove(character);
-                        return character;
-                    }
-                    return default;
-                }
-            );
+        return entity;
     }
 
-    private readonly List<DynamicField> dynamicFields = new();
-    private FieldBuilder<object?, object> saveCharactersFieldBuilder;
-
-    public void AddDynamicFields(params DynamicField[] fields) => dynamicFields.AddRange(fields);
-
-    public void AddDynamicFields(IEnumerable<DynamicField> fields) => AddDynamicFields(fields.ToArray());
-
-    public FieldBuilder<object?, object> DynamicFieldArgument(DynamicField field) =>
-        saveCharactersFieldBuilder = field.Type switch
-        {
-            "int" => saveCharactersFieldBuilder.Argument<IntGraphType>(field.Name),
-            "string" => saveCharactersFieldBuilder.Argument<StringGraphType>(field.Name),
-            _ => throw new NotSupportedException(),
-        };
-
-    public static JsonNode? GetDynamicField(IResolveFieldContext<object?> context, DynamicField field) =>
-        field.Type switch
-        {
-            "int" => context.GetArgument<int>(field.Name),
-            "string" => context.GetArgument<string>(field.Name),
-            _ => throw new NotSupportedException(),
-        };
-
-    public FieldBuilder<object?, object> InitializeSaveCharacters()
+    [UseFiltering]
+    public async Task<IEnumerable<WeatherForecast>> SetWeatherForecastsAsync(
+        [DefaultDateTimeValue] Optional<DateTime> date,
+        [DefaultValue(0)] Optional<int> temperatureC,
+        [DefaultValue("")] Optional<string> summary,
+        IResolverContext context,
+        IExecutable<WeatherForecast> executable,
+        CancellationToken cancellationToken = default
+    )
     {
-        foreach (var field in dynamicFields)
-            DynamicFieldArgument(field);
-        return saveCharactersFieldBuilder
-            .Resolve()
-            .WithService<FunicularDbContext>()
-            .ResolveAsync(
-                async (context, db) =>
-                {
-                    var id = context.GetArgument<Guid?>("id") ?? Guid.Empty;
+        if (executable is not QueryableExecutable<WeatherForecast> query)
+            throw new NotSupportedException();
 
-                    var existing =
-                        id != Guid.Empty
-                            ? await db.Characters
-                                .AsNoTracking()
-                                .FirstOrDefaultAsync(character => character.Id == id, context.CancellationToken)
-                            : default;
-                    var character =
-                        existing
-                        ?? new(id, string.Empty, JsonSerializer.SerializeToElement(new Dictionary<string, object?>()));
+        var entities =
+            await query.Filter(context).ToListAsync(cancellationToken) as IEnumerable<WeatherForecast>
+            ?? Enumerable.Empty<WeatherForecast>();
+        entities = entities.Select(entity =>
+        {
+            if (date.HasValue)
+                entity = entity with { Date = date };
+            if (temperatureC.HasValue)
+                entity = entity with { TemperatureC = temperatureC };
+            if (summary.HasValue)
+                entity = entity with { Summary = summary };
+            return entity;
+        });
+        return entities;
+    }
 
-                    if (context.HasArgument("name"))
-                        character = character with { Name = context.GetArgument<string>("name") };
+    [UseFiltering]
+    public async Task<IEnumerable<WeatherForecast>> DropWeatherForecastsAsync(
+        IResolverContext context,
+        IExecutable<WeatherForecast> executable,
+        RemoveEntity removeEntity,
+        CancellationToken cancellationToken = default
+    )
+    {
+        if (executable is not QueryableExecutable<WeatherForecast> query)
+            throw new NotSupportedException();
 
-                    var dynamicFields = this.dynamicFields.Where(field => context.HasArgument(field.Name));
-                    if (dynamicFields.Any())
-                    {
-                        var json = JsonObject.Create(character.Json) ?? new();
-                        foreach (var field in dynamicFields)
-                            json[field.Name] = GetDynamicField(context, field);
-                        character = character with { Json = JsonDocument.Parse(json.ToJsonString()).RootElement };
-                    }
-
-                    db.Characters.Update(character);
-                    return character;
-                }
-            );
+        var entities =
+            await query.Filter(context).ToListAsync(cancellationToken) as IEnumerable<WeatherForecast>
+            ?? Enumerable.Empty<WeatherForecast>();
+        removeEntity.RemoveRange(entities);
+        return entities;
     }
 }

@@ -1,39 +1,33 @@
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-
 using Funicular.Client;
-using GraphQL.Client.Http;
-using GraphQL.Client.Serializer.SystemTextJson;
-using GraphQL.Client.Abstractions;
+using Funicular.Client.Graph;
+
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddTransient<CustomAuthorizationMessageHandler>();
+var services = builder.Services;
 
-builder.Services
-    .AddHttpClient("server", client => client.BaseAddress = new("https://localhost:7000"))
-    .AddHttpMessageHandler<CustomAuthorizationMessageHandler>();
+services
+    .AddHttpClient(
+        FunicularClient.ClientName,
+        client => client.BaseAddress = new(builder.HostEnvironment.BaseAddress + "graphql")
+    )
+    .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
 
-builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"));
+services.AddFunicularClient();
 
-builder.Services.AddOidcAuthentication(options =>
+services.AddOidcAuthentication(options =>
 {
-    options.AuthenticationPaths.RemoteRegisterPath = "https://localhost:7000/account/register";
-    options.ProviderOptions.Authority = "https://localhost:7000";
+    options.AuthenticationPaths.RemoteRegisterPath = builder.HostEnvironment.BaseAddress + "account/register";
+    options.AuthenticationPaths.RemoteProfilePath = builder.HostEnvironment.BaseAddress + "manage";
+    options.ProviderOptions.Authority = builder.HostEnvironment.BaseAddress;
     options.ProviderOptions.ClientId = "default";
     options.ProviderOptions.ResponseMode = "query";
     options.ProviderOptions.ResponseType = "code";
 });
-
-builder.Services.AddScoped<IGraphQLClient>(
-    sp =>
-        new GraphQLHttpClient(
-            new() { EndPoint = new("https://localhost:7000/graphql"), },
-            new SystemTextJsonSerializer(),
-            sp.GetRequiredService<IHttpClientFactory>().CreateClient("server")
-        )
-);
 
 await builder.Build().RunAsync();

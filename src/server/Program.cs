@@ -1,34 +1,44 @@
-using FluentValidation;
-
+using Funicular.Server.Commands;
 using Funicular.Server.Data;
 using Funicular.Server.Data.Models;
 using Funicular.Server.Graph;
-using Funicular.Server.Graph.Models;
 using Funicular.Server.Services;
-using Funicular.Server.Validation;
-using Funicular.Server.ViewModels.Account;
 
-using GraphQL;
+using HotChocolate.Data.Filters;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+using OpenIddict.Server;
+using OpenIddict.Server.AspNetCore;
+using OpenIddict.Validation.AspNetCore;
+
 using Quartz;
+
+using StronglyTypedIds;
 
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
+[assembly: StronglyTypedIdDefaults(
+    converters: StronglyTypedIdConverter.TypeConverter
+        | StronglyTypedIdConverter.SystemTextJson
+        | StronglyTypedIdConverter.EfCoreValueConverter
+)]
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var configuration = builder.Configuration;
 var services = builder.Services;
 
 services.AddControllersWithViews();
 
 services.AddDbContext<FunicularDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default"));
+    options.UseNpgsql(configuration.GetConnectionString("Default"));
     options.UseOpenIddict();
 });
+
+services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
 
 services
     .AddIdentity<FunicularUser, IdentityRole>()
@@ -66,7 +76,8 @@ services
 
         options.RegisterScopes(Scopes.Email, Scopes.Profile, Scopes.Roles);
 
-        options.AddDevelopmentEncryptionCertificate().AddDevelopmentSigningCertificate();
+        if (builder.Environment.IsDevelopment())
+            options.AddDevelopmentEncryptionCertificate().AddDevelopmentSigningCertificate();
 
         options.RequireProofKeyForCodeExchange();
 
@@ -78,29 +89,42 @@ services
             .EnableTokenEndpointPassthrough()
             .EnableUserinfoEndpointPassthrough()
             .EnableVerificationEndpointPassthrough();
+
+        options.UseAspNetCore();
     })
     .AddValidation(options =>
     {
-        // options.AddAudiences("resource_server");
         options.UseLocalServer();
         options.UseAspNetCore();
     });
 
-services.AddCors(
-    options => options.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin())
-);
+services.AddScoped(typeof(IExecutable<>), typeof(FunicularExecutable<>));
 
-services.AddScoped<IValidator<LoginViewModel>, LoginModelValidator>();
-services.AddScoped<IValidator<RegisterViewModel>, RegisterModelValidator>();
+services
+    .AddGraphQLServer()
+    .RegisterService<IExecutable<Character>>()
+    .RegisterService<IExecutable<WeatherForecast>>()
+    .RegisterService<AddEntity>()
+    .RegisterService<UpdateEntity>()
+    .RegisterService<RemoveEntity>()
+    .AddQueryType<FunicularQuery>()
+    .AddMutationType<FunicularMutation>()
+    .AddQueryableCursorPagingProvider(defaultProvider: true)
+    .AddProjections()
+    .AddFiltering()
+    .AddSorting()
+    .AddConvention<IFilterConvention, FunicularFilterConventionExtensions>()
+    .BindRuntimeType<CharacterId, UuidType>()
+    .AddTypeConverter<CharacterId, Guid>(_ => _.Value)
+    .AddTypeConverter<Guid, CharacterId>(_ => new(_));
 
-services.AddScoped<OrderByGraphType>();
-services.AddScoped<DynamicFieldType>();
-services.AddScoped<CharacterType>();
-services.AddScoped<FunicularQuery>();
-services.AddScoped<FunicularMutation>();
+services.AddScoped<AddEntity>();
+services.AddScoped<UpdateEntity>();
+services.AddScoped<RemoveEntity>();
 
-services.AddGraphQL(
-    options => options.AddSystemTextJson().AddSchema<FunicularSchema>(GraphQL.DI.ServiceLifetime.Scoped)
+services.Configure<OpenIddictServerOptions>(configuration.GetSection(nameof(OpenIddictServerOptions)));
+services.Configure<OpenIddictServerAspNetCoreOptions>(
+    configuration.GetSection(nameof(OpenIddictServerAspNetCoreOptions))
 );
 
 if (builder.Environment.IsDevelopment())
@@ -111,48 +135,26 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseGraphQLPlayground();
+    app.UseWebAssemblyDebugging();
 }
-
-app.UseStaticFiles();
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
 
 app.UseHttpsRedirection();
 
-app.UseRouting();
+app.UseBlazorFrameworkFiles();
+app.UseStaticFiles();
 
-app.UseCors();
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseWhen(
-    context => context.Request.Path.Equals("/graphql"),
-    b =>
-        b.Use(
-            async (context, next) =>
-            {
-                var characterType = context.RequestServices.GetRequiredService<CharacterType>();
-                var query = context.RequestServices.GetRequiredService<FunicularQuery>();
-                var mutation = context.RequestServices.GetRequiredService<FunicularMutation>();
-                var db = context.RequestServices.GetRequiredService<FunicularDbContext>();
-                await foreach (
-                    var field in db.CharacterFields
-                        .AsNoTracking()
-                        .AsAsyncEnumerable()
-                        .WithCancellation(context.RequestAborted)
-                )
-                {
-                    characterType.DynamicField(field);
-                    query.AddDynamicFields(field);
-                    mutation.AddDynamicFields(field);
-                }
-                query.InitializeCharacters();
-                mutation.InitializeSaveCharacters();
-                await next();
-            }
-        )
-);
-
-app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+app.MapGraphQL().RequireAuthorization();
+app.MapDefaultControllerRoute();
+app.MapFallbackToFile("index.html");
 
 app.Run();
