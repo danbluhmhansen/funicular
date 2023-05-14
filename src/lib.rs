@@ -99,6 +99,14 @@ mod tests {
     }
 
     #[pg_test]
+    fn test_select_schema_field_cols() {
+        assert_eq!(
+            "charisma bigint, constitution bigint, dexterity bigint, intelligence bigint, strength bigint, wisdom bigint".to_string(),
+            crate::select_schema_field_cols(Uuid::from_bytes(SCHEMA_ID))
+        )
+    }
+
+    #[pg_test]
     fn test_refresh_char_aggr() {
         Spi::run("CREATE EXTENSION tablefunc;").unwrap();
         crate::refresh_char_aggr(Uuid::from_bytes(SCHEMA_ID)).unwrap();
