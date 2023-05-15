@@ -46,10 +46,13 @@ fn select_schema_field_cols(schema_id: Uuid) -> String {
 fn refresh_char_aggr(schema_id: Uuid) -> Result<(), pgrx::spi::Error> {
     if let Ok(Some(view_name)) = select_schema_name(schema_id) {
         let cols = select_schema_field_cols(schema_id);
-        Spi::run(&format!("DROP MATERIALIZED VIEW IF EXISTS {}", view_name))?;
+        Spi::run(&format!(
+            "DROP MATERIALIZED VIEW IF EXISTS char_aggr_{}",
+            view_name
+        ))?;
         Spi::run(&format!(
             r#"
-                CREATE MATERIALIZED VIEW {} AS
+                CREATE MATERIALIZED VIEW char_aggr_{} AS
                     SELECT * FROM crosstab('
                         SELECT
                             char.name,
