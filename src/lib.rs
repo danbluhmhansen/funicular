@@ -92,13 +92,12 @@ mod tests {
     }
 
     #[pg_test]
-    fn test_select_schema_name() {
+    fn test_select_schema_name() -> Result<(), pgrx::spi::Error> {
         assert_eq!(
             "foo".to_string(),
-            crate::select_schema_name(Uuid::from_bytes(SCHEMA_ID))
-                .unwrap()
-                .unwrap()
-        )
+            crate::select_schema_name(Uuid::from_bytes(SCHEMA_ID))?.unwrap()
+        );
+        Ok(())
     }
 
     #[pg_test]
@@ -110,9 +109,26 @@ mod tests {
     }
 
     #[pg_test]
-    fn test_refresh_char_aggr() {
-        Spi::run("CREATE EXTENSION tablefunc;").unwrap();
-        crate::refresh_char_aggr(Uuid::from_bytes(SCHEMA_ID)).unwrap();
+    fn test_refresh_char_aggr() -> Result<(), pgrx::spi::Error> {
+        Spi::run("CREATE EXTENSION tablefunc;")?;
+        crate::refresh_char_aggr(Uuid::from_bytes(SCHEMA_ID))?;
+        assert_eq!(
+            "Braugnor Quickcleaver".to_string(),
+            Spi::get_one::<String>("SELECT name FROM char_aggr_foo;")?.unwrap()
+        );
+        Ok(())
+    }
+
+    #[pg_test]
+    fn test_refresh_char_aggr_trigger() -> Result<(), pgrx::spi::Error> {
+        Spi::run("CREATE EXTENSION tablefunc;")?;
+        crate::refresh_char_aggr(Uuid::from_bytes(SCHEMA_ID))?;
+        Spi::run("INSERT INTO schema_field (schema_id, fun_type, path) VALUES ('312c5ac5-23aa-4568-9d10-5949650bc8c0', 'int', 'bar');")?;
+        assert_eq!(
+            0,
+            Spi::get_one::<i64>("SELECT bar FROM char_aggr_foo;")?.unwrap()
+        );
+        Ok(())
     }
 }
 
