@@ -131,7 +131,7 @@ fn refresh_char_aggr_trigger<'a>(
     });
     if let (Some(aggr_counts), Some(field_counts)) = (opt_aggr_counts, opt_field_counts) {
         zip(aggr_counts, field_counts)
-            .filter_map(|(aggr, field)| match aggr.1 != field.1 {
+            .filter_map(|(aggr, field)| match aggr.1 - 1 != field.1 {
                 true => Some(aggr.0),
                 false => None,
             })
@@ -196,10 +196,7 @@ mod tests {
         crate::refresh_char_aggr(Uuid::from_bytes(SCHEMA_ID))?;
         Spi::run("CREATE TRIGGER test_trigger AFTER INSERT OR UPDATE OR DELETE ON schema_field FOR EACH STATEMENT EXECUTE PROCEDURE refresh_char_aggr_trigger();")?;
         Spi::run("INSERT INTO schema_field (schema_id, fun_type, path) VALUES ('312c5ac5-23aa-4568-9d10-5949650bc8c0', 'int', 'bar');")?;
-        assert_eq!(
-            0,
-            Spi::get_one::<i64>("SELECT bar FROM char_aggr_foo;")?.unwrap()
-        );
+        assert_eq!(None, Spi::get_one::<i64>("SELECT bar FROM char_aggr_foo;")?);
         Ok(())
     }
 }
