@@ -31,15 +31,18 @@ fn select_schema_field_cols(schema_id: Uuid) -> String {
             .map(|row| -> Result<String, pgrx::spi::Error> {
                 match row["path"].value::<String>() {
                     Ok(Some(path)) => match row["fun_type"].value() {
-                        Ok(Some("int")) => Ok(format!("{} bigint", path)),
-                        _ => Ok(format!("{} bigint", path)),
+                        Ok(Some("int")) => Ok(format!("{path} bigint",)),
+                        _ => Ok(format!("{path} bigint",)),
                     },
                     _ => Ok("".to_string()),
                 }
             })
             .collect::<Result<Vec<String>, pgrx::spi::Error>>()
     }) {
-        Ok(cols) => cols.join(", "),
+        Ok(mut cols) => {
+            cols.insert(0, "name text".to_string());
+            cols.join(", ")
+        }
         _ => "".to_string(),
     }
 }
@@ -49,12 +52,11 @@ fn refresh_char_aggr(schema_id: Uuid) -> Result<(), pgrx::spi::Error> {
     if let Ok(Some(view_name)) = select_schema_name(schema_id) {
         let cols = select_schema_field_cols(schema_id);
         Spi::run(&format!(
-            "DROP MATERIALIZED VIEW IF EXISTS char_aggr_{}",
-            view_name
+            "DROP MATERIALIZED VIEW IF EXISTS char_aggr_{view_name};",
         ))?;
         Spi::run(&format!(
             r#"
-                CREATE MATERIALIZED VIEW char_aggr_{} AS
+                CREATE MATERIALIZED VIEW char_aggr_{view_name} AS
                     SELECT * FROM crosstab('
                         SELECT
                             char.name,
@@ -68,14 +70,60 @@ fn refresh_char_aggr(schema_id: Uuid) -> Result<(), pgrx::spi::Error> {
                         JOIN char_trait ON char_trait.char_id = char.id
                         JOIN trait ON trait.id = char_trait.trait_id
                         LEFT JOIN effect ON effect.trait_id = trait.id AND effect.schema_field_id = schema_field.id
+                        WHERE schema_field.schema_id = ''{schema_id}''
                         GROUP BY char.id, schema_field.id
                         ORDER BY 1, 2'
-                    ) AS ct(name text, {});
+                    ) AS ct({cols});
             "#,
-            view_name, cols
         ))?;
     }
     Ok(())
+}
+
+#[pg_trigger]
+fn char_aggr_sync<'a>(
+    trigger: &'a pgrx::PgTrigger<'a>,
+) -> Result<Option<PgHeapTuple<'a, impl WhoAllocated>>, Box<dyn Error>> {
+    match trigger.op().unwrap() {
+        PgTriggerOperation::Insert => {
+            if let Some(new) = trigger.new() {
+                if let Some(schema_id) = new.get_by_name::<Uuid>("id")? {
+                    Spi::run_with_args(
+                        "SELECT refresh_char_aggr($1);",
+                        Some(vec![(PgBuiltInOids::UUIDOID.oid(), schema_id.into_datum())]),
+                    )?;
+                }
+            }
+            Ok(trigger.new())
+        }
+        PgTriggerOperation::Update => {
+            if let Some(new) = trigger.new() {
+                if let Some(schema_name) = new.get_by_name::<String>("name")? {
+                    Spi::run(&format!(
+                        "DROP MATERIALIZED VIEW IF EXISTS char_aggr_{schema_name};",
+                    ))?;
+                }
+                if let Some(schema_id) = new.get_by_name::<Uuid>("id")? {
+                    Spi::run_with_args(
+                        "SELECT refresh_char_aggr($1);",
+                        Some(vec![(PgBuiltInOids::UUIDOID.oid(), schema_id.into_datum())]),
+                    )?;
+                }
+            }
+            Ok(trigger.new())
+        }
+        PgTriggerOperation::Delete => {
+            if let Some(old) = trigger.old() {
+                if let Some(schema_name) = old.get_by_name::<String>("name")? {
+                    Spi::run(&format!(
+                        "DROP MATERIALIZED VIEW IF EXISTS char_aggr_{schema_name};",
+                    ))?;
+                }
+            }
+            Ok(trigger.old())
+        }
+        PgTriggerOperation::Truncate => todo!(),
+    }
 }
 
 #[pg_trigger]
@@ -95,7 +143,7 @@ fn refresh_char_aggr_trigger<'a>(
                     .map(|schema| {
                         client
                             .select(
-                                &format!("SELECT * FROM char_aggr_{}", schema.1),
+                                &format!("SELECT * FROM char_aggr_{};", schema.1),
                                 Some(0),
                                 None,
                             )
@@ -135,10 +183,10 @@ fn refresh_char_aggr_trigger<'a>(
                 true => Some(aggr.0),
                 false => None,
             })
-            .for_each(|schema| {
+            .for_each(|schema_id| {
                 Spi::run_with_args(
-                    "SELECT refresh_char_aggr($1)",
-                    Some(vec![(PgBuiltInOids::UUIDOID.oid(), schema.into_datum())]),
+                    "SELECT refresh_char_aggr($1);",
+                    Some(vec![(PgBuiltInOids::UUIDOID.oid(), schema_id.into_datum())]),
                 )
                 .unwrap();
             });
@@ -174,7 +222,7 @@ mod tests {
     #[pg_test]
     fn test_select_schema_field_cols() {
         assert_eq!(
-            "charisma bigint, constitution bigint, dexterity bigint, intelligence bigint, strength bigint, wisdom bigint".to_string(),
+            "name text, charisma bigint, constitution bigint, dexterity bigint, intelligence bigint, strength bigint, wisdom bigint".to_string(),
             crate::select_schema_field_cols(Uuid::from_bytes(SCHEMA_ID))
         )
     }
@@ -197,6 +245,16 @@ mod tests {
         Spi::run("CREATE TRIGGER test_trigger AFTER INSERT OR UPDATE OR DELETE ON schema_field FOR EACH STATEMENT EXECUTE PROCEDURE refresh_char_aggr_trigger();")?;
         Spi::run("INSERT INTO schema_field (schema_id, fun_type, path) VALUES ('312c5ac5-23aa-4568-9d10-5949650bc8c0', 'int', 'bar');")?;
         assert_eq!(None, Spi::get_one::<i64>("SELECT bar FROM char_aggr_foo;")?);
+        Ok(())
+    }
+
+    #[pg_test]
+    fn test_char_aggr_sync() -> Result<(), pgrx::spi::Error> {
+        Spi::run("CREATE EXTENSION tablefunc;")?;
+        crate::refresh_char_aggr(Uuid::from_bytes(SCHEMA_ID))?;
+        Spi::run("CREATE TRIGGER test_trigger AFTER INSERT OR UPDATE OR DELETE ON schema FOR EACH ROW EXECUTE PROCEDURE char_aggr_sync();")?;
+        Spi::run("INSERT INTO schema (name) VALUES ('bar');")?;
+        Spi::run("SELECT * FROM char_aggr_bar;")?;
         Ok(())
     }
 }
