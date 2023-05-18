@@ -1,73 +1,75 @@
-use std::error::Error;
 use std::iter::zip;
 
-use pgrx::prelude::*;
-use pgrx::Uuid;
+use pgrx::{prelude::*, Uuid};
 
-#[pg_trigger]
-pub(crate) fn refresh_char_aggr_trigger<'a>(
-    trigger: &'a pgrx::PgTrigger<'a>,
-) -> Result<Option<PgHeapTuple<'a, impl WhoAllocated>>, Box<dyn Error>> {
-    let opt_aggr_counts = Spi::connect(|client| {
-        match client.select("SELECT id, name FROM schema ORDER BY id;", None, None) {
-            Ok(table) => Some(
+fn aggr_counts() -> Result<Vec<(Uuid, i64)>, pgrx::spi::Error> {
+    Spi::connect(|client| {
+        client
+            .select("SELECT id, name FROM schema ORDER BY id;", None, None)
+            .map(|table| {
                 table
                     .filter_map(|row| {
-                        match (row["id"].value::<Uuid>(), row["name"].value::<String>()) {
-                            (Ok(Some(id)), Ok(Some(name))) => Some((id, name)),
-                            _ => None,
-                        }
+                        row["id"]
+                            .value::<Uuid>()
+                            .ok()
+                            .flatten()
+                            .zip(row["name"].value::<String>().ok().flatten())
                     })
-                    .map(|schema| {
+                    .map(|(schema_id, schema_name)| {
                         client
                             .select(
-                                &format!("SELECT * FROM char_aggr_{};", schema.1),
+                                &format!("SELECT * FROM char_aggr_{schema_name};"),
                                 Some(0),
                                 None,
                             )
-                            .map(|row| (schema.0, row.columns().unwrap() as i64))
-                            .unwrap()
+                            .map(|row| row.columns().map(|cols| (schema_id, cols as i64)))
+                            .and_then(|x| x)
                     })
-                    .collect::<Vec<(Uuid, i64)>>(),
-            ),
-            _ => None,
-        }
-    });
-    let opt_field_counts = Spi::connect(|client| {
-        match client.select(
-            "SELECT schema_id, COUNT(*) FROM schema_field GROUP BY schema_id ORDER BY schema_id;",
-            None,
-            None,
-        ) {
-            Ok(table) => Some(
+                    .collect::<Result<Vec<(Uuid, i64)>, pgrx::spi::Error>>()
+            })
+            .and_then(|res| res)
+    })
+}
+
+fn field_counts() -> Result<Vec<(Uuid, i64)>, pgrx::spi::Error> {
+    Spi::connect(|client| {
+        client
+            .select(
+                "SELECT schema_id, COUNT(*) FROM schema_field GROUP BY schema_id ORDER BY schema_id;",
+                None,
+                None,
+            )
+            .map(|table| {
                 table
                     .filter_map(|row| {
-                        match (
-                            row["schema_id"].value::<Uuid>(),
-                            row["count"].value::<i64>(),
-                        ) {
-                            (Ok(Some(schema_id)), Ok(Some(count))) => Some((schema_id, count)),
-                            _ => None,
-                        }
+                        row["schema_id"]
+                            .value::<Uuid>()
+                            .ok()
+                            .flatten()
+                            .zip(row["count"].value::<i64>().ok().flatten())
                     })
-                    .collect::<Vec<(Uuid, i64)>>(),
-            ),
-            _ => None,
-        }
-    });
-    if let (Some(aggr_counts), Some(field_counts)) = (opt_aggr_counts, opt_field_counts) {
-        zip(aggr_counts, field_counts)
-            .filter_map(|(aggr, field)| match aggr.1 - 1 != field.1 {
-                true => Some(aggr.0),
-                false => None,
+                    .collect::<Vec<(Uuid, i64)>>()
             })
-            .for_each(|schema_id| {
-                Spi::run_with_args(
-                    "SELECT refresh_char_aggr($1);",
-                    Some(vec![(PgBuiltInOids::UUIDOID.oid(), schema_id.into_datum())]),
-                )
-                .unwrap();
-            });
+    })
+}
+
+#[pg_trigger]
+pub fn refresh_char_aggr_trigger<'a>(
+    trigger: &'a pgrx::PgTrigger<'a>,
+) -> Result<Option<PgHeapTuple<'a, impl WhoAllocated>>, pgrx::spi::Error> {
+    if let (Ok(aggr_counts), Ok(field_counts)) = (aggr_counts(), field_counts()) {
+        zip(aggr_counts, field_counts)
+            .filter_map(|((aggr_id, aggr_count), (_, field_count))| {
+                match aggr_count - 1 != field_count {
+                    true => Spi::run_with_args(
+                        "SELECT refresh_char_aggr($1);",
+                        Some(vec![(PgBuiltInOids::UUIDOID.oid(), aggr_id.into_datum())]),
+                    )
+                    .ok(),
+                    false => None,
+                }
+            })
+            .for_each(drop);
     }
 
     Ok(trigger.new())

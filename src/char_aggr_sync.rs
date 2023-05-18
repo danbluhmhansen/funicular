@@ -2,49 +2,57 @@ use std::error::Error;
 
 use pgrx::{prelude::*, Uuid};
 
+fn create_view(schema_id: Uuid) -> Result<(), pgrx::spi::Error> {
+    Spi::run_with_args(
+        "SELECT refresh_char_aggr($1);",
+        Some(vec![(PgBuiltInOids::UUIDOID.oid(), schema_id.into_datum())]),
+    )
+}
+
+fn drop_view(schema_name: String) -> Result<(), pgrx::spi::Error> {
+    Spi::run(&format!(
+        "DROP MATERIALIZED VIEW IF EXISTS char_aggr_{schema_name};",
+    ))
+}
+
 #[pg_trigger]
 pub fn char_aggr_sync<'a>(
     trigger: &'a pgrx::PgTrigger<'a>,
 ) -> Result<Option<PgHeapTuple<'a, impl WhoAllocated>>, Box<dyn Error>> {
-    match trigger.op().unwrap() {
-        PgTriggerOperation::Insert => {
-            if let Some(new) = trigger.new() {
-                if let Some(schema_id) = new.get_by_name::<Uuid>("id")? {
-                    Spi::run_with_args(
-                        "SELECT refresh_char_aggr($1);",
-                        Some(vec![(PgBuiltInOids::UUIDOID.oid(), schema_id.into_datum())]),
-                    )?;
+    match trigger.op() {
+        Ok(PgTriggerOperation::Insert) => {
+            if let Some(Some(schema_id)) = trigger.new().and_then(|new| new.get_by_name("id").ok())
+            {
+                create_view(schema_id)?;
+            }
+            Ok(trigger.new())
+        }
+        Ok(PgTriggerOperation::Update) => {
+            if let (Some((Ok(Some(new_name)), Ok(Some(schema_id)))), Some(Some(old_name))) = (
+                trigger
+                    .new()
+                    .map(|new| (new.get_by_name::<String>("name"), new.get_by_name("id"))),
+                trigger
+                    .old()
+                    .and_then(|old| old.get_by_name::<String>("name").ok()),
+            ) {
+                if new_name != old_name {
+                    drop_view(old_name)?;
+                    create_view(schema_id)?;
                 }
             }
             Ok(trigger.new())
         }
-        PgTriggerOperation::Update => {
-            if let Some(new) = trigger.new() {
-                if let Some(schema_name) = new.get_by_name::<String>("name")? {
-                    Spi::run(&format!(
-                        "DROP MATERIALIZED VIEW IF EXISTS char_aggr_{schema_name};",
-                    ))?;
-                }
-                if let Some(schema_id) = new.get_by_name::<Uuid>("id")? {
-                    Spi::run_with_args(
-                        "SELECT refresh_char_aggr($1);",
-                        Some(vec![(PgBuiltInOids::UUIDOID.oid(), schema_id.into_datum())]),
-                    )?;
-                }
-            }
-            Ok(trigger.new())
-        }
-        PgTriggerOperation::Delete => {
-            if let Some(old) = trigger.old() {
-                if let Some(schema_name) = old.get_by_name::<String>("name")? {
-                    Spi::run(&format!(
-                        "DROP MATERIALIZED VIEW IF EXISTS char_aggr_{schema_name};",
-                    ))?;
-                }
+        Ok(PgTriggerOperation::Delete) => {
+            if let Some(Some(schema_name)) =
+                trigger.old().and_then(|old| old.get_by_name("name").ok())
+            {
+                drop_view(schema_name)?;
             }
             Ok(trigger.old())
         }
-        PgTriggerOperation::Truncate => todo!(),
+        Ok(PgTriggerOperation::Truncate) => todo!(),
+        Err(e) => Err(Box::new(e)),
     }
 }
 

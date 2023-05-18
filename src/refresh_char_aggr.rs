@@ -1,6 +1,4 @@
-use pgrx::prelude::*;
-
-use pgrx::Uuid;
+use pgrx::{prelude::*, Uuid};
 
 fn select_schema_name(schema_id: Uuid) -> Result<Option<String>, pgrx::spi::Error> {
     Spi::get_one_with_args::<String>(
@@ -82,8 +80,8 @@ mod tests {
     #[pg_test]
     fn test_select_schema_name() -> Result<(), pgrx::spi::Error> {
         assert_eq!(
-            "foo".to_string(),
-            crate::refresh_char_aggr::select_schema_name(Uuid::from_bytes(SCHEMA_ID))?.unwrap()
+            Some("foo".to_string()),
+            crate::refresh_char_aggr::select_schema_name(Uuid::from_bytes(SCHEMA_ID))?
         );
         Ok(())
     }
@@ -101,8 +99,8 @@ mod tests {
         Spi::run("CREATE EXTENSION tablefunc;")?;
         crate::refresh_char_aggr::refresh_char_aggr(Uuid::from_bytes(SCHEMA_ID))?;
         assert_eq!(
-            "Braugnor Quickcleaver".to_string(),
-            Spi::get_one::<String>("SELECT name FROM char_aggr_foo;")?.unwrap()
+            Some("Braugnor Quickcleaver".to_string()),
+            Spi::get_one::<String>("SELECT name FROM char_aggr_foo;")?
         );
         Ok(())
     }
