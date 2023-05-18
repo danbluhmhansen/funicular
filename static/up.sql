@@ -8,7 +8,7 @@ CREATE TYPE fun_type AS ENUM (
 
 CREATE TABLE schema (
     id   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    name text NOT NULL UNIQUE
+    name text NOT NULL UNIQUE CHECK (name ~ '^[a-z_]*$')
 );
 
 CREATE TABLE schema_field (
