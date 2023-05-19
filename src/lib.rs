@@ -9,8 +9,8 @@ pgrx::pg_module_magic!();
 extension_sql_file!("../static/up.sql");
 
 #[pg_extern]
-fn hello_funicular_ext() -> &'static str {
-    "Hello, funicular_ext"
+fn hello_funicular() -> &'static str {
+    "Hello, funicular"
 }
 
 #[cfg(any(test, feature = "pg_test"))]
@@ -19,8 +19,8 @@ mod tests {
     use pgrx::prelude::*;
 
     #[pg_test]
-    fn test_hello_funicular_ext() {
-        assert_eq!("Hello, funicular_ext", crate::hello_funicular_ext());
+    fn test_hello_funicular() {
+        assert_eq!("Hello, funicular", crate::hello_funicular());
     }
 }
 

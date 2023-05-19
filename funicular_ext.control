@@ -1,5 +1,0 @@
-comment = 'funicular_ext:  Created by pgrx'
-default_version = '@CARGO_VERSION@'
-module_pathname = '$libdir/funicular_ext'
-relocatable = false
-superuser = true
