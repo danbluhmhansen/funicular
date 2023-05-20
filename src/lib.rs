@@ -6,6 +6,7 @@ mod refresh_char_aggr_trigger;
 
 pgrx::pg_module_magic!();
 
+#[cfg(any(debug_assertions, test))]
 extension_sql_file!("../static/up.sql");
 
 #[pg_extern]
