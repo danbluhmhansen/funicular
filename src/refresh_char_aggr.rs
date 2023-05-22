@@ -1,5 +1,7 @@
 use pgrx::{prelude::*, Uuid};
 
+use crate::FunType;
+
 /// Select a schema's name by its ID.
 fn select_schema_name(schema_id: Uuid) -> Result<Option<String>, pgrx::spi::Error> {
     Spi::get_one_with_args::<String>(
@@ -22,9 +24,11 @@ fn select_schema_field_cols(schema_id: Uuid) -> String {
                     .value::<String>()
                     .ok()
                     .flatten()
-                    .zip(row["fun_type"].value::<String>().ok().flatten())
+                    .zip(row["fun_type"].value::<FunType>().ok().flatten())
                 {
-                    Some((path, fun_type)) if fun_type == "int" => Ok(format!("{path} bigint")),
+                    Some((path, fun_type)) if fun_type == FunType::Int4 => {
+                        Ok(format!("{path} bigint"))
+                    }
                     _ => Ok("".to_string()),
                 }
             })
@@ -54,7 +58,7 @@ pub fn refresh_char_aggr(schema_id: Uuid) -> Result<(), pgrx::spi::Error> {
                             char.name,
                             schema_field.path,
                             SUM(CASE
-                                WHEN schema_field.fun_type = ''int'' THEN effect.val::int
+                                WHEN schema_field.fun_type = ''Int4'' THEN effect.val::int
                                 ELSE 0
                             END)
                         FROM char

@@ -1,21 +1,13 @@
-CREATE TYPE fun_type AS ENUM (
-    'int2', 'int', 'int8',
-    'uuid', 'text', 'bool',
-    'real', 'float8', 'numeric',
-    'date', 'time', 'timez', 'timestamp', 'timestampz',
-    'json', 'jsonb'
-);
-
 CREATE TABLE schema (
     id   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     name text NOT NULL UNIQUE CHECK (name ~ '^[a-z_]*$')
 );
 
 CREATE TABLE schema_field (
-    id        uuid     PRIMARY KEY DEFAULT gen_random_uuid(),
-    schema_id uuid     NOT NULL REFERENCES schema ON DELETE CASCADE ON UPDATE CASCADE,
-    path      text     NOT NULL CHECK (path ~ '^[a-z\.]*$'),
-    fun_type  fun_type NOT NULL,
+    id        uuid    PRIMARY KEY DEFAULT gen_random_uuid(),
+    schema_id uuid    NOT NULL REFERENCES schema ON DELETE CASCADE ON UPDATE CASCADE,
+    path      text    NOT NULL CHECK (path ~ '^[a-z\.]*$'),
+    fun_type  FunType NOT NULL,
     "desc"    text,
 
     UNIQUE (schema_id, path)
@@ -63,12 +55,12 @@ BEGIN
     INSERT INTO schema (id, name) VALUES (schema_id, 'foo');
 
     INSERT INTO schema_field (id, schema_id, fun_type, path) VALUES
-        (str_field_id, schema_id, 'int', 'strength'),
-        (dex_field_id, schema_id, 'int', 'dexterity'),
-        (con_field_id, schema_id, 'int', 'constitution'),
-        (int_field_id, schema_id, 'int', 'intelligence'),
-        (wis_field_id, schema_id, 'int', 'wisdom'),
-        (cha_field_id, schema_id, 'int', 'charisma');
+        (str_field_id, schema_id, 'Int4', 'strength'),
+        (dex_field_id, schema_id, 'Int4', 'dexterity'),
+        (con_field_id, schema_id, 'Int4', 'constitution'),
+        (int_field_id, schema_id, 'Int4', 'intelligence'),
+        (wis_field_id, schema_id, 'Int4', 'wisdom'),
+        (cha_field_id, schema_id, 'Int4', 'charisma');
 
     INSERT INTO char (id, name) VALUES
         (char1_id, 'Braugnor Quickcleaver'),
