@@ -2,6 +2,7 @@ use std::iter::zip;
 
 use pgrx::{prelude::*, Uuid};
 
+/// Count character aggregate fields.
 fn aggr_counts() -> Result<Vec<(Uuid, i64)>, pgrx::spi::Error> {
     Spi::connect(|client| {
         client
@@ -31,6 +32,7 @@ fn aggr_counts() -> Result<Vec<(Uuid, i64)>, pgrx::spi::Error> {
     })
 }
 
+/// Count schema fields.
 fn field_counts() -> Result<Vec<(Uuid, i64)>, pgrx::spi::Error> {
     Spi::connect(|client| {
         client
@@ -53,6 +55,9 @@ fn field_counts() -> Result<Vec<(Uuid, i64)>, pgrx::spi::Error> {
     })
 }
 
+/// Trigger on `INSERT`, `UPDATE`, and `DELETE` for `schema_fields`.
+/// When triggered, it will look for character aggregate views no longer matching their schema fields,
+/// and sync them using [crate::refresh_char_aggr::refresh_char_aggr].
 #[pg_trigger]
 pub fn refresh_char_aggr_trigger<'a>(
     trigger: &'a pgrx::PgTrigger<'a>,
@@ -72,7 +77,10 @@ pub fn refresh_char_aggr_trigger<'a>(
             .for_each(drop);
     }
 
-    Ok(trigger.new())
+    match trigger.op() {
+        Ok(PgTriggerOperation::Insert) | Ok(PgTriggerOperation::Update) => Ok(trigger.new()),
+        _ => Ok(trigger.old()),
+    }
 }
 
 #[cfg(any(test, feature = "pg_test"))]
@@ -81,12 +89,12 @@ mod tests {
     use pgrx::prelude::*;
 
     #[pg_test]
-    fn test_char_aggr_sync() -> Result<(), pgrx::spi::Error> {
+    fn test_refresh_char_aggr_trigger() -> Result<(), pgrx::spi::Error> {
         Spi::run("CREATE EXTENSION tablefunc;")?;
         Spi::run("SELECT refresh_char_aggr('312c5ac5-23aa-4568-9d10-5949650bc8c0')")?;
-        Spi::run("CREATE TRIGGER test_trigger AFTER INSERT OR UPDATE OR DELETE ON schema FOR EACH ROW EXECUTE PROCEDURE char_aggr_sync();")?;
-        Spi::run("INSERT INTO schema (name) VALUES ('bar');")?;
-        Spi::run("SELECT * FROM char_aggr_bar;")?;
+        Spi::run("CREATE TRIGGER test_trigger AFTER INSERT OR UPDATE OR DELETE ON schema_field FOR EACH STATEMENT EXECUTE PROCEDURE refresh_char_aggr_trigger();")?;
+        Spi::run("INSERT INTO schema_field (schema_id, fun_type, path) VALUES ('312c5ac5-23aa-4568-9d10-5949650bc8c0', 'int', 'bar');")?;
+        assert_eq!(None, Spi::get_one::<i64>("SELECT bar FROM char_aggr_foo;")?);
         Ok(())
     }
 }

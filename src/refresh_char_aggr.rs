@@ -1,5 +1,6 @@
 use pgrx::{prelude::*, Uuid};
 
+/// Select a schema's name by its ID.
 fn select_schema_name(schema_id: Uuid) -> Result<Option<String>, pgrx::spi::Error> {
     Spi::get_one_with_args::<String>(
         "SELECT name FROM schema WHERE id = $1;",
@@ -7,6 +8,7 @@ fn select_schema_name(schema_id: Uuid) -> Result<Option<String>, pgrx::spi::Erro
     )
 }
 
+/// Maps a schema's fields to a string like `name text, {path1} {fun_type1}, {path2} {fun_type2}`.
 fn select_schema_field_cols(schema_id: Uuid) -> String {
     match Spi::connect(|client| -> Result<Vec<String>, pgrx::spi::Error> {
         client
@@ -16,11 +18,13 @@ fn select_schema_field_cols(schema_id: Uuid) -> String {
                 Some(vec![(PgBuiltInOids::UUIDOID.oid(), schema_id.into_datum())]),
             )?
             .map(|row| -> Result<String, pgrx::spi::Error> {
-                match row["path"].value::<String>() {
-                    Ok(Some(path)) => match row["fun_type"].value() {
-                        Ok(Some("int")) => Ok(format!("{path} bigint",)),
-                        _ => Ok(format!("{path} bigint",)),
-                    },
+                match row["path"]
+                    .value::<String>()
+                    .ok()
+                    .flatten()
+                    .zip(row["fun_type"].value::<String>().ok().flatten())
+                {
+                    Some((path, fun_type)) if fun_type == "int" => Ok(format!("{path} bigint")),
                     _ => Ok("".to_string()),
                 }
             })
@@ -34,6 +38,7 @@ fn select_schema_field_cols(schema_id: Uuid) -> String {
     }
 }
 
+/// (Re-)Creates a schema's character aggregate view.
 #[pg_extern]
 pub fn refresh_char_aggr(schema_id: Uuid) -> Result<(), pgrx::spi::Error> {
     if let Ok(Some(view_name)) = select_schema_name(schema_id) {

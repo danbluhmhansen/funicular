@@ -2,6 +2,7 @@ use std::error::Error;
 
 use pgrx::{prelude::*, Uuid};
 
+/// Creates an aggregate view over characters, for a schema, using [crate::refresh_char_aggr::refresh_char_aggr].
 fn create_view(schema_id: Uuid) -> Result<(), pgrx::spi::Error> {
     Spi::run_with_args(
         "SELECT refresh_char_aggr($1);",
@@ -9,12 +10,15 @@ fn create_view(schema_id: Uuid) -> Result<(), pgrx::spi::Error> {
     )
 }
 
+/// Drops a schema's character aggregate view.
 fn drop_view(schema_name: String) -> Result<(), pgrx::spi::Error> {
     Spi::run(&format!(
         "DROP MATERIALIZED VIEW IF EXISTS char_aggr_{schema_name};",
     ))
 }
 
+/// Trigger to run on `INSERT`, `UPDATE`, and `DELETE` operations on `schemas`.
+/// When triggered, it will create and/or drop the schema's character aggregate view.
 #[pg_trigger]
 pub fn char_aggr_sync<'a>(
     trigger: &'a pgrx::PgTrigger<'a>,
@@ -62,12 +66,12 @@ mod tests {
     use pgrx::prelude::*;
 
     #[pg_test]
-    fn test_refresh_char_aggr_trigger() -> Result<(), pgrx::spi::Error> {
+    fn test_char_aggr_sync() -> Result<(), pgrx::spi::Error> {
         Spi::run("CREATE EXTENSION tablefunc;")?;
         Spi::run("SELECT refresh_char_aggr('312c5ac5-23aa-4568-9d10-5949650bc8c0')")?;
-        Spi::run("CREATE TRIGGER test_trigger AFTER INSERT OR UPDATE OR DELETE ON schema_field FOR EACH STATEMENT EXECUTE PROCEDURE refresh_char_aggr_trigger();")?;
-        Spi::run("INSERT INTO schema_field (schema_id, fun_type, path) VALUES ('312c5ac5-23aa-4568-9d10-5949650bc8c0', 'int', 'bar');")?;
-        assert_eq!(None, Spi::get_one::<i64>("SELECT bar FROM char_aggr_foo;")?);
+        Spi::run("CREATE TRIGGER test_trigger AFTER INSERT OR UPDATE OR DELETE ON schema FOR EACH ROW EXECUTE PROCEDURE char_aggr_sync();")?;
+        Spi::run("INSERT INTO schema (name) VALUES ('bar');")?;
+        Spi::run("SELECT * FROM char_aggr_bar;")?;
         Ok(())
     }
 }
