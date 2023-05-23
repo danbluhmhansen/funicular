@@ -1,4 +1,9 @@
-use crate::{FunType, Schema, SchemaField, SeaSelect, SpiSelect};
+use crate::{
+    fun_type::FunType,
+    models::{Schema, SchemaField},
+    sea_select::SeaSelect,
+    spi_select::SpiSelect,
+};
 
 use pgrx::{prelude::*, Uuid};
 
