@@ -1,23 +1,31 @@
-use pgrx::{prelude::*, Uuid};
+use crate::{FunType, Schema, SchemaField, SeaSelect, SpiSelect};
 
-use crate::FunType;
+use pgrx::{prelude::*, Uuid};
 
 /// Select a schema's name by its ID.
 fn select_schema_name(schema_id: Uuid) -> Result<Option<String>, pgrx::spi::Error> {
-    Spi::get_one_with_args::<String>(
-        "SELECT name FROM schema WHERE id = $1;",
-        vec![(PgBuiltInOids::UUIDOID.oid(), schema_id.into_datum())],
-    )
+    sea_query::Query::select()
+        .from(Schema::Table)
+        .column(Schema::Name)
+        .and_where(
+            sea_query::Expr::col(Schema::Id).eq(uuid::Uuid::from_bytes(*schema_id.as_bytes())),
+        )
+        .get_one()
 }
 
 /// Maps a schema's fields to a string like `name text, {path1} {fun_type1}, {path2} {fun_type2}`.
 fn select_schema_field_cols(schema_id: Uuid) -> String {
     match Spi::connect(|client| -> Result<Vec<String>, pgrx::spi::Error> {
         client
-            .select(
-                "SELECT path, fun_type FROM schema_field WHERE schema_id = $1 ORDER BY path;",
-                None,
-                Some(vec![(PgBuiltInOids::UUIDOID.oid(), schema_id.into_datum())]),
+            .sea_select(
+                sea_query::Query::select()
+                    .from(SchemaField::Table)
+                    .columns([SchemaField::Path, SchemaField::FunType])
+                    .and_where(
+                        sea_query::Expr::col(SchemaField::SchemaId)
+                            .eq(uuid::Uuid::from_bytes(*schema_id.as_bytes())),
+                    )
+                    .order_by(SchemaField::Path, sea_query::Order::Asc),
             )?
             .map(|row| -> Result<String, pgrx::spi::Error> {
                 match row["path"]
