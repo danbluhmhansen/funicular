@@ -2,6 +2,7 @@ use crate::{
     fun_type::FunType,
     models::{Schema, SchemaField},
     sea_select::SeaSelect,
+    spi_heap_tuple_data_ext::SpiHeapTupleDataExt,
     spi_select::SpiSelect,
 };
 
@@ -32,26 +33,20 @@ fn select_schema_field_cols(schema_id: Uuid) -> String {
                     )
                     .order_by(SchemaField::Path, sea_query::Order::Asc),
             )?
-            .map(|row| -> Result<String, pgrx::spi::Error> {
-                match row["path"]
-                    .value::<String>()
-                    .ok()
-                    .flatten()
-                    .zip(row["fun_type"].value::<FunType>().ok().flatten())
-                {
-                    Some((path, fun_type)) if fun_type == FunType::Int4 => {
-                        Ok(format!("{path} bigint"))
-                    }
-                    _ => Ok("".to_string()),
+            .map(|row| match row.two::<String, FunType>() {
+                Ok(Some((path, fun_type))) if fun_type == FunType::Int4 => {
+                    Ok(format!("{path} bigint"))
                 }
+                Err(e) => Err(e),
+                _ => Ok("".to_string()),
             })
-            .collect::<Result<Vec<String>, pgrx::spi::Error>>()
+            .collect()
     }) {
         Ok(mut cols) => {
             cols.insert(0, "name text".to_string());
             cols.join(", ")
         }
-        _ => "".to_string(),
+        _ => "name text".to_string(),
     }
 }
 

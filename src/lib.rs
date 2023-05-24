@@ -8,6 +8,7 @@ mod models;
 mod refresh_char_aggr;
 mod refresh_char_aggr_trigger;
 mod sea_select;
+mod spi_heap_tuple_data_ext;
 mod spi_select;
 
 pgrx::pg_module_magic!();
