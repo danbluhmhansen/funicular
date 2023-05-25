@@ -2,8 +2,8 @@ use crate::{
     fun_type::FunType,
     models::{Schema, SchemaField},
     sea_select::SeaSelect,
+    sea_select_ext::SeaSelectExt,
     spi_heap_tuple_data_ext::SpiHeapTupleDataExt,
-    spi_select::SpiSelect,
 };
 
 use pgrx::{prelude::*, Uuid};

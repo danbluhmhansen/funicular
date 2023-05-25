@@ -2,12 +2,16 @@ use std::error::Error;
 
 use pgrx::{prelude::*, Uuid};
 
+use crate::{models::RefreshCharAggr, sea_select_ext::SeaSelectExt};
+
 /// Creates an aggregate view over characters, for a schema, using [crate::refresh_char_aggr::refresh_char_aggr].
 fn create_view(schema_id: Uuid) -> Result<(), pgrx::spi::Error> {
-    Spi::run_with_args(
-        "SELECT refresh_char_aggr($1);",
-        Some(vec![(PgBuiltInOids::UUIDOID.oid(), schema_id.into_datum())]),
-    )
+    sea_query::Query::select()
+        .expr(
+            sea_query::Func::cust(RefreshCharAggr)
+                .arg(uuid::Uuid::from_bytes(*schema_id.as_bytes())),
+        )
+        .run()
 }
 
 /// Drops a schema's character aggregate view.

@@ -14,3 +14,6 @@ pub enum SchemaField {
     FunType,
     Desc,
 }
+
+#[derive(sea_query::Iden)]
+pub struct RefreshCharAggr;

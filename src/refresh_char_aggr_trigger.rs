@@ -2,20 +2,26 @@ use std::iter::zip;
 
 use pgrx::{prelude::*, Uuid};
 
+use crate::{
+    models::{RefreshCharAggr, Schema, SchemaField},
+    sea_select::SeaSelect,
+    sea_select_ext::SeaSelectExt,
+    spi_heap_tuple_data_ext::SpiHeapTupleDataExt,
+};
+
 /// Count character aggregate fields.
 fn aggr_counts() -> Result<Vec<(Uuid, i64)>, pgrx::spi::Error> {
     Spi::connect(|client| {
         client
-            .select("SELECT id, name FROM schema ORDER BY id;", None, None)
+            .sea_select(
+                sea_query::Query::select()
+                    .from(Schema::Table)
+                    .columns([Schema::Id, Schema::Name])
+                    .order_by(Schema::Id, sea_query::Order::Asc),
+            )
             .map(|table| {
                 table
-                    .filter_map(|row| {
-                        row["id"]
-                            .value::<Uuid>()
-                            .ok()
-                            .flatten()
-                            .zip(row["name"].value::<String>().ok().flatten())
-                    })
+                    .filter_map(|row| row.two::<Uuid, String>().ok().flatten())
                     .map(|(schema_id, schema_name)| {
                         client
                             .select(
@@ -36,20 +42,17 @@ fn aggr_counts() -> Result<Vec<(Uuid, i64)>, pgrx::spi::Error> {
 fn field_counts() -> Result<Vec<(Uuid, i64)>, pgrx::spi::Error> {
     Spi::connect(|client| {
         client
-            .select(
-                "SELECT schema_id, COUNT(*) FROM schema_field GROUP BY schema_id ORDER BY schema_id;",
-                None,
-                None,
+            .sea_select(
+                sea_query::Query::select()
+                    .from(SchemaField::Table)
+                    .column(SchemaField::SchemaId)
+                    .expr(sea_query::Expr::count(sea_query::Expr::asterisk()))
+                    .group_by_col(SchemaField::SchemaId)
+                    .order_by(SchemaField::SchemaId, sea_query::Order::Asc),
             )
             .map(|table| {
                 table
-                    .filter_map(|row| {
-                        row["schema_id"]
-                            .value::<Uuid>()
-                            .ok()
-                            .flatten()
-                            .zip(row["count"].value::<i64>().ok().flatten())
-                    })
+                    .filter_map(|row| row.two::<Uuid, i64>().ok().flatten())
                     .collect::<Vec<(Uuid, i64)>>()
             })
     })
@@ -66,11 +69,15 @@ pub fn refresh_char_aggr_trigger<'a>(
         zip(aggr_counts, field_counts)
             .filter_map(|((aggr_id, aggr_count), (_, field_count))| {
                 match aggr_count - 1 != field_count {
-                    true => Spi::run_with_args(
-                        "SELECT refresh_char_aggr($1);",
-                        Some(vec![(PgBuiltInOids::UUIDOID.oid(), aggr_id.into_datum())]),
-                    )
-                    .ok(),
+                    true => Some(
+                        sea_query::Query::select()
+                            .expr(
+                                sea_query::Func::cust(RefreshCharAggr)
+                                    .arg(uuid::Uuid::from_bytes(*aggr_id.as_bytes())),
+                            )
+                            .run(),
+                    ),
+
                     false => None,
                 }
             })
