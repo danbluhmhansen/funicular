@@ -3,7 +3,7 @@ WORKDIR /funicular
 COPY . .
 RUN apt update
 RUN apt install -y clang
-RUN cargo install cargo-pgrx
+RUN cargo install --locked cargo-pgrx
 RUN cargo pgrx init
 RUN cargo pgrx package --pg-config /root/.pgrx/15.3/pgrx-install/bin/pg_config --out-dir .
 

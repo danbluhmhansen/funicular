@@ -16,13 +16,13 @@ pg15 = ["pgrx/pg15", "pgrx-tests/pg15"]
 pg_test = []
 
 [dependencies]
-pgrx = "=0.8.3"
+pgrx = "=0.8.4"
 sea-query = { version = "0.28.5", default-features = false, features = ["backend-postgres", "derive", "with-uuid"] }
 serde = { version = "1.0.163", features = ["derive"] }
 uuid = { version = "1.3.3" }
 
 [dev-dependencies]
-pgrx-tests = "=0.8.3"
+pgrx-tests = "=0.8.4"
 
 [profile.dev]
 panic = "unwind"
