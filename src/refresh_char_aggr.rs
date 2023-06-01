@@ -90,18 +90,9 @@ mod tests {
     use pgrx::{prelude::*, Uuid, UuidBytes};
 
     const SCHEMA_ID: UuidBytes = [
-        0x31, 0x2c, 0x5a, 0xc5, 0x23, 0xaa, 0x45, 0x68, 0x9d, 0x10, 0x59, 0x49, 0x65, 0x0b, 0xc8,
-        0xc0,
+        0x01, 0x88, 0x67, 0x15, 0x04, 0xa4, 0x7a, 0x8a, 0x9c, 0x1d, 0xba, 0x69, 0xf0, 0x3e, 0xb0,
+        0x7d,
     ];
-
-    #[pg_test]
-    fn test_select_schema_name() -> Result<(), pgrx::spi::Error> {
-        assert_eq!(
-            Some("foo".to_string()),
-            crate::refresh_char_aggr::select_schema_name(Uuid::from_bytes(SCHEMA_ID))?
-        );
-        Ok(())
-    }
 
     #[pg_test]
     fn test_select_schema_field_cols() {

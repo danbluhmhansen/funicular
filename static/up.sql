@@ -1,10 +1,10 @@
 CREATE TABLE schema (
-    id   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id   uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
     name text NOT NULL UNIQUE CHECK (name ~ '^[a-z_]*$')
 );
 
 CREATE TABLE schema_field (
-    id        uuid    PRIMARY KEY DEFAULT gen_random_uuid(),
+    id        uuid    PRIMARY KEY DEFAULT gen_rand_uuid7(),
     schema_id uuid    NOT NULL REFERENCES schema ON DELETE CASCADE ON UPDATE CASCADE,
     path      text    NOT NULL CHECK (path ~ '^[a-z\.]*$'),
     fun_type  FunType NOT NULL,
@@ -14,12 +14,12 @@ CREATE TABLE schema_field (
 );
 
 CREATE TABLE char (
-    id   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id   uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
     name text NOT NULL
 );
 
 CREATE TABLE trait (
-    id   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id   uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
     name text NOT NULL
 );
 
@@ -39,18 +39,18 @@ CREATE TABLE char_trait (
 
 DO $$
 DECLARE
-    schema_id      uuid = '312c5ac5-23aa-4568-9d10-5949650bc8c0';
-    str_field_id   uuid = 'c41c4fe3-55f7-4686-a611-d1f8a2167cda';
-    dex_field_id   uuid = '8c37fe56-4975-422b-81ba-44ad699cb79a';
-    con_field_id   uuid = '45de57aa-0b7b-4f01-a9c4-a293f63117a8';
-    int_field_id   uuid = '6987b38f-3f66-434a-a163-fcae3079aff6';
-    wis_field_id   uuid = '917f8f43-c0fa-4275-ac56-37010d0bda44';
-    cha_field_id   uuid = 'd33a2feb-e238-4a71-a6b0-bb32d3c0def5';
-    char1_id       uuid = '6bd29180-2f97-4840-b9af-5cd984e3a335';
-    char2_id       uuid = 'bbb51d5c-a972-469b-b8a5-cf8e93852d2b';
-    base_trait_id  uuid = 'd201bb9b-abaf-4eda-a28f-13af08686e32';
-    dwarf_trait_id uuid = 'dc34bd53-2a03-4a65-98a7-144b09f9e810';
-    elf_trait_id   uuid = 'be0791bc-1c75-4efb-8f67-fc192de16b3a';
+    schema_id      uuid = '01886715-04a4-7a8a-9c1d-ba69f03eb07d';
+    str_field_id   uuid = '01886715-04a4-7a8a-9c1d-ba6a475c2c5f';
+    dex_field_id   uuid = '01886715-04a4-7a8a-9c1d-ba6b67430f80';
+    con_field_id   uuid = '01886715-04a4-7a8a-9c1d-ba6c33dc0078';
+    int_field_id   uuid = '01886715-04a4-7a8a-9c1d-ba6d766527d9';
+    wis_field_id   uuid = '01886715-04a4-7a8a-9c1d-ba6e79ad795c';
+    cha_field_id   uuid = '01886715-04a4-7a8a-9c1d-ba6fbc7fabfc';
+    char1_id       uuid = '01886715-04a4-7a8a-9c1d-ba7022e9d75d';
+    char2_id       uuid = '01886715-04a4-7a8a-9c1d-ba71f4624747';
+    base_trait_id  uuid = '01886715-04a4-7a8a-9c1d-ba72cd3bd9dc';
+    dwarf_trait_id uuid = '01886715-04a4-7a8a-9c1d-ba7325666592';
+    elf_trait_id   uuid = '01886715-04a4-7a8a-9c1d-ba74fa9e348d';
 BEGIN
     INSERT INTO schema (id, name) VALUES (schema_id, 'foo');
 
