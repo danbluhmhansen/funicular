@@ -1,7 +1,8 @@
 //! PostgreSQL extension for building dynamic rules and tracking data for tabletop role-playing games.
 
-use chrono::{Datelike, NaiveDateTime, Timelike};
+use chrono::{Datelike, NaiveDate, NaiveDateTime, Timelike};
 use pgrx::prelude::*;
+use rand::rngs::ThreadRng;
 
 mod char_aggr_sync;
 mod fun_type;
@@ -38,11 +39,6 @@ fn sea_vals_to_args(values: sea_query::Values) -> Vec<(PgOid, Option<pg_sys::Dat
 }
 
 #[pg_extern]
-fn gen_rand_uuid7() -> Result<pgrx::Uuid, String> {
-    pgrx::Uuid::from_slice(uuid7::uuid7().as_bytes())
-}
-
-#[pg_extern]
 fn uuid7_to_time(uuid: pgrx::Uuid) -> Result<pgrx::Timestamp, &'static str> {
     if uuid[6] >> 4 == 7 {
         let ts = &uuid[0..6];
@@ -62,13 +58,35 @@ fn uuid7_to_time(uuid: pgrx::Uuid) -> Result<pgrx::Timestamp, &'static str> {
                 date.day() as u8,
                 time.hour() as u8,
                 time.minute() as u8,
-                f64::from(time.nanosecond()) / 1000_000_000.0,
+                f64::from(time.nanosecond()) / 1_000_000_000.0,
             ))
         } else {
             Err("Cannot convert timestamp to date.")
         }
     } else {
         Err("Wrong UUID version.")
+    }
+}
+
+#[pg_extern]
+fn gen_rand_uuid7() -> Result<pgrx::Uuid, String> {
+    pgrx::Uuid::from_slice(uuid7::uuid7().as_bytes())
+}
+
+#[pg_extern]
+fn gen_uuid7(ts: pgrx::Timestamp) -> Result<pgrx::Uuid, String> {
+    let (h, m, s, ms) = ts.to_hms_micro();
+    if let Some(datetime) =
+        NaiveDate::from_ymd_opt(ts.year(), u32::from(ts.month()), u32::from(ts.day()))
+            .and_then(|d| d.and_hms_micro_opt(u32::from(h), u32::from(m), u32::from(s), ms))
+    {
+        pgrx::Uuid::from_slice(
+            uuid7::V7Generator::new(ThreadRng::default())
+                .generate_or_reset_core(datetime.timestamp_millis() as u64, 10_000)
+                .as_bytes(),
+        )
+    } else {
+        Err("Cannot convert timestamp to date.".to_string())
     }
 }
 
@@ -92,7 +110,7 @@ mod tests {
                 2023, 5, 29, 10, 36, 0.724
             ))),
             Spi::get_one_with_args::<pgrx::Timestamp>(
-                "SELECT uuid7_to_time($1)",
+                "SELECT uuid7_to_time($1);",
                 vec![(
                     PgBuiltInOids::UUIDOID.oid(),
                     pgrx::Uuid::from_bytes(UUID).into_datum(),
@@ -100,7 +118,27 @@ mod tests {
             )
         );
     }
+
+    #[pg_test]
+    fn test_gen_uuid7() {
+        let ts = pgrx::Timestamp::new_unchecked(2000, 1, 1, 0, 0, 0.0);
+        let uuid = Spi::get_one_with_args::<pgrx::Uuid>(
+            "SELECT gen_uuid7($1);",
+            vec![(PgBuiltInOids::TIMESTAMPOID.oid(), ts.into_datum())],
+        )
+        .ok()
+        .flatten()
+        .unwrap();
+        assert_eq!(
+            Ok(Some(ts)),
+            Spi::get_one_with_args::<pgrx::Timestamp>(
+                "SELECT uuid7_to_time($1);",
+                vec![(PgBuiltInOids::UUIDOID.oid(), uuid.into_datum(),)],
+            )
+        );
+    }
 }
+
 /// This module is required by `cargo pgrx test` invocations.
 /// It must be visible at the root of your extension crate.
 #[cfg(test)]

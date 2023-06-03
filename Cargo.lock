@@ -451,6 +451,7 @@ dependencies = [
  "chrono",
  "pgrx",
  "pgrx-tests",
+ "rand",
  "sea-query",
  "serde",
  "uuid",
