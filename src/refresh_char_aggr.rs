@@ -1,8 +1,8 @@
 use crate::{
     fun_type::FunType,
     models::{Schema, SchemaField},
+    sea_ext::SeaGetOneExt,
     sea_select::SeaSelect,
-    sea_select_ext::SeaSelectExt,
     spi_heap_tuple_data_ext::SpiHeapTupleDataExt,
 };
 
@@ -95,15 +95,20 @@ mod tests {
     ];
 
     #[pg_test]
-    fn test_select_schema_field_cols() {
+    fn test_select_schema_field_cols() -> Result<(), pgrx::spi::Error> {
+        Spi::run("SELECT _230603095553_init_up();")?;
+        Spi::run("SELECT fun_seed();")?;
         assert_eq!(
             "name text, charisma bigint, constitution bigint, dexterity bigint, intelligence bigint, strength bigint, wisdom bigint".to_string(),
             crate::refresh_char_aggr::select_schema_field_cols(Uuid::from_bytes(SCHEMA_ID))
-        )
+        );
+        Ok(())
     }
 
     #[pg_test]
     fn test_refresh_char_aggr() -> Result<(), pgrx::spi::Error> {
+        Spi::run("SELECT _230603095553_init_up();")?;
+        Spi::run("SELECT fun_seed();")?;
         Spi::run("CREATE EXTENSION tablefunc;")?;
         crate::refresh_char_aggr::refresh_char_aggr(Uuid::from_bytes(SCHEMA_ID))?;
         assert_eq!(

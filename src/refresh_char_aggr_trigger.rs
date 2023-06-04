@@ -4,8 +4,8 @@ use pgrx::{prelude::*, Uuid};
 
 use crate::{
     models::{RefreshCharAggr, Schema, SchemaField},
+    sea_ext::SeaRunExt,
     sea_select::SeaSelect,
-    sea_select_ext::SeaSelectExt,
     spi_heap_tuple_data_ext::SpiHeapTupleDataExt,
 };
 
@@ -97,6 +97,8 @@ mod tests {
 
     #[pg_test]
     fn test_refresh_char_aggr_trigger() -> Result<(), pgrx::spi::Error> {
+        Spi::run("SELECT _230603095553_init_up();")?;
+        Spi::run("SELECT fun_seed();")?;
         Spi::run("CREATE EXTENSION tablefunc;")?;
         Spi::run("SELECT refresh_char_aggr('01886715-04a4-7a8a-9c1d-ba69f03eb07d')")?;
         Spi::run("CREATE TRIGGER test_trigger AFTER INSERT OR UPDATE OR DELETE ON schema_field FOR EACH STATEMENT EXECUTE PROCEDURE refresh_char_aggr_trigger();")?;

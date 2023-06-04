@@ -2,7 +2,7 @@ use std::error::Error;
 
 use pgrx::{prelude::*, Uuid};
 
-use crate::{models::RefreshCharAggr, sea_select_ext::SeaSelectExt};
+use crate::{models::RefreshCharAggr, sea_ext::SeaRunExt};
 
 /// Creates an aggregate view over characters, for a schema, using [crate::refresh_char_aggr::refresh_char_aggr].
 fn create_view(schema_id: Uuid) -> Result<(), pgrx::spi::Error> {
@@ -71,8 +71,10 @@ mod tests {
 
     #[pg_test]
     fn test_char_aggr_sync() -> Result<(), pgrx::spi::Error> {
+        Spi::run("SELECT _230603095553_init_up();")?;
+        Spi::run("SELECT fun_seed();")?;
         Spi::run("CREATE EXTENSION tablefunc;")?;
-        Spi::run("SELECT refresh_char_aggr('312c5ac5-23aa-4568-9d10-5949650bc8c0')")?;
+        Spi::run("SELECT refresh_char_aggr('01886715-04a4-7a8a-9c1d-ba69f03eb07d')")?;
         Spi::run("CREATE TRIGGER test_trigger AFTER INSERT OR UPDATE OR DELETE ON schema FOR EACH ROW EXECUTE PROCEDURE char_aggr_sync();")?;
         Spi::run("INSERT INTO schema (name) VALUES ('bar');")?;
         Spi::run("SELECT * FROM char_aggr_bar;")?;
