@@ -11,11 +11,6 @@ struct _230603095553Init;
 impl Migration for _230603095553Init {
     fn up() -> Result<(), spi::Error> {
         Table::create()
-            .table(_Migration::Table)
-            .col(ColumnDef::new(_Migration::Name).text().primary_key())
-            .run()?;
-
-        Table::create()
             .table(Schema::Table)
             .col(
                 ColumnDef::new(Schema::Id)
@@ -138,7 +133,7 @@ impl Migration for _230603095553Init {
         Query::insert()
             .into_table(_Migration::Table)
             .columns([_Migration::Name])
-            .values_panic(["_230603095553Init".into()])
+            .values_panic(["_230603095553_init".into()])
             .run()?;
 
         Ok(())
@@ -151,7 +146,6 @@ impl Migration for _230603095553Init {
         Table::drop().table(Char::Table).run()?;
         Table::drop().table(SchemaField::Table).run()?;
         Table::drop().table(Schema::Table).run()?;
-        Table::drop().table(_Migration::Table).run()?;
         Ok(())
     }
 }

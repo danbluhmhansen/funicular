@@ -96,7 +96,7 @@ mod tests {
 
     #[pg_test]
     fn test_select_schema_field_cols() -> Result<(), pgrx::spi::Error> {
-        Spi::run("SELECT _230603095553_init_up();")?;
+        Spi::run("SELECT migrations_up();")?;
         Spi::run("SELECT fun_seed();")?;
         assert_eq!(
             "name text, charisma bigint, constitution bigint, dexterity bigint, intelligence bigint, strength bigint, wisdom bigint".to_string(),
@@ -107,7 +107,7 @@ mod tests {
 
     #[pg_test]
     fn test_refresh_char_aggr() -> Result<(), pgrx::spi::Error> {
-        Spi::run("SELECT _230603095553_init_up();")?;
+        Spi::run("SELECT migrations_up();")?;
         Spi::run("SELECT fun_seed();")?;
         Spi::run("CREATE EXTENSION tablefunc;")?;
         crate::refresh_char_aggr::refresh_char_aggr(Uuid::from_bytes(SCHEMA_ID))?;
