@@ -1,71 +1,87 @@
 use crate::{
+    fun_type::Funtype,
     migrations::Migration,
-    models::{Char, CharTrait, Effect, GenRandUuid7, Schema, SchemaField, Trait, _Migration},
+    models::{Character, CharacterTrait, FunField, FunSchema, Rule, Trait, _Migration},
     sea_ext::SeaRunExt,
+    uuid7::GenRandUuid7,
 };
 use pgrx::prelude::*;
-use sea_query::{ColumnDef, ForeignKey, ForeignKeyAction, Func, Index, Query, Table};
+use sea_query::{
+    ColumnDef, Expr, ForeignKey, ForeignKeyAction, Func, Iden, Index, IntoIden, Query, Table,
+};
+use std::iter::once;
 
+#[derive(Iden)]
 struct _230603095553Init;
 
 impl Migration for _230603095553Init {
     fn up() -> Result<(), spi::Error> {
         Table::create()
-            .table(Schema::Table)
+            .table(FunSchema::Table)
             .col(
-                ColumnDef::new(Schema::Id)
+                ColumnDef::new(FunSchema::Id)
                     .uuid()
                     .primary_key()
                     .default(Func::cust(GenRandUuid7)),
             )
             .col(
-                ColumnDef::new(Schema::Name)
+                ColumnDef::new(FunSchema::Name)
                     .text()
                     .not_null()
                     .unique_key()
-                    .extra("CHECK (name ~ '^[a-z_]*$')".to_string()),
+                    .extra(format!(
+                        "CHECK ({} ~ '^[a-z_]*$')",
+                        FunSchema::Name.into_iden().to_string()
+                    )),
             )
             .run()?;
 
         Table::create()
-            .table(SchemaField::Table)
+            .table(FunField::Table)
             .col(
-                ColumnDef::new(SchemaField::Id)
+                ColumnDef::new(FunField::Id)
                     .uuid()
                     .primary_key()
                     .default(Func::cust(GenRandUuid7)),
             )
-            .col(ColumnDef::new(SchemaField::SchemaId).uuid().not_null())
+            .col(ColumnDef::new(FunField::SchemaId).uuid().not_null())
+            .col(ColumnDef::new(FunField::FieldId).uuid())
             .col(
-                ColumnDef::new(SchemaField::Path)
+                ColumnDef::new(FunField::Field)
                     .text()
                     .not_null()
-                    .extra("CHECK (path ~ '^[a-z_]*$')".to_string()),
+                    .extra(format!(
+                        "CHECK ({} ~ '^[a-z_]*$')",
+                        FunField::Field.into_iden().to_string()
+                    )),
             )
-            .col(
-                ColumnDef::new(SchemaField::FunType)
-                    .extra("funtype".to_string())
-                    .not_null(),
-            )
-            .col(ColumnDef::new(SchemaField::Desc).text())
+            .col(ColumnDef::new(FunField::FunType).custom(Funtype).not_null())
+            .col(ColumnDef::new(FunField::Description).text())
             .foreign_key(
                 ForeignKey::create()
-                    .from(SchemaField::Table, SchemaField::SchemaId)
-                    .to(Schema::Table, Schema::Id)
+                    .from(FunField::Table, FunField::SchemaId)
+                    .to(FunSchema::Table, FunSchema::Id)
+                    .on_delete(ForeignKeyAction::Cascade)
+                    .on_update(ForeignKeyAction::Cascade),
+            )
+            .foreign_key(
+                ForeignKey::create()
+                    .from(FunField::Table, FunField::FieldId)
+                    .to(FunField::Table, FunField::Id)
                     .on_delete(ForeignKeyAction::Cascade)
                     .on_update(ForeignKeyAction::Cascade),
             )
             .run()?;
 
         Table::create()
-            .table(Char::Table)
+            .table(Character::Table)
             .col(
-                ColumnDef::new(Char::Id)
+                ColumnDef::new(Character::Id)
                     .uuid()
                     .primary_key()
                     .default(Func::cust(GenRandUuid7)),
             )
-            .col(ColumnDef::new(Char::Name).text().not_null())
+            .col(ColumnDef::new(Character::Name).text().not_null())
             .run()?;
 
         Table::create()
@@ -80,50 +96,50 @@ impl Migration for _230603095553Init {
             .run()?;
 
         Table::create()
-            .table(Effect::Table)
-            .col(ColumnDef::new(Effect::TraitId).uuid().not_null())
-            .col(ColumnDef::new(Effect::SchemaFieldId).uuid().not_null())
-            .col(ColumnDef::new(Effect::Val).text().not_null())
-            .primary_key(
-                Index::create()
-                    .col(Effect::TraitId)
-                    .col(Effect::SchemaFieldId),
-            )
+            .table(Rule::Table)
+            .col(ColumnDef::new(Rule::FieldId).uuid().not_null())
+            .col(ColumnDef::new(Rule::TraitId).uuid().not_null())
+            .col(ColumnDef::new(Rule::Value).text().not_null())
+            .primary_key(Index::create().col(Rule::FieldId).col(Rule::TraitId))
             .foreign_key(
                 ForeignKey::create()
-                    .from(Effect::Table, Effect::TraitId)
-                    .to(Trait::Table, Trait::Id)
+                    .from(Rule::Table, Rule::FieldId)
+                    .to(FunField::Table, FunField::Id)
                     .on_delete(ForeignKeyAction::Cascade)
                     .on_update(ForeignKeyAction::Cascade),
             )
             .foreign_key(
                 ForeignKey::create()
-                    .from(Effect::Table, Effect::SchemaFieldId)
-                    .to(SchemaField::Table, SchemaField::Id)
+                    .from(Rule::Table, Rule::TraitId)
+                    .to(Trait::Table, Trait::Id)
                     .on_delete(ForeignKeyAction::Cascade)
                     .on_update(ForeignKeyAction::Cascade),
             )
             .run()?;
 
         Table::create()
-            .table(CharTrait::Table)
-            .col(ColumnDef::new(CharTrait::CharId).uuid().not_null())
-            .col(ColumnDef::new(CharTrait::TraitId).uuid().not_null())
+            .table(CharacterTrait::Table)
+            .col(
+                ColumnDef::new(CharacterTrait::CharacterId)
+                    .uuid()
+                    .not_null(),
+            )
+            .col(ColumnDef::new(CharacterTrait::TraitId).uuid().not_null())
             .primary_key(
                 Index::create()
-                    .col(CharTrait::CharId)
-                    .col(CharTrait::TraitId),
+                    .col(CharacterTrait::CharacterId)
+                    .col(CharacterTrait::TraitId),
             )
             .foreign_key(
                 ForeignKey::create()
-                    .from(CharTrait::Table, CharTrait::CharId)
-                    .to(Char::Table, Char::Id)
+                    .from(CharacterTrait::Table, CharacterTrait::CharacterId)
+                    .to(Character::Table, Character::Id)
                     .on_delete(ForeignKeyAction::Cascade)
                     .on_update(ForeignKeyAction::Cascade),
             )
             .foreign_key(
                 ForeignKey::create()
-                    .from(CharTrait::Table, CharTrait::TraitId)
+                    .from(CharacterTrait::Table, CharacterTrait::TraitId)
                     .to(Trait::Table, Trait::Id)
                     .on_delete(ForeignKeyAction::Cascade)
                     .on_update(ForeignKeyAction::Cascade),
@@ -133,19 +149,23 @@ impl Migration for _230603095553Init {
         Query::insert()
             .into_table(_Migration::Table)
             .columns([_Migration::Name])
-            .values_panic(["_230603095553_init".into()])
+            .values_panic(once(_230603095553Init.to_string().into()))
             .run()?;
 
         Ok(())
     }
 
     fn down() -> Result<(), spi::Error> {
-        Table::drop().table(CharTrait::Table).run()?;
-        Table::drop().table(Effect::Table).run()?;
+        Table::drop().table(CharacterTrait::Table).run()?;
+        Table::drop().table(Rule::Table).run()?;
         Table::drop().table(Trait::Table).run()?;
-        Table::drop().table(Char::Table).run()?;
-        Table::drop().table(SchemaField::Table).run()?;
-        Table::drop().table(Schema::Table).run()?;
+        Table::drop().table(Character::Table).run()?;
+        Table::drop().table(FunField::Table).run()?;
+        Table::drop().table(FunSchema::Table).run()?;
+        Query::delete()
+            .from_table(_Migration::Table)
+            .and_where(Expr::col(_Migration::Name).eq(_230603095553Init.to_string()))
+            .run()?;
         Ok(())
     }
 }

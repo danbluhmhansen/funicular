@@ -1,22 +1,18 @@
 //! PostgreSQL extension for building dynamic rules and tracking data for tabletop role-playing games.
 
-use crate::models::{Char, CharTrait, Effect, SchemaField, Trait};
-use chrono::{Datelike, NaiveDate, NaiveDateTime, Timelike};
-use models::Schema;
+use crate::models::{Character, CharacterTrait, FunField, Rule, Trait};
+use models::FunSchema;
 use pgrx::prelude::*;
-use rand::rngs::ThreadRng;
 use sea_ext::SeaRunExt;
 use sea_query::Expr;
 
-mod char_aggr_sync;
 mod fun_type;
 mod migrations;
 mod models;
-mod refresh_char_aggr;
-mod refresh_char_aggr_trigger;
 mod sea_ext;
 mod sea_select;
 mod spi_heap_tuple_data_ext;
+mod uuid7;
 
 pgrx::pg_module_magic!();
 
@@ -41,58 +37,6 @@ fn sea_vals_to_args(values: sea_query::Values) -> Vec<(PgOid, Option<pg_sys::Dat
             _ => todo!(),
         })
         .collect()
-}
-
-#[pg_extern]
-fn uuid7_to_time(uuid: pgrx::Uuid) -> Result<pgrx::Timestamp, &'static str> {
-    if uuid[6] >> 4 == 7 {
-        let ts = &uuid[0..6];
-        let ms = (ts[0] as i64) << 40
-            | (ts[1] as i64) << 32
-            | (ts[2] as i64) << 24
-            | (ts[3] as i64) << 16
-            | (ts[4] as i64) << 8
-            | (ts[5] as i64);
-
-        if let Some(date) = NaiveDateTime::from_timestamp_millis(ms) {
-            let time = date.time();
-
-            Ok(pgrx::Timestamp::new_unchecked(
-                date.year() as isize,
-                date.month() as u8,
-                date.day() as u8,
-                time.hour() as u8,
-                time.minute() as u8,
-                f64::from(time.nanosecond()) / 1_000_000_000.0,
-            ))
-        } else {
-            Err("Cannot convert timestamp to date.")
-        }
-    } else {
-        Err("Wrong UUID version.")
-    }
-}
-
-#[pg_extern]
-fn gen_rand_uuid7() -> Result<pgrx::Uuid, String> {
-    pgrx::Uuid::from_slice(uuid7::uuid7().as_bytes())
-}
-
-#[pg_extern]
-fn gen_uuid7(ts: pgrx::Timestamp) -> Result<pgrx::Uuid, String> {
-    let (h, m, s, ms) = ts.to_hms_micro();
-    if let Some(datetime) =
-        NaiveDate::from_ymd_opt(ts.year(), u32::from(ts.month()), u32::from(ts.day()))
-            .and_then(|d| d.and_hms_micro_opt(u32::from(h), u32::from(m), u32::from(s), ms))
-    {
-        pgrx::Uuid::from_slice(
-            uuid7::V7Generator::new(ThreadRng::default())
-                .generate_or_reset_core(datetime.timestamp_millis() as u64, 10_000)
-                .as_bytes(),
-        )
-    } else {
-        Err("Cannot convert timestamp to date.".to_string())
-    }
 }
 
 #[pg_extern]
@@ -147,18 +91,18 @@ fn fun_seed() -> Result<(), spi::Error> {
     ]);
 
     sea_query::Query::insert()
-        .into_table(Schema::Table)
-        .columns([Schema::Id, Schema::Name])
+        .into_table(FunSchema::Table)
+        .columns([FunSchema::Id, FunSchema::Name])
         .values_panic([SCHEMA_ID.into(), "foo".into()])
         .run()?;
 
     sea_query::Query::insert()
-        .into_table(SchemaField::Table)
+        .into_table(FunField::Table)
         .columns([
-            SchemaField::Id,
-            SchemaField::SchemaId,
-            SchemaField::FunType,
-            SchemaField::Path,
+            FunField::Id,
+            FunField::SchemaId,
+            FunField::FunType,
+            FunField::Field,
         ])
         .values_panic([
             STR_FIELD_ID.into(),
@@ -199,8 +143,8 @@ fn fun_seed() -> Result<(), spi::Error> {
         .run()?;
 
     sea_query::Query::insert()
-        .into_table(Char::Table)
-        .columns([Char::Id, Char::Name])
+        .into_table(Character::Table)
+        .columns([Character::Id, Character::Name])
         .values_panic([CHAR1_ID.into(), "Braugnor Quickcleaver".into()])
         .values_panic([CHAR2_ID.into(), "Jaudenn Runecleaver".into()])
         .run()?;
@@ -214,8 +158,8 @@ fn fun_seed() -> Result<(), spi::Error> {
         .run()?;
 
     sea_query::Query::insert()
-        .into_table(Effect::Table)
-        .columns([Effect::TraitId, Effect::SchemaFieldId, Effect::Val])
+        .into_table(Rule::Table)
+        .columns([Rule::TraitId, Rule::FieldId, Rule::Value])
         .values_panic([BASE_TRAIT_ID.into(), STR_FIELD_ID.into(), 8.into()])
         .values_panic([BASE_TRAIT_ID.into(), DEX_FIELD_ID.into(), 8.into()])
         .values_panic([BASE_TRAIT_ID.into(), CON_FIELD_ID.into(), 8.into()])
@@ -227,8 +171,8 @@ fn fun_seed() -> Result<(), spi::Error> {
         .run()?;
 
     sea_query::Query::insert()
-        .into_table(CharTrait::Table)
-        .columns([CharTrait::CharId, CharTrait::TraitId])
+        .into_table(CharacterTrait::Table)
+        .columns([CharacterTrait::CharacterId, CharacterTrait::TraitId])
         .values_panic([CHAR1_ID.into(), BASE_TRAIT_ID.into()])
         .values_panic([CHAR2_ID.into(), BASE_TRAIT_ID.into()])
         .values_panic([CHAR1_ID.into(), DWARF_TRAIT_ID.into()])
@@ -236,52 +180,6 @@ fn fun_seed() -> Result<(), spi::Error> {
         .run()?;
 
     Ok(())
-}
-
-#[cfg(any(test, feature = "pg_test"))]
-#[pg_schema]
-mod tests {
-    use pgrx::prelude::*;
-
-    const UUID: pgrx::UuidBytes = [
-        0x01, 0x88, 0x67, 0x15, 0x04, 0xa4, 0x7a, 0x8a, 0x9c, 0x1d, 0xba, 0x69, 0xf0, 0x3e, 0xb0,
-        0x7d,
-    ];
-
-    #[pg_test]
-    fn test_uuid7_to_time() {
-        assert_eq!(
-            Ok(Some(pgrx::Timestamp::new_unchecked(
-                2023, 5, 29, 10, 36, 0.724
-            ))),
-            Spi::get_one_with_args::<pgrx::Timestamp>(
-                "SELECT uuid7_to_time($1);",
-                vec![(
-                    PgBuiltInOids::UUIDOID.oid(),
-                    pgrx::Uuid::from_bytes(UUID).into_datum(),
-                )],
-            )
-        );
-    }
-
-    #[pg_test]
-    fn test_gen_uuid7() {
-        let ts = pgrx::Timestamp::new_unchecked(2000, 1, 1, 0, 0, 0.0);
-        let uuid = Spi::get_one_with_args::<pgrx::Uuid>(
-            "SELECT gen_uuid7($1);",
-            vec![(PgBuiltInOids::TIMESTAMPOID.oid(), ts.into_datum())],
-        )
-        .ok()
-        .flatten()
-        .unwrap();
-        assert_eq!(
-            Ok(Some(ts)),
-            Spi::get_one_with_args::<pgrx::Timestamp>(
-                "SELECT uuid7_to_time($1);",
-                vec![(PgBuiltInOids::UUIDOID.oid(), uuid.into_datum(),)],
-            )
-        );
-    }
 }
 
 /// This module is required by `cargo pgrx test` invocations.

@@ -1,5 +1,9 @@
 use pgrx::{PgBuiltInOids, PostgresEnum};
+use sea_query::Iden;
 use serde::{Deserialize, Serialize};
+
+#[derive(Iden)]
+pub struct Funtype;
 
 #[derive(Debug, Serialize, Deserialize, PostgresEnum, PartialEq)]
 pub enum FunType {

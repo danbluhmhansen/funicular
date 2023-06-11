@@ -1,6 +1,6 @@
 use pgrx::prelude::*;
 
-mod _000000000000;
+mod _000000000000_migrations;
 mod _230603095553_init;
 
 trait Migration {
@@ -10,7 +10,7 @@ trait Migration {
 
 #[pg_extern]
 fn migrations_up() -> Result<(), spi::Error> {
-    Spi::run("SELECT _000000000000_up();")?;
+    Spi::run("SELECT _000000000000_migrations_up();")?;
     Spi::run("SELECT _230603095553_init_up();")?;
     Ok(())
 }
@@ -18,7 +18,7 @@ fn migrations_up() -> Result<(), spi::Error> {
 #[pg_extern]
 fn migrations_down() -> Result<(), spi::Error> {
     Spi::run("SELECT _230603095553_init_down();")?;
-    Spi::run("SELECT _000000000000_down();")?;
+    Spi::run("SELECT _000000000000_migrations_down();")?;
     Ok(())
 }
 

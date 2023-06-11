@@ -7,24 +7,25 @@ pub enum _Migration {
 }
 
 #[derive(Iden)]
-pub enum Schema {
+pub enum FunSchema {
     Table,
     Id,
     Name,
 }
 
 #[derive(Iden)]
-pub enum SchemaField {
+pub enum FunField {
     Table,
     Id,
     SchemaId,
-    Path,
+    FieldId,
+    Field,
     FunType,
-    Desc,
+    Description,
 }
 
 #[derive(Iden)]
-pub enum Char {
+pub enum Character {
     Table,
     Id,
     Name,
@@ -38,28 +39,16 @@ pub enum Trait {
 }
 
 #[derive(Iden)]
-pub enum Effect {
+pub enum Rule {
     Table,
+    FieldId,
     TraitId,
-    SchemaFieldId,
-    Val,
+    Value,
 }
 
 #[derive(Iden)]
-pub enum CharTrait {
+pub enum CharacterTrait {
     Table,
-    CharId,
+    CharacterId,
     TraitId,
 }
-
-#[derive(Iden)]
-pub struct Uuid7ToTime;
-
-#[derive(Iden)]
-pub struct GenRandUuid7;
-
-#[derive(Iden)]
-pub struct GenUuid7;
-
-#[derive(Iden)]
-pub struct RefreshCharAggr;
