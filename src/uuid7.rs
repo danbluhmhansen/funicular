@@ -1,10 +1,6 @@
 use chrono::{Datelike, NaiveDate, NaiveDateTime, Timelike};
 use pgrx::prelude::*;
 use rand::rngs::ThreadRng;
-use sea_query::Iden;
-
-#[derive(Iden)]
-pub struct Uuid7ToTime;
 
 #[pg_extern]
 pub fn uuid7_to_time(uuid: pgrx::Uuid) -> Result<pgrx::Timestamp, &'static str> {
@@ -36,16 +32,10 @@ pub fn uuid7_to_time(uuid: pgrx::Uuid) -> Result<pgrx::Timestamp, &'static str> 
     }
 }
 
-#[derive(Iden)]
-pub struct GenRandUuid7;
-
 #[pg_extern]
 pub fn gen_rand_uuid7() -> Result<pgrx::Uuid, String> {
     pgrx::Uuid::from_slice(uuid7::uuid7().as_bytes())
 }
-
-#[derive(Iden)]
-pub struct GenUuid7;
 
 #[pg_extern]
 pub fn gen_uuid7(ts: pgrx::Timestamp) -> Result<pgrx::Uuid, String> {

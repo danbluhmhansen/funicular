@@ -1,219 +1,112 @@
-use crate::{
-    migrations::Migration,
-    models::{
-        Character, CharacterTrait, FunField, FunSchema, NumericRule, TextRule, Trait, _Migration,
-    },
-    sea_ext::SeaRunExt,
-    uuid7::GenRandUuid7,
-};
+use crate::migrations::Migration;
 use pgrx::prelude::*;
-use sea_query::{
-    ColumnDef, Expr, ForeignKey, ForeignKeyAction, Func, Iden, Index, IntoIden, Query, Table,
-};
-use std::iter::once;
 
-#[derive(Iden)]
 struct _230603095553Init;
 
 impl Migration for _230603095553Init {
     fn up() -> Result<(), spi::Error> {
-        Table::create()
-            .table(FunSchema::Table)
-            .col(
-                ColumnDef::new(FunSchema::Id)
-                    .uuid()
-                    .primary_key()
-                    .default(Func::cust(GenRandUuid7)),
-            )
-            .col(
-                ColumnDef::new(FunSchema::Name)
-                    .text()
-                    .not_null()
-                    .unique_key()
-                    .extra(format!(
-                        "CHECK ({} ~ '^[a-z_]*$')",
-                        FunSchema::Name.into_iden().to_string()
-                    )),
-            )
-            .run()?;
-
-        Table::create()
-            .table(FunField::Table)
-            .col(
-                ColumnDef::new(FunField::Id)
-                    .uuid()
-                    .primary_key()
-                    .default(Func::cust(GenRandUuid7)),
-            )
-            .col(ColumnDef::new(FunField::SchemaId).uuid().not_null())
-            .col(ColumnDef::new(FunField::FieldId).uuid())
-            .col(
-                ColumnDef::new(FunField::Name)
-                    .text()
-                    .not_null()
-                    .extra(format!(
-                        "CHECK ({} ~ '^[a-z_]*$')",
-                        FunField::Name.into_iden().to_string()
-                    )),
-            )
-            .col(ColumnDef::new(FunField::Description).text())
-            .foreign_key(
-                ForeignKey::create()
-                    .from(FunField::Table, FunField::SchemaId)
-                    .to(FunSchema::Table, FunSchema::Id)
-                    .on_delete(ForeignKeyAction::Cascade)
-                    .on_update(ForeignKeyAction::Cascade),
-            )
-            .foreign_key(
-                ForeignKey::create()
-                    .from(FunField::Table, FunField::FieldId)
-                    .to(FunField::Table, FunField::Id)
-                    .on_delete(ForeignKeyAction::Cascade)
-                    .on_update(ForeignKeyAction::Cascade),
-            )
-            .run()?;
-
-        Table::create()
-            .table(Character::Table)
-            .col(
-                ColumnDef::new(Character::Id)
-                    .uuid()
-                    .primary_key()
-                    .default(Func::cust(GenRandUuid7)),
-            )
-            .col(ColumnDef::new(Character::Name).text().not_null())
-            .run()?;
-
-        Table::create()
-            .table(Trait::Table)
-            .col(
-                ColumnDef::new(Trait::Id)
-                    .uuid()
-                    .primary_key()
-                    .default(Func::cust(GenRandUuid7)),
-            )
-            .col(ColumnDef::new(Trait::Name).text().not_null())
-            .run()?;
-
-        Table::create()
-            .table(NumericRule::Table)
-            .col(ColumnDef::new(NumericRule::FieldId).uuid().not_null())
-            .col(ColumnDef::new(NumericRule::TraitId).uuid().not_null())
-            .col(ColumnDef::new(NumericRule::Value).decimal().not_null())
-            .primary_key(
-                Index::create()
-                    .col(NumericRule::FieldId)
-                    .col(NumericRule::TraitId),
-            )
-            .foreign_key(
-                ForeignKey::create()
-                    .from(NumericRule::Table, NumericRule::FieldId)
-                    .to(FunField::Table, FunField::Id)
-                    .on_delete(ForeignKeyAction::Cascade)
-                    .on_update(ForeignKeyAction::Cascade),
-            )
-            .foreign_key(
-                ForeignKey::create()
-                    .from(NumericRule::Table, NumericRule::TraitId)
-                    .to(Trait::Table, Trait::Id)
-                    .on_delete(ForeignKeyAction::Cascade)
-                    .on_update(ForeignKeyAction::Cascade),
-            )
-            .run()?;
-
-        Table::create()
-            .table(TextRule::Table)
-            .col(ColumnDef::new(TextRule::FieldId).uuid().not_null())
-            .col(ColumnDef::new(TextRule::TraitId).uuid().not_null())
-            .col(ColumnDef::new(TextRule::Value).text().not_null())
-            .primary_key(
-                Index::create()
-                    .col(TextRule::FieldId)
-                    .col(TextRule::TraitId),
-            )
-            .foreign_key(
-                ForeignKey::create()
-                    .from(TextRule::Table, TextRule::FieldId)
-                    .to(FunField::Table, FunField::Id)
-                    .on_delete(ForeignKeyAction::Cascade)
-                    .on_update(ForeignKeyAction::Cascade),
-            )
-            .foreign_key(
-                ForeignKey::create()
-                    .from(TextRule::Table, TextRule::TraitId)
-                    .to(Trait::Table, Trait::Id)
-                    .on_delete(ForeignKeyAction::Cascade)
-                    .on_update(ForeignKeyAction::Cascade),
-            )
-            .run()?;
-
-        Table::create()
-            .table(CharacterTrait::Table)
-            .col(
-                ColumnDef::new(CharacterTrait::CharacterId)
-                    .uuid()
-                    .not_null(),
-            )
-            .col(ColumnDef::new(CharacterTrait::TraitId).uuid().not_null())
-            .primary_key(
-                Index::create()
-                    .col(CharacterTrait::CharacterId)
-                    .col(CharacterTrait::TraitId),
-            )
-            .foreign_key(
-                ForeignKey::create()
-                    .from(CharacterTrait::Table, CharacterTrait::CharacterId)
-                    .to(Character::Table, Character::Id)
-                    .on_delete(ForeignKeyAction::Cascade)
-                    .on_update(ForeignKeyAction::Cascade),
-            )
-            .foreign_key(
-                ForeignKey::create()
-                    .from(CharacterTrait::Table, CharacterTrait::TraitId)
-                    .to(Trait::Table, Trait::Id)
-                    .on_delete(ForeignKeyAction::Cascade)
-                    .on_update(ForeignKeyAction::Cascade),
-            )
-            .run()?;
-
         Spi::run(
             r#"
-CREATE VIEW character_numeric_field AS
-SELECT
-	character.id AS character_id,
-	fun_field.id AS field_id,
-	SUM(numeric_rule.value)
-FROM fun_field
-JOIN numeric_rule ON numeric_rule.field_id = fun_field.id
-JOIN trait ON trait.id = numeric_rule.trait_id
-JOIN character_trait ON character_trait.trait_id = trait.id
-JOIN character ON character.id = character_trait.character_id
-GROUP BY fun_field.id, character.id
-ORDER BY character.id;
+            CREATE TABLE schema (
+                id uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
+                name text NOT NULL CHECK (name ~ '^[a-z_]*$')
+            );
             "#,
         )?;
 
-        Query::insert()
-            .into_table(_Migration::Table)
-            .columns([_Migration::Name])
-            .values_panic(once(_230603095553Init.to_string().into()))
-            .run()?;
+        Spi::run(
+            r#"
+            CREATE TABLE field (
+                id uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
+                schema_id uuid NOT NULL REFERENCES schema(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                field_id uuid REFERENCES field(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                name text NOT NULL CHECK (name ~ '^[a-z_]*$'),
+                description text
+            );
+            "#,
+        )?;
+
+        Spi::run(
+            r#"
+            CREATE TABLE character (
+                id uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
+                name text NOT NULL
+            );
+            "#,
+        )?;
+
+        Spi::run(
+            r#"
+            CREATE TABLE trait (
+                id uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
+                name text NOT NULL
+            );
+            "#,
+        )?;
+
+        Spi::run(
+            r#"
+            CREATE TABLE numeric_rule (
+                field_id uuid NOT NULL REFERENCES field(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                trait_id uuid NOT NULL REFERENCES trait(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                value numeric NOT NULL,
+                PRIMARY KEY (field_id, trait_id)
+            );
+            "#,
+        )?;
+
+        Spi::run(
+            r#"
+            CREATE TABLE text_rule (
+                field_id uuid NOT NULL REFERENCES field(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                trait_id uuid NOT NULL REFERENCES trait(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                value text NOT NULL,
+                PRIMARY KEY (field_id, trait_id)
+            );
+            "#,
+        )?;
+
+        Spi::run(
+            r#"
+            CREATE TABLE character_trait (
+                character_id uuid NOT NULL REFERENCES character(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                trait_id uuid NOT NULL REFERENCES trait(id) ON DELETE CASCADE ON UPDATE CASCADE
+            );
+            "#,
+        )?;
+
+        Spi::run(
+            r#"
+            CREATE VIEW character_numeric_field AS
+            SELECT
+            	character.id AS character_id,
+            	field.id AS field_id,
+            	SUM(numeric_rule.value)
+            FROM field
+            JOIN numeric_rule ON numeric_rule.field_id = field.id
+            JOIN trait ON trait.id = numeric_rule.trait_id
+            JOIN character_trait ON character_trait.trait_id = trait.id
+            JOIN character ON character.id = character_trait.character_id
+            GROUP BY field.id, character.id
+            ORDER BY character.id;
+            "#,
+        )?;
+
+        Spi::run("INSERT INTO _migration VALUES ('230603095553_init');")?;
 
         Ok(())
     }
 
     fn down() -> Result<(), spi::Error> {
-        Table::drop().table(CharacterTrait::Table).run()?;
-        Table::drop().table(TextRule::Table).run()?;
-        Table::drop().table(NumericRule::Table).run()?;
-        Table::drop().table(Trait::Table).run()?;
-        Table::drop().table(Character::Table).run()?;
-        Table::drop().table(FunField::Table).run()?;
-        Table::drop().table(FunSchema::Table).run()?;
-        Query::delete()
-            .from_table(_Migration::Table)
-            .and_where(Expr::col(_Migration::Name).eq(_230603095553Init.to_string()))
-            .run()?;
+        Spi::run("DROP VIEW character_numeric_field;")?;
+        Spi::run("DROP TABLE character_trait;")?;
+        Spi::run("DROP TABLE text_rule;")?;
+        Spi::run("DROP TABLE numeric_rule;")?;
+        Spi::run("DROP TABLE trait;")?;
+        Spi::run("DROP TABLE character;")?;
+        Spi::run("DROP TABLE field;")?;
+        Spi::run("DROP TABLE schema;")?;
+        Spi::run("DELETE FROM _migration WHERE name = '230603095553_init';")?;
         Ok(())
     }
 }

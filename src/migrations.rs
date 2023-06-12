@@ -31,6 +31,8 @@ mod tests {
     fn test_migrations() -> Result<(), spi::Error> {
         Spi::run("SELECT migrations_up();")?;
         Spi::run("SELECT migrations_down();")?;
+        Spi::run("SELECT migrations_up();")?;
+        Spi::run("SELECT migrations_down();")?;
         Ok(())
     }
 }

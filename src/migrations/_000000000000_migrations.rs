@@ -1,28 +1,17 @@
-use crate::{migrations::Migration, models::_Migration, sea_ext::SeaRunExt};
+use crate::migrations::Migration;
 use pgrx::prelude::*;
-use sea_query::{ColumnDef, Iden, Query, Table};
-use std::iter::once;
 
-#[derive(Iden)]
 struct _000000000000Migrations;
 
 impl Migration for _000000000000Migrations {
     fn up() -> Result<(), pgrx::spi::Error> {
-        Table::create()
-            .table(_Migration::Table)
-            .col(ColumnDef::new(_Migration::Name).text().primary_key())
-            .run()?;
-        Query::insert()
-            .into_table(_Migration::Table)
-            .columns([_Migration::Name])
-            .values_panic(once(_000000000000Migrations.to_string().into()))
-            .run()?;
+        Spi::run("CREATE TABLE _migration (name text PRIMARY KEY);")?;
+        Spi::run("INSERT INTO _migration VALUES ('000000000000_migrations');")?;
         Ok(())
     }
 
     fn down() -> Result<(), pgrx::spi::Error> {
-        Table::drop().table(_Migration::Table).run()?;
-        Ok(())
+        Spi::run("DROP TABLE _migration;")
     }
 }
 
