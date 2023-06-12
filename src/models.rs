@@ -19,8 +19,7 @@ pub enum FunField {
     Id,
     SchemaId,
     FieldId,
-    Field,
-    FunType,
+    Name,
     Description,
 }
 
@@ -39,7 +38,15 @@ pub enum Trait {
 }
 
 #[derive(Iden)]
-pub enum Rule {
+pub enum NumericRule {
+    Table,
+    FieldId,
+    TraitId,
+    Value,
+}
+
+#[derive(Iden)]
+pub enum TextRule {
     Table,
     FieldId,
     TraitId,

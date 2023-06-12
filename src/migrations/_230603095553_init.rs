@@ -1,7 +1,8 @@
 use crate::{
-    fun_type::Funtype,
     migrations::Migration,
-    models::{Character, CharacterTrait, FunField, FunSchema, Rule, Trait, _Migration},
+    models::{
+        Character, CharacterTrait, FunField, FunSchema, NumericRule, TextRule, Trait, _Migration,
+    },
     sea_ext::SeaRunExt,
     uuid7::GenRandUuid7,
 };
@@ -47,15 +48,14 @@ impl Migration for _230603095553Init {
             .col(ColumnDef::new(FunField::SchemaId).uuid().not_null())
             .col(ColumnDef::new(FunField::FieldId).uuid())
             .col(
-                ColumnDef::new(FunField::Field)
+                ColumnDef::new(FunField::Name)
                     .text()
                     .not_null()
                     .extra(format!(
                         "CHECK ({} ~ '^[a-z_]*$')",
-                        FunField::Field.into_iden().to_string()
+                        FunField::Name.into_iden().to_string()
                     )),
             )
-            .col(ColumnDef::new(FunField::FunType).custom(Funtype).not_null())
             .col(ColumnDef::new(FunField::Description).text())
             .foreign_key(
                 ForeignKey::create()
@@ -96,21 +96,51 @@ impl Migration for _230603095553Init {
             .run()?;
 
         Table::create()
-            .table(Rule::Table)
-            .col(ColumnDef::new(Rule::FieldId).uuid().not_null())
-            .col(ColumnDef::new(Rule::TraitId).uuid().not_null())
-            .col(ColumnDef::new(Rule::Value).text().not_null())
-            .primary_key(Index::create().col(Rule::FieldId).col(Rule::TraitId))
+            .table(NumericRule::Table)
+            .col(ColumnDef::new(NumericRule::FieldId).uuid().not_null())
+            .col(ColumnDef::new(NumericRule::TraitId).uuid().not_null())
+            .col(ColumnDef::new(NumericRule::Value).decimal().not_null())
+            .primary_key(
+                Index::create()
+                    .col(NumericRule::FieldId)
+                    .col(NumericRule::TraitId),
+            )
             .foreign_key(
                 ForeignKey::create()
-                    .from(Rule::Table, Rule::FieldId)
+                    .from(NumericRule::Table, NumericRule::FieldId)
                     .to(FunField::Table, FunField::Id)
                     .on_delete(ForeignKeyAction::Cascade)
                     .on_update(ForeignKeyAction::Cascade),
             )
             .foreign_key(
                 ForeignKey::create()
-                    .from(Rule::Table, Rule::TraitId)
+                    .from(NumericRule::Table, NumericRule::TraitId)
+                    .to(Trait::Table, Trait::Id)
+                    .on_delete(ForeignKeyAction::Cascade)
+                    .on_update(ForeignKeyAction::Cascade),
+            )
+            .run()?;
+
+        Table::create()
+            .table(TextRule::Table)
+            .col(ColumnDef::new(TextRule::FieldId).uuid().not_null())
+            .col(ColumnDef::new(TextRule::TraitId).uuid().not_null())
+            .col(ColumnDef::new(TextRule::Value).text().not_null())
+            .primary_key(
+                Index::create()
+                    .col(TextRule::FieldId)
+                    .col(TextRule::TraitId),
+            )
+            .foreign_key(
+                ForeignKey::create()
+                    .from(TextRule::Table, TextRule::FieldId)
+                    .to(FunField::Table, FunField::Id)
+                    .on_delete(ForeignKeyAction::Cascade)
+                    .on_update(ForeignKeyAction::Cascade),
+            )
+            .foreign_key(
+                ForeignKey::create()
+                    .from(TextRule::Table, TextRule::TraitId)
                     .to(Trait::Table, Trait::Id)
                     .on_delete(ForeignKeyAction::Cascade)
                     .on_update(ForeignKeyAction::Cascade),
@@ -146,6 +176,23 @@ impl Migration for _230603095553Init {
             )
             .run()?;
 
+        Spi::run(
+            r#"
+CREATE VIEW character_numeric_field AS
+SELECT
+	character.id AS character_id,
+	fun_field.id AS field_id,
+	SUM(numeric_rule.value)
+FROM fun_field
+JOIN numeric_rule ON numeric_rule.field_id = fun_field.id
+JOIN trait ON trait.id = numeric_rule.trait_id
+JOIN character_trait ON character_trait.trait_id = trait.id
+JOIN character ON character.id = character_trait.character_id
+GROUP BY fun_field.id, character.id
+ORDER BY character.id;
+            "#,
+        )?;
+
         Query::insert()
             .into_table(_Migration::Table)
             .columns([_Migration::Name])
@@ -157,7 +204,8 @@ impl Migration for _230603095553Init {
 
     fn down() -> Result<(), spi::Error> {
         Table::drop().table(CharacterTrait::Table).run()?;
-        Table::drop().table(Rule::Table).run()?;
+        Table::drop().table(TextRule::Table).run()?;
+        Table::drop().table(NumericRule::Table).run()?;
         Table::drop().table(Trait::Table).run()?;
         Table::drop().table(Character::Table).run()?;
         Table::drop().table(FunField::Table).run()?;
