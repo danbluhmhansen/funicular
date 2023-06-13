@@ -1,17 +1,24 @@
-use crate::migrations::Migration;
+use crate::{migrations::Migration, models::_Migration};
 use pgrx::prelude::*;
 
 struct _000000000000Migrations;
 
 impl Migration for _000000000000Migrations {
     fn up() -> Result<(), pgrx::spi::Error> {
-        Spi::run("CREATE TABLE _migration (name text PRIMARY KEY);")?;
-        Spi::run("INSERT INTO _migration VALUES ('000000000000_migrations');")?;
+        Spi::run(&format!(
+            "CREATE TABLE {migration} ({migration_name} text PRIMARY KEY);",
+            migration = _Migration::Table,
+            migration_name = _Migration::Name
+        ))?;
+        Spi::run(&format!(
+            "INSERT INTO {} VALUES ('000000000000_migrations');",
+            _Migration::Table
+        ))?;
         Ok(())
     }
 
     fn down() -> Result<(), pgrx::spi::Error> {
-        Spi::run("DROP TABLE _migration;")
+        Spi::run(&format!("DROP TABLE {};", _Migration::Table))
     }
 }
 

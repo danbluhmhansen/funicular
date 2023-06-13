@@ -1,112 +1,180 @@
-use crate::migrations::Migration;
+use crate::{
+    migrations::Migration, models::Character, models::CharacterNumericField,
+    models::CharacterTrait, models::Field, models::NumericRule, models::Schema, models::TextRule,
+    models::Trait, models::_Migration,
+};
 use pgrx::prelude::*;
 
 struct _230603095553Init;
 
 impl Migration for _230603095553Init {
     fn up() -> Result<(), spi::Error> {
-        Spi::run(
+        Spi::run(&format!(
             r#"
-            CREATE TABLE schema (
-                id uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
-                name text NOT NULL CHECK (name ~ '^[a-z_]*$')
+            CREATE TABLE {schema} (
+                {schema_id} uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
+                {schema_name} text NOT NULL CHECK ({schema_name} ~ '^[a-z_]*$')
             );
             "#,
-        )?;
+            schema = Schema::Table,
+            schema_id = Schema::Id,
+            schema_name = Schema::Name,
+        ))?;
 
-        Spi::run(
+        Spi::run(&format!(
             r#"
-            CREATE TABLE field (
-                id uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
-                schema_id uuid NOT NULL REFERENCES schema(id) ON DELETE CASCADE ON UPDATE CASCADE,
-                field_id uuid REFERENCES field(id) ON DELETE CASCADE ON UPDATE CASCADE,
-                name text NOT NULL CHECK (name ~ '^[a-z_]*$'),
-                description text
+            CREATE TABLE {field} (
+                {field_id} uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
+                {field_schema_id} uuid NOT NULL REFERENCES {schema}({schema_id}) ON DELETE CASCADE ON UPDATE CASCADE,
+                {field_field_id} uuid REFERENCES {field}({field_id}) ON DELETE CASCADE ON UPDATE CASCADE,
+                {field_name} text NOT NULL CHECK ({field_name} ~ '^[a-z_]*$'),
+                {field_description} text
             );
             "#,
-        )?;
+            field = Field::Table,
+            field_id = Field::Id,
+            field_schema_id = Field::SchemaId,
+            field_field_id = Field::FieldId,
+            field_name = Field::Name,
+            field_description = Field::Description,
+            schema = Schema::Table,
+            schema_id = Schema::Id,
+        ))?;
 
-        Spi::run(
+        Spi::run(&format!(
             r#"
-            CREATE TABLE character (
-                id uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
-                name text NOT NULL
+            CREATE TABLE {character} (
+                {character_id} uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
+                {character_name} text NOT NULL
             );
             "#,
-        )?;
+            character = Character::Table,
+            character_id = Character::Id,
+            character_name = Character::Name,
+        ))?;
 
-        Spi::run(
+        Spi::run(&format!(
             r#"
-            CREATE TABLE trait (
-                id uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
-                name text NOT NULL
+            CREATE TABLE {trait} (
+                {trait_id} uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
+                {trait_name} text NOT NULL
             );
             "#,
-        )?;
+            trait = Trait::Table,
+            trait_id = Trait::Id,
+            trait_name = Trait::Name,
+        ))?;
 
-        Spi::run(
+        Spi::run(&format!(
             r#"
-            CREATE TABLE numeric_rule (
-                field_id uuid NOT NULL REFERENCES field(id) ON DELETE CASCADE ON UPDATE CASCADE,
-                trait_id uuid NOT NULL REFERENCES trait(id) ON DELETE CASCADE ON UPDATE CASCADE,
-                value numeric NOT NULL,
-                PRIMARY KEY (field_id, trait_id)
+            CREATE TABLE {numeric_rule} (
+                {numeric_rule_field_id} uuid NOT NULL REFERENCES {field}({field_id}) ON DELETE CASCADE ON UPDATE CASCADE,
+                {numeric_rule_trait_id} uuid NOT NULL REFERENCES {trait}({trait_id}) ON DELETE CASCADE ON UPDATE CASCADE,
+                {numeric_rule_value} numeric NOT NULL,
+                PRIMARY KEY ({numeric_rule_field_id}, {numeric_rule_trait_id})
             );
             "#,
-        )?;
+            numeric_rule = NumericRule::Table,
+            numeric_rule_field_id = NumericRule::FieldId,
+            numeric_rule_trait_id = NumericRule::TraitId,
+            numeric_rule_value = NumericRule::Value,
+            field = Field::Table,
+            field_id = Field::Id,
+            trait = Trait::Table,
+            trait_id = Trait::Id,
+        ))?;
 
-        Spi::run(
+        Spi::run(&format!(
             r#"
-            CREATE TABLE text_rule (
-                field_id uuid NOT NULL REFERENCES field(id) ON DELETE CASCADE ON UPDATE CASCADE,
-                trait_id uuid NOT NULL REFERENCES trait(id) ON DELETE CASCADE ON UPDATE CASCADE,
-                value text NOT NULL,
-                PRIMARY KEY (field_id, trait_id)
+            CREATE TABLE {text_rule} (
+                {text_rule_field_id} uuid NOT NULL REFERENCES {field}({field_id}) ON DELETE CASCADE ON UPDATE CASCADE,
+                {text_rule_trait_id} uuid NOT NULL REFERENCES {trait}({trait_id}) ON DELETE CASCADE ON UPDATE CASCADE,
+                {text_rule_value} numeric NOT NULL,
+                PRIMARY KEY ({text_rule_field_id}, {text_rule_trait_id})
             );
             "#,
-        )?;
+            text_rule = TextRule::Table,
+            text_rule_field_id = TextRule::FieldId,
+            text_rule_trait_id = TextRule::TraitId,
+            text_rule_value = TextRule::Value,
+            field = Field::Table,
+            field_id = Field::Id,
+            trait = Trait::Table,
+            trait_id = Trait::Id,
+        ))?;
 
-        Spi::run(
+        Spi::run(&format!(
             r#"
-            CREATE TABLE character_trait (
-                character_id uuid NOT NULL REFERENCES character(id) ON DELETE CASCADE ON UPDATE CASCADE,
-                trait_id uuid NOT NULL REFERENCES trait(id) ON DELETE CASCADE ON UPDATE CASCADE
+            CREATE TABLE {character_trait} (
+                {character_trait_character_id} uuid NOT NULL REFERENCES {character}({character_id}) ON DELETE CASCADE ON UPDATE CASCADE,
+                {character_trait_trait_id} uuid NOT NULL REFERENCES {trait}({trait_id}) ON DELETE CASCADE ON UPDATE CASCADE
             );
             "#,
-        )?;
+            character_trait = CharacterTrait::Table,
+            character_trait_character_id = CharacterTrait::CharacterId,
+            character_trait_trait_id = CharacterTrait::TraitId,
+            character = Character::Table,
+            character_id = Character::Id,
+            trait = Trait::Table,
+            trait_id = Trait::Id,
+        ))?;
 
-        Spi::run(
+        Spi::run(&format!(
             r#"
-            CREATE VIEW character_numeric_field AS
+            CREATE VIEW {character_numeric_field} AS
             SELECT
-            	character.id AS character_id,
-            	field.id AS field_id,
-            	SUM(numeric_rule.value)
-            FROM field
-            JOIN numeric_rule ON numeric_rule.field_id = field.id
-            JOIN trait ON trait.id = numeric_rule.trait_id
-            JOIN character_trait ON character_trait.trait_id = trait.id
-            JOIN character ON character.id = character_trait.character_id
-            GROUP BY field.id, character.id
-            ORDER BY character.id;
+            	{character}.{character_id} AS {character_numeric_field_character_id},
+            	{field}.{field_id} AS {character_numeric_field_field_id},
+            	SUM({numeric_rule}.{numeric_rule_value}) AS {character_numeric_field_value}
+            FROM {field}
+            JOIN {numeric_rule} ON {numeric_rule}.{numeric_rule_field_id} = {field}.{field_id}
+            JOIN {trait} ON {trait}.{trait_id} = {numeric_rule}.{numeric_rule_trait_id}
+            JOIN {character_trait} ON {character_trait}.{character_trait_trait_id} = {trait}.{trait_id}
+            JOIN {character} ON {character}.{character_id} = {character_trait}.{character_trait_character_id}
+            GROUP BY {field}.{field_id}, {character}.{character_id}
+            ORDER BY {character}.{character_id};
             "#,
-        )?;
+            character_numeric_field = CharacterNumericField::View,
+            character_numeric_field_character_id = CharacterNumericField::CharacterId,
+            character_numeric_field_field_id = CharacterNumericField::FieldId,
+            character_numeric_field_value = CharacterNumericField::Value,
+            field = Field::Table,
+            field_id = Field::Id,
+            character = Character::Table,
+            character_id = Character::Id,
+            trait = Trait::Table,
+            trait_id = Trait::Id,
+            numeric_rule = NumericRule::Table,
+            numeric_rule_field_id = NumericRule::FieldId,
+            numeric_rule_trait_id = NumericRule::TraitId,
+            numeric_rule_value = NumericRule::Value,
+            character_trait = CharacterTrait::Table,
+            character_trait_character_id = CharacterTrait::CharacterId,
+            character_trait_trait_id = CharacterTrait::TraitId,
+        ))?;
 
-        Spi::run("INSERT INTO _migration VALUES ('230603095553_init');")?;
+        Spi::run(&format!(
+            "INSERT INTO {} VALUES ('230603095553_init');",
+            _Migration::Table
+        ))?;
 
         Ok(())
     }
 
     fn down() -> Result<(), spi::Error> {
-        Spi::run("DROP VIEW character_numeric_field;")?;
-        Spi::run("DROP TABLE character_trait;")?;
-        Spi::run("DROP TABLE text_rule;")?;
-        Spi::run("DROP TABLE numeric_rule;")?;
-        Spi::run("DROP TABLE trait;")?;
-        Spi::run("DROP TABLE character;")?;
-        Spi::run("DROP TABLE field;")?;
-        Spi::run("DROP TABLE schema;")?;
-        Spi::run("DELETE FROM _migration WHERE name = '230603095553_init';")?;
+        Spi::run(&format!("DROP VIEW {};", CharacterNumericField::View))?;
+        Spi::run(&format!("DROP TABLE {};", CharacterTrait::Table))?;
+        Spi::run(&format!("DROP TABLE {};", TextRule::Table))?;
+        Spi::run(&format!("DROP TABLE {};", NumericRule::Table))?;
+        Spi::run(&format!("DROP TABLE {};", Trait::Table))?;
+        Spi::run(&format!("DROP TABLE {};", Character::Table))?;
+        Spi::run(&format!("DROP TABLE {};", Field::Table))?;
+        Spi::run(&format!("DROP TABLE {};", Schema::Table))?;
+        Spi::run(&format!(
+            "DELETE FROM {migration} WHERE {migration_name} = '230603095553_init';",
+            migration = _Migration::Table,
+            migration_name = _Migration::Name
+        ))?;
         Ok(())
     }
 }
