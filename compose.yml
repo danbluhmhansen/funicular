@@ -1,5 +1,5 @@
 services:
-  funicular:
+  db:
     build:
       context: .
     environment:
@@ -14,6 +14,18 @@ services:
       - postgres
     restart: unless-stopped
   
+  server:
+    image: postgrest/postgrest
+    ports:
+      - "${PGRST_PORT:-3000}:3000"
+    environment:
+      PGRST_DB_URI: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/funicular
+      PGRST_DB_SCHEMAS: public
+      PGRST_DB_ANON_ROLE: web_anon
+      PGRST_OPENAPI_SERVER_PROXY_URI: http://127.0.0.1:3000
+    depends_on:
+      - db
+
   pgadmin:
     container_name: pgadmin_container
     image: dpage/pgadmin4:latest
@@ -28,6 +40,8 @@ services:
     networks:
       - postgres
     restart: unless-stopped
+    depends_on:
+      - db
 
 networks:
   postgres:
