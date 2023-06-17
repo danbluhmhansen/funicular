@@ -9,6 +9,8 @@ struct _230603095553Init;
 
 impl Migration for _230603095553Init {
     fn up() -> Result<(), spi::Error> {
+        Spi::run(r#"COMMENT ON SCHEMA public IS e'@graphql({"inflect_names": true})';"#)?;
+
         Spi::run(&format!(
             r#"
             CREATE TABLE {schema} (
@@ -47,7 +49,7 @@ impl Migration for _230603095553Init {
         ))?;
 
         Spi::run(&format!(
-            "COMMENT ON TABLE {} 'Describes a specific attribute of a character or item.';",
+            "COMMENT ON TABLE {} IS 'Describes a specific attribute of a character or item.';",
             Field::Table
         ))?;
 
@@ -64,7 +66,7 @@ impl Migration for _230603095553Init {
         ))?;
 
         Spi::run(&format!(
-            "COMMENT ON TABLE {} 'An individual controlled by a player or Game Master.';",
+            "COMMENT ON TABLE {} IS 'An individual controlled by a player or Game Master.';",
             Character::Table
         ))?;
 
@@ -81,7 +83,7 @@ impl Migration for _230603095553Init {
         ))?;
 
         Spi::run(&format!(
-            "COMMENT ON TABLE {} 'Describes a specific trait or effect of a character or item.';",
+            "COMMENT ON TABLE {} IS 'Describes a specific trait or effect of a character or item.';",
             Trait::Table
         ))?;
 
@@ -105,7 +107,7 @@ impl Migration for _230603095553Init {
         ))?;
 
         Spi::run(&format!(
-            "COMMENT ON TABLE {} 'Describes a rule of a trait, which field to affect and by what amount';",
+            "COMMENT ON TABLE {} IS 'Describes a rule of a trait, which field to affect and by what amount';",
             NumericRule::Table
         ))?;
 
@@ -129,20 +131,21 @@ impl Migration for _230603095553Init {
         ))?;
 
         Spi::run(&format!(
-            "COMMENT ON TABLE {} 'Describes a rule of a trait, which field to affect and by what amount';",
+            "COMMENT ON TABLE {} IS 'Describes a rule of a trait, which field to affect and by what amount';",
             TextRule::Table
         ))?;
 
         Spi::run(&format!(
             r#"
-            CREATE TABLE {character_trait} (
-                {character_trait_character_id} uuid NOT NULL REFERENCES {character}({character_id}) ON DELETE CASCADE ON UPDATE CASCADE,
-                {character_trait_trait_id} uuid NOT NULL REFERENCES {trait}({trait_id}) ON DELETE CASCADE ON UPDATE CASCADE
+            CREATE TABLE {char_trait} (
+                {char_trait_character_id} uuid NOT NULL REFERENCES {character}({character_id}) ON DELETE CASCADE ON UPDATE CASCADE,
+                {char_trait_trait_id} uuid NOT NULL REFERENCES {trait}({trait_id}) ON DELETE CASCADE ON UPDATE CASCADE,
+                PRIMARY KEY ({char_trait_character_id}, {char_trait_trait_id})
             );
             "#,
-            character_trait = CharacterTrait::Table,
-            character_trait_character_id = CharacterTrait::CharacterId,
-            character_trait_trait_id = CharacterTrait::TraitId,
+            char_trait = CharacterTrait::Table,
+            char_trait_character_id = CharacterTrait::CharacterId,
+            char_trait_trait_id = CharacterTrait::TraitId,
             character = Character::Table,
             character_id = Character::Id,
             trait = Trait::Table,
@@ -150,47 +153,72 @@ impl Migration for _230603095553Init {
         ))?;
 
         Spi::run(&format!(
+            "COMMENT ON TABLE {} IS 'Connection between characters and traits.';",
+            CharacterTrait::Table
+        ))?;
+
+        Spi::run(&format!(
             r#"
-            CREATE VIEW {character_numeric_field} AS
+            CREATE VIEW {char_num_field} AS
             SELECT
-            	{character}.{character_id} AS {character_numeric_field_character_id},
-            	{field}.{field_id} AS {character_numeric_field_field_id},
-            	SUM({numeric_rule}.{numeric_rule_value}) AS {character_numeric_field_value}
+            	{char}.{char_id} AS {char_num_field_char_id},
+            	{field}.{field_id} AS {char_num_field_field_id},
+            	SUM({numeric_rule}.{numeric_rule_value}) AS {char_num_field_value}
             FROM {field}
             JOIN {numeric_rule} ON {numeric_rule}.{numeric_rule_field_id} = {field}.{field_id}
             JOIN {trait} ON {trait}.{trait_id} = {numeric_rule}.{numeric_rule_trait_id}
-            JOIN {character_trait} ON {character_trait}.{character_trait_trait_id} = {trait}.{trait_id}
-            JOIN {character} ON {character}.{character_id} = {character_trait}.{character_trait_character_id}
-            GROUP BY {field}.{field_id}, {character}.{character_id}
-            ORDER BY {character}.{character_id};
+            JOIN {char_trait} ON {char_trait}.{char_trait_trait_id} = {trait}.{trait_id}
+            JOIN {char} ON {char}.{char_id} = {char_trait}.{char_trait_char_id}
+            GROUP BY {field}.{field_id}, {char}.{char_id}
+            ORDER BY {char}.{char_id};
             "#,
-            character_numeric_field = CharacterNumericField::View,
-            character_numeric_field_character_id = CharacterNumericField::CharacterId,
-            character_numeric_field_field_id = CharacterNumericField::FieldId,
-            character_numeric_field_value = CharacterNumericField::Value,
+            char_num_field = CharacterNumericField::View,
+            char_num_field_char_id = CharacterNumericField::CharacterId,
+            char_num_field_field_id = CharacterNumericField::FieldId,
+            char_num_field_value = CharacterNumericField::Value,
             field = Field::Table,
             field_id = Field::Id,
-            character = Character::Table,
-            character_id = Character::Id,
+            char = Character::Table,
+            char_id = Character::Id,
             trait = Trait::Table,
             trait_id = Trait::Id,
             numeric_rule = NumericRule::Table,
             numeric_rule_field_id = NumericRule::FieldId,
             numeric_rule_trait_id = NumericRule::TraitId,
             numeric_rule_value = NumericRule::Value,
-            character_trait = CharacterTrait::Table,
-            character_trait_character_id = CharacterTrait::CharacterId,
-            character_trait_trait_id = CharacterTrait::TraitId,
+            char_trait = CharacterTrait::Table,
+            char_trait_char_id = CharacterTrait::CharacterId,
+            char_trait_trait_id = CharacterTrait::TraitId,
         ))?;
 
         Spi::run(&format!(
             r#"
-            COMMENT ON VIEW {character_numeric_field} IS
-            e'@graphql({{"primary_key_columns": [{character_id},{field_id}]}})';
+            COMMENT ON VIEW {char_num_field} IS E'
+                @graphql({{
+                    "primary_key_columns": [{char_num_field_char_id},{char_num_field_field_id}],
+                    "foreign_keys": [
+                        {{
+                            "local_columns": [{char_num_field_char_id}],
+                            "foreign_schema": "public",
+                            "foreign_table": {char},
+                            "foreign_columns": [{char_id}]
+                        }},
+                        {{
+                            "local_columns": [{char_num_field_field_id}],
+                            "foreign_schema": "public",
+                            "foreign_table": {field},
+                            "foreign_columns": [{field_id}]
+                        }}
+                    ]
+                }})';
             "#,
-            character_numeric_field = CharacterNumericField::View,
-            character_id = CharacterNumericField::CharacterId,
-            field_id = CharacterNumericField::FieldId,
+            char_num_field = CharacterNumericField::View,
+            char_num_field_char_id = CharacterNumericField::CharacterId,
+            char_num_field_field_id = CharacterNumericField::FieldId,
+            char = Character::Table,
+            char_id = Character::Id,
+            field = Field::Table,
+            field_id = Field::Id,
         ))?;
 
         Spi::run(&format!(
