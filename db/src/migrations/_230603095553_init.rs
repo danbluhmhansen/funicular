@@ -22,6 +22,11 @@ impl Migration for _230603095553Init {
         ))?;
 
         Spi::run(&format!(
+            "COMMENT ON TABLE {} IS 'Collection of fields.';",
+            Schema::Table
+        ))?;
+
+        Spi::run(&format!(
             r#"
             CREATE TABLE {field} (
                 {field_id} uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
@@ -42,6 +47,11 @@ impl Migration for _230603095553Init {
         ))?;
 
         Spi::run(&format!(
+            "COMMENT ON TABLE {} 'Describes a specific attribute of a character or item.';",
+            Field::Table
+        ))?;
+
+        Spi::run(&format!(
             r#"
             CREATE TABLE {character} (
                 {character_id} uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
@@ -54,6 +64,11 @@ impl Migration for _230603095553Init {
         ))?;
 
         Spi::run(&format!(
+            "COMMENT ON TABLE {} 'An individual controlled by a player or Game Master.';",
+            Character::Table
+        ))?;
+
+        Spi::run(&format!(
             r#"
             CREATE TABLE {trait} (
                 {trait_id} uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
@@ -63,6 +78,11 @@ impl Migration for _230603095553Init {
             trait = Trait::Table,
             trait_id = Trait::Id,
             trait_name = Trait::Name,
+        ))?;
+
+        Spi::run(&format!(
+            "COMMENT ON TABLE {} 'Describes a specific trait or effect of a character or item.';",
+            Trait::Table
         ))?;
 
         Spi::run(&format!(
@@ -85,6 +105,11 @@ impl Migration for _230603095553Init {
         ))?;
 
         Spi::run(&format!(
+            "COMMENT ON TABLE {} 'Describes a rule of a trait, which field to affect and by what amount';",
+            NumericRule::Table
+        ))?;
+
+        Spi::run(&format!(
             r#"
             CREATE TABLE {text_rule} (
                 {text_rule_field_id} uuid NOT NULL REFERENCES {field}({field_id}) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -101,6 +126,11 @@ impl Migration for _230603095553Init {
             field_id = Field::Id,
             trait = Trait::Table,
             trait_id = Trait::Id,
+        ))?;
+
+        Spi::run(&format!(
+            "COMMENT ON TABLE {} 'Describes a rule of a trait, which field to affect and by what amount';",
+            TextRule::Table
         ))?;
 
         Spi::run(&format!(
@@ -151,6 +181,16 @@ impl Migration for _230603095553Init {
             character_trait = CharacterTrait::Table,
             character_trait_character_id = CharacterTrait::CharacterId,
             character_trait_trait_id = CharacterTrait::TraitId,
+        ))?;
+
+        Spi::run(&format!(
+            r#"
+            COMMENT ON VIEW {character_numeric_field} IS
+            e'@graphql({{"primary_key_columns": [{character_id},{field_id}]}})';
+            "#,
+            character_numeric_field = CharacterNumericField::View,
+            character_id = CharacterNumericField::CharacterId,
+            field_id = CharacterNumericField::FieldId,
         ))?;
 
         Spi::run(&format!(

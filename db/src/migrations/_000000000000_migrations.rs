@@ -10,10 +10,17 @@ impl Migration for _000000000000Migrations {
             migration = _Migration::Table,
             migration_name = _Migration::Name
         ))?;
+
+        Spi::run(&format!(
+            "COMMENT ON TABLE {} IS 'Track which migrations are applied to the database.';",
+            _Migration::Table
+        ))?;
+
         Spi::run(&format!(
             "INSERT INTO {} VALUES ('000000000000_migrations');",
             _Migration::Table
         ))?;
+
         Ok(())
     }
 
