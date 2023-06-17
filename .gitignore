@@ -3,3 +3,5 @@
 /target
 *.iml
 **/*.rs.bk
+
+/app/dist/

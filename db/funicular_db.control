@@ -1,5 +1,5 @@
 comment = 'funicular:  Created by pgrx'
 default_version = '@CARGO_VERSION@'
-module_pathname = '$libdir/funicular'
+module_pathname = '$libdir/funicular_db'
 relocatable = false
 superuser = true
