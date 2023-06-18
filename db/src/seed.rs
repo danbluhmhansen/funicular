@@ -1,7 +1,4 @@
-use crate::{
-    into_pgrx_arg::IntoPgrxArg,
-    models::{Character, CharacterTrait, Field, NumericRule, Schema, Trait},
-};
+use crate::into_pgrx_arg::IntoPgrxArg;
 use pgrx::prelude::*;
 
 #[pg_extern]
@@ -68,14 +65,13 @@ pub fn fun_seed() -> Result<(), spi::Error> {
     .into_arg();
 
     Spi::run_with_args(
-        &format!("INSERT INTO {} VALUES ($1, 'foo')", Schema::Table),
+        r#"INSERT INTO "schema" VALUES ($1, 'foo')"#,
         Some(vec![schema_id]),
     )?;
 
     Spi::run_with_args(
-        &format!(
-            r#"
-        INSERT INTO {field} ({field_id}, {field_schema_id}, {field_name}) VALUES
+        r#"
+        INSERT INTO "field" ("id", "schema_id", "name") VALUES
             ($2, $1, 'strength'),
             ($3, $1, 'dexterity'),
             ($4, $1, 'constitution'),
@@ -83,11 +79,6 @@ pub fn fun_seed() -> Result<(), spi::Error> {
             ($6, $1, 'wisdom'),
             ($7, $1, 'charisma');
         "#,
-            field = Field::Table,
-            field_id = Field::Id,
-            field_schema_id = Field::SchemaId,
-            field_name = Field::Name
-        ),
         Some(vec![
             schema_id,
             str_field_id,
@@ -100,34 +91,27 @@ pub fn fun_seed() -> Result<(), spi::Error> {
     )?;
 
     Spi::run_with_args(
-        &format!(
-            r#"
-        INSERT INTO {} VALUES
+        r#"
+        INSERT INTO "character" VALUES
             ($1, 'Braugnor Quickcleaver'),
             ($2, 'Jaudenn Runecleaver');
         "#,
-            Character::Table
-        ),
         Some(vec![char1_id, char2_id]),
     )?;
 
     Spi::run_with_args(
-        &format!(
-            r#"
-        INSERT INTO {} VALUES
+        r#"
+        INSERT INTO "trait" VALUES
             ($1, 'base'),
             ($2, 'dwarf'),
             ($3, 'elf');
         "#,
-            Trait::Table
-        ),
         Some(vec![base_trait_id, dwarf_trait_id, elf_trait_id]),
     )?;
 
     Spi::run_with_args(
-        &format!(
-            r#"
-        INSERT INTO {} VALUES
+        r#"
+        INSERT INTO "numeric_rule" VALUES
             ($1, $7, 8),
             ($2, $7, 8),
             ($3, $7, 8),
@@ -137,8 +121,6 @@ pub fn fun_seed() -> Result<(), spi::Error> {
             ($1, $8, 2),
             ($2, $9, 2);
         "#,
-            NumericRule::Table
-        ),
         Some(vec![
             str_field_id,
             dex_field_id,
@@ -153,16 +135,13 @@ pub fn fun_seed() -> Result<(), spi::Error> {
     )?;
 
     Spi::run_with_args(
-        &format!(
-            r#"
-        INSERT INTO {} VALUES
+        r#"
+        INSERT INTO "character_trait" VALUES
             ($1, $3),
             ($2, $3),
             ($1, $4),
             ($2, $5);
         "#,
-            CharacterTrait::Table
-        ),
         Some(vec![
             char1_id,
             char2_id,
