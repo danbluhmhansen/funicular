@@ -1,15 +1,15 @@
 use crate::migrations::Migration;
 use pgrx::prelude::*;
 
-struct _230603095553Init;
+struct _230618102627Auth;
 
-impl Migration for _230603095553Init {
+impl Migration for _230618102627Auth {
     fn up() -> Result<(), spi::Error> {
         if !Spi::get_one_with_args::<bool>(
             r#"SELECT EXISTS (SELECT 1 FROM "_migration" WHERE "name" = $1 LIMIT 1);"#,
             vec![(
                 PgBuiltInOids::TEXTOID.oid(),
-                "230603095553_init".into_datum(),
+                "230618102627_auth".into_datum(),
             )],
         )
         .is_ok_and(|o| !o.is_some_and(|b| !b))
@@ -24,7 +24,7 @@ impl Migration for _230603095553Init {
             r#"SELECT EXISTS (SELECT 1 FROM "_migration" WHERE "name" = $1 LIMIT 1);"#,
             vec![(
                 PgBuiltInOids::TEXTOID.oid(),
-                "230603095553_init".into_datum(),
+                "230618102627_auth".into_datum(),
             )],
         )
         .is_ok_and(|o| o.is_some_and(|b| b))
@@ -36,11 +36,11 @@ impl Migration for _230603095553Init {
 }
 
 #[pg_extern]
-pub fn _230603095553_init_up() -> Result<(), spi::Error> {
-    _230603095553Init::up()
+pub fn _230618102627_auth_up() -> Result<(), spi::Error> {
+    _230618102627Auth::up()
 }
 
 #[pg_extern]
-pub fn _230603095553_init_down() -> Result<(), spi::Error> {
-    _230603095553Init::down()
+pub fn _230618102627_auth_down() -> Result<(), spi::Error> {
+    _230618102627Auth::down()
 }
