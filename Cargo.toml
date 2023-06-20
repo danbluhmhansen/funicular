@@ -1,5 +1,5 @@
 [workspace]
-members = ["app", "db"]
+members = ["app", "db", "derive"]
 
 [profile.dev]
 panic = "unwind"

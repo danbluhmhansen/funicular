@@ -1,13 +1,38 @@
+use funicular_derive::pg_migration;
 use pgrx::prelude::*;
 
-mod _000000000000_migrations;
-mod _230603095553_init;
-mod _230618102627_auth;
-
-trait Migration {
-    fn up() -> Result<(), spi::Error>;
-    fn down() -> Result<(), spi::Error>;
+#[pg_extern]
+pub fn _000000000000_migrations_up() -> Result<(), spi::Error> {
+    if !Spi::get_one_with_args::<bool>(
+            r#"SELECT 1::boolean FROM "information_schema"."tables" WHERE "table_schema" = $1 AND "table_name" = $2;"#,
+            vec![
+                (PgBuiltInOids::TEXTOID.oid(), "public".into_datum()),
+                (PgBuiltInOids::TEXTOID.oid(), "_migration".into_datum()),
+            ],
+        ).is_ok_and(|o| !o.is_some_and(|b| !b)) {
+            Spi::run(include_str!("migrations/_000000000000_migrations/up.sql"))?;
+        }
+    Ok(())
 }
+
+#[pg_extern]
+pub fn _000000000000_migrations_down() -> Result<(), spi::Error> {
+    if Spi::get_one_with_args::<bool>(
+        r#"SELECT EXISTS (SELECT 1 FROM "_migration" WHERE "name" = $1 LIMIT 1);"#,
+        vec![(
+            PgBuiltInOids::TEXTOID.oid(),
+            "000000000000_migrations".into_datum(),
+        )],
+    )
+    .is_ok_and(|o| o.is_some_and(|b| b))
+    {
+        Spi::run(include_str!("migrations/_000000000000_migrations/down.sql"))?;
+    }
+    Ok(())
+}
+
+pg_migration!(_230603095553_init);
+pg_migration!(_230618102627_auth);
 
 #[pg_extern]
 fn migrations_up() -> Result<(), spi::Error> {
