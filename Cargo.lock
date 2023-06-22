@@ -484,6 +484,9 @@ checksum = "f03a044702089b29cbac16d07a20a787334e430c206d97e028e2c9e384b49e13"
 name = "funicular_app"
 version = "0.1.0"
 dependencies = [
+ "gloo-net",
+ "serde",
+ "wasm-bindgen-futures",
  "yew",
 ]
 
