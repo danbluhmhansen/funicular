@@ -1,6 +1,6 @@
 use gloo_net::http::Request;
 use serde::Deserialize;
-use yew::prelude::*;
+use yew::{prelude::*, suspense::use_future};
 
 #[derive(Properties, PartialEq)]
 pub struct ButtonProps {
@@ -38,38 +38,47 @@ struct Character {
 }
 
 #[function_component]
-fn App() -> Html {
-    let counter = use_state(|| 0);
-    let onclick = {
-        let counter = counter.clone();
-        move |_| {
-            let value = *counter + 1;
-            counter.set(value);
-        }
-    };
-
-    let characters: Vec<Character> = vec![];
-    let characters = use_state(|| characters);
-    {
-        let characters = characters.clone();
-        use_effect(move || {
-            wasm_bindgen_futures::spawn_local(async move {
-                if let Ok(response) = Request::get("http://localhost:3000/character").send().await {
-                    if let Ok(fetched_characters) = response.json::<Vec<Character>>().await {
-                        characters.set(fetched_characters);
+fn Characters() -> HtmlResult {
+    let res = use_future(|| async {
+        Request::get("http://localhost:3000/character")
+            .send()
+            .await?
+            .json::<Vec<Character>>()
+            .await
+    })?;
+    Ok(match *res {
+        Ok(ref res) => html! {
+            <table class={classes!("table-auto", "dark:text-white")}>
+                <thead>
+                    <tr>
+                        <th>{"Id"}</th>
+                        <th>{"Name"}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        res.iter().map(|c| html! {
+                            <tr>
+                                <td>{c.id.as_ref()}</td>
+                                <td>{c.name.as_ref()}</td>
+                            </tr>
+                        }).collect::<Html>()
                     }
-                }
-            })
-        });
-    }
+                </tbody>
+            </table>
+        },
+        Err(ref failure) => failure.to_string().into(),
+    })
+}
 
+#[function_component]
+fn App() -> Html {
+    let fallback = html! {<div>{"Loading..."}</div>};
     html! {
         <div>
-            <Button {onclick}>{ "+1" }</Button>
-            <p class={classes!("dark:text-white")}>{ *counter }</p>
-            <ul class={classes!("dark:text-white")}>
-                { characters.iter().filter_map(|c| c.name.as_ref() ).collect::<Html>() }
-            </ul>
+            <Suspense {fallback}>
+                <Characters />
+            </Suspense>
         </div>
     }
 }
