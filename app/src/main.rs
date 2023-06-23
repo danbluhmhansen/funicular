@@ -46,21 +46,40 @@ fn Characters() -> HtmlResult {
             .json::<Vec<Character>>()
             .await
     })?;
+
+    let table_class = classes!("table-auto", "border-collapse");
+    let th_class = classes!(
+        "border-b",
+        "dark:border-slate-600",
+        "text-slate-400",
+        "dark:text-slate-200"
+    );
+    let tbody_class = classes!("bg-white", "dark:bg-slate-800");
+    let td_class = classes!(
+        "border-b",
+        "border-slate-100",
+        "dark:border-slate-700",
+        "p-4",
+        "pl-8",
+        "text-slate-500",
+        "dark:text-slate-400"
+    );
+
     Ok(match *res {
         Ok(ref res) => html! {
-            <table class={classes!("table-auto", "dark:text-white")}>
+            <table class={table_class}>
                 <thead>
                     <tr>
-                        <th>{"Id"}</th>
-                        <th>{"Name"}</th>
+                        <th class={th_class.clone()}>{"Id"}</th>
+                        <th class={th_class.clone()}>{"Name"}</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class={tbody_class}>
                     {
                         res.iter().map(|c| html! {
                             <tr>
-                                <td>{c.id.as_ref()}</td>
-                                <td>{c.name.as_ref()}</td>
+                                <td class={td_class.clone()}>{c.id.as_ref()}</td>
+                                <td class={td_class.clone()}>{c.name.as_ref()}</td>
                             </tr>
                         }).collect::<Html>()
                     }
