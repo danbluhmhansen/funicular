@@ -33,12 +33,14 @@ pub fn _000000000000_migrations_down() -> Result<(), spi::Error> {
 
 pg_migration!(_230603095553_init);
 pg_migration!(_230618102627_auth);
+pg_migration!(_230624135332_items);
 
 #[pg_extern]
 fn migrations_up() -> Result<(), spi::Error> {
     Spi::run("SELECT _000000000000_migrations_up();")?;
     Spi::run("SELECT _230603095553_init_up();")?;
     Spi::run("SELECT _230618102627_auth_up();")?;
+    Spi::run("SELECT _230624135332_items_up();")?;
     Ok(())
 }
 
@@ -60,6 +62,7 @@ fn migrations_down() -> Result<(), spi::Error> {
         return Ok(());
     }
 
+    Spi::run("SELECT _230624135332_items_down();")?;
     Spi::run("SELECT _230618102627_auth_down();")?;
     Spi::run("SELECT _230603095553_init_down();")?;
     Spi::run("SELECT _000000000000_migrations_down();")?;

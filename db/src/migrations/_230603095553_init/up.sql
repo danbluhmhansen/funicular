@@ -1,5 +1,3 @@
-COMMENT ON SCHEMA "public" IS E'@graphql({"inflect_names": true})';
-
 CREATE TABLE "schema" (
     "id"   uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
     "name" text NOT NULL CHECK ("name" ~ '^[a-z_]*$')
@@ -62,34 +60,15 @@ COMMENT ON TABLE "character_trait" IS 'Connection between characters and traits.
 
 CREATE VIEW "character_numeric_field" AS
 SELECT
-    "character"."id" AS "character_id",
-    "field"."id" AS "field_id",
+    "character"."id"            AS "character_id",
+    "field"."id"                AS "field_id",
     SUM("numeric_rule"."value") AS "value"
 FROM "field"
-JOIN "numeric_rule"    ON "numeric_rule"."field_id" = "field"."id"
-JOIN "trait"           ON "trait"."id" = "numeric_rule"."trait_id"
+JOIN "numeric_rule"    ON "numeric_rule"."field_id"    = "field"."id"
+JOIN "trait"           ON "trait"."id"                 = "numeric_rule"."trait_id"
 JOIN "character_trait" ON "character_trait"."trait_id" = "trait"."id"
-JOIN "character"       ON "character"."id" = "character_trait"."character_id"
+JOIN "character"       ON "character"."id"             = "character_trait"."character_id"
 GROUP BY "field"."id", "character"."id"
 ORDER BY "character"."id";
-
-COMMENT ON VIEW "character_numeric_field" IS E'
-    @graphql({{
-        "primary_key_columns": ["character_id","field_id"],
-        "foreign_keys": [
-            {{
-                "local_columns": ["character_id"],
-                "foreign_schema": "public",
-                "foreign_table": "character",
-                "foreign_columns": ["id"]
-            }},
-            {{
-                "local_columns": ["field_id"],
-                "foreign_schema": "public",
-                "foreign_table": "field",
-                "foreign_columns": ["id"]
-            }}
-        ]
-    }})';
 
 INSERT INTO "_migration" VALUES ('230603095553_init');
