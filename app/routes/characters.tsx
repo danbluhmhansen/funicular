@@ -22,7 +22,7 @@ export default function Page({ data }: PageProps<Character[] | null>) {
       </thead>
       <tbody>
         {data.map((c) => (
-          <tr>
+          <tr key={c.id}>
             <td>
               <a href={`/characters/${c.id}`}>
                 {c.name}
