@@ -31,16 +31,16 @@ pub fn _000000000000_migrations_down() -> Result<(), spi::Error> {
     Ok(())
 }
 
-pg_migration!(_230603095553_init);
-pg_migration!(_230618102627_auth);
-pg_migration!(_230624135332_items);
+pg_migration!(_230625095802_auth);
+pg_migration!(_230625095922_game);
+pg_migration!(_230625105931_actor);
 
 #[pg_extern]
 fn migrations_up() -> Result<(), spi::Error> {
     Spi::run("SELECT _000000000000_migrations_up();")?;
-    Spi::run("SELECT _230603095553_init_up();")?;
-    Spi::run("SELECT _230618102627_auth_up();")?;
-    Spi::run("SELECT _230624135332_items_up();")?;
+    Spi::run("SELECT _230625095802_auth_up();")?;
+    Spi::run("SELECT _230625095922_game_up();")?;
+    Spi::run("SELECT _230625105931_actor_up();")?;
     Ok(())
 }
 
@@ -62,9 +62,9 @@ fn migrations_down() -> Result<(), spi::Error> {
         return Ok(());
     }
 
-    Spi::run("SELECT _230624135332_items_down();")?;
-    Spi::run("SELECT _230618102627_auth_down();")?;
-    Spi::run("SELECT _230603095553_init_down();")?;
+    Spi::run("SELECT _230625105931_actor_down();")?;
+    Spi::run("SELECT _230625095922_game_down();")?;
+    Spi::run("SELECT _230625095802_auth_down();")?;
     Spi::run("SELECT _000000000000_migrations_down();")?;
 
     Ok(())
