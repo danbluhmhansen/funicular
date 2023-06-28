@@ -1,6 +1,6 @@
 CREATE TABLE "game" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
-    "name"        text NOT NULL CHECK ("name" ~ '^[a-z_]*$'),
+    "name"        text NOT NULL,
     "description" text
 );
 
@@ -9,7 +9,7 @@ COMMENT ON TABLE "game" IS 'Collection of rules for a specific game.';
 CREATE TABLE "skill" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
     "game_id"     uuid NOT NULL REFERENCES "game"("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    "name"        text NOT NULL CHECK ("name" ~ '^[a-z_]*$'),
+    "name"        text NOT NULL,
     "description" text
 );
 
@@ -22,7 +22,7 @@ CREATE TABLE "sub_skill" (
 
 CREATE TABLE "trait" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
-    "name"        text NOT NULL CHECK ("name" ~ '^[a-z_]*$'),
+    "name"        text NOT NULL,
     "description" text
 );
 

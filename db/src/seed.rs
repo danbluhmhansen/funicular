@@ -1,12 +1,29 @@
 use crate::into_pgrx_arg::IntoPgrxArg;
 use pgrx::prelude::*;
 
-#[pg_extern]
-pub fn fun_seed() -> Result<(), spi::Error> {
-    let game = Spi::get_one::<pgrx::Uuid>(
-        r#"INSERT INTO "game" ("name") VALUES ('foo') RETURNING "id";"#,
-    )?;
+fn seed_game() -> Result<pgrx::Uuid, spi::Error> {
+    Ok(
+        Spi::get_one::<pgrx::Uuid>(
+            r#"INSERT INTO "game" ("name") VALUES ('foo') RETURNING "id";"#,
+        )?
+        .unwrap(),
+    )
+}
 
+struct Skills {
+    str: pgrx::Uuid,
+    dex: pgrx::Uuid,
+    con: pgrx::Uuid,
+    int: pgrx::Uuid,
+    wis: pgrx::Uuid,
+    cha: pgrx::Uuid,
+    att_mel: pgrx::Uuid,
+    att_fin: pgrx::Uuid,
+    att_ran: pgrx::Uuid,
+    att_thr: pgrx::Uuid,
+}
+
+fn seed_skills(game: pgrx::Uuid) -> Result<Skills, spi::Error> {
     let skills = Spi::connect(|mut client| -> Result<Vec<pgrx::Uuid>, spi::Error> {
         Ok(client
             .update(
@@ -25,22 +42,24 @@ pub fn fun_seed() -> Result<(), spi::Error> {
                 RETURNING "id";
                 "#,
                 None,
-                Some(vec![game.unwrap().into_arg()]),
+                Some(vec![game.into_arg()]),
             )?
             .filter_map(|row| row.get(1).ok().flatten())
             .collect())
     })?;
 
-    let str = skills[0].into_arg();
-    let dex = skills[1].into_arg();
-    let con = skills[2].into_arg();
-    let int = skills[3].into_arg();
-    let wis = skills[4].into_arg();
-    let cha = skills[5].into_arg();
-    let att_mel = skills[6].into_arg();
-    let att_fin = skills[7].into_arg();
-    let att_ran = skills[8].into_arg();
-    let att_thr = skills[9].into_arg();
+    let skills = Skills {
+        str: skills[0],
+        dex: skills[1],
+        con: skills[2],
+        int: skills[3],
+        wis: skills[4],
+        cha: skills[5],
+        att_mel: skills[6],
+        att_fin: skills[7],
+        att_ran: skills[8],
+        att_thr: skills[9],
+    };
 
     Spi::run_with_args(
         r#"
@@ -50,9 +69,32 @@ pub fn fun_seed() -> Result<(), spi::Error> {
             ($2, $5),
             ($2, $6);
         "#,
-        Some(vec![str, dex, att_mel, att_fin, att_ran, att_thr]),
+        Some(vec![
+            skills.str.into_arg(),
+            skills.dex.into_arg(),
+            skills.att_mel.into_arg(),
+            skills.att_fin.into_arg(),
+            skills.att_ran.into_arg(),
+            skills.att_thr.into_arg(),
+        ]),
     )?;
 
+    Ok(skills)
+}
+
+struct Traits {
+    base: pgrx::Uuid,
+    base_str: pgrx::Uuid,
+    base_dex: pgrx::Uuid,
+    base_con: pgrx::Uuid,
+    base_int: pgrx::Uuid,
+    base_wis: pgrx::Uuid,
+    base_cha: pgrx::Uuid,
+    dwarf: pgrx::Uuid,
+    elf: pgrx::Uuid,
+}
+
+fn seed_traits() -> Result<Traits, spi::Error> {
     let traits = Spi::connect(|mut client| -> Result<Vec<pgrx::Uuid>, spi::Error> {
         Ok(client
             .update(
@@ -78,18 +120,20 @@ pub fn fun_seed() -> Result<(), spi::Error> {
             .collect())
     })?;
 
-    let base = traits[0].into_arg();
-    let base_str = traits[1].into_arg();
-    let base_dex = traits[2].into_arg();
-    let base_con = traits[3].into_arg();
-    let base_int = traits[4].into_arg();
-    let base_wis = traits[5].into_arg();
-    let base_cha = traits[6].into_arg();
-    let dwarf = traits[7].into_arg();
-    let elf = traits[8].into_arg();
-    let att_mel_trait = traits[9].into_arg();
-    let att_fin_trait = traits[10].into_arg();
+    Ok(Traits {
+        base: traits[0],
+        base_str: traits[1],
+        base_dex: traits[2],
+        base_con: traits[3],
+        base_int: traits[4],
+        base_wis: traits[5],
+        base_cha: traits[6],
+        dwarf: traits[7],
+        elf: traits[8],
+    })
+}
 
+fn seed_rule_nums(skills: &Skills, traits: &Traits) -> Result<(), spi::Error> {
     Spi::run_with_args(
         r#"
         INSERT INTO "rule_num" VALUES
@@ -109,8 +153,59 @@ pub fn fun_seed() -> Result<(), spi::Error> {
             ($2, $15, 2);
         "#,
         Some(vec![
-            str, dex, con, int, wis, cha, base, base_str, base_dex, base_con, base_int, base_wis,
-            base_cha, dwarf, elf,
+            skills.str.into_arg(),
+            skills.dex.into_arg(),
+            skills.con.into_arg(),
+            skills.int.into_arg(),
+            skills.wis.into_arg(),
+            skills.cha.into_arg(),
+            traits.base.into_arg(),
+            traits.base_str.into_arg(),
+            traits.base_dex.into_arg(),
+            traits.base_con.into_arg(),
+            traits.base_int.into_arg(),
+            traits.base_wis.into_arg(),
+            traits.base_cha.into_arg(),
+            traits.dwarf.into_arg(),
+            traits.elf.into_arg(),
+        ]),
+    )
+}
+
+fn seed_actors(skills: &Skills, traits: &Traits) -> Result<Vec<pgrx::Uuid>, spi::Error> {
+    let kinds = Spi::connect(|mut client| -> Result<Vec<pgrx::Uuid>, spi::Error> {
+        Ok(client
+            .update(
+                r#"
+                INSERT INTO "actor_kind" ("name") VALUES
+                    ('player')
+                RETURNING "id";
+                "#,
+                None,
+                None,
+            )?
+            .filter_map(|row| row.get(1).ok().flatten())
+            .collect())
+    })?;
+
+    Spi::run_with_args(
+        r#"
+        INSERT INTO "actor_skill" VALUES
+            ($1, $2),
+            ($1, $3),
+            ($1, $4),
+            ($1, $5),
+            ($1, $6),
+            ($1, $7);
+        "#,
+        Some(vec![
+            kinds[0].into_arg(),
+            skills.str.into_arg(),
+            skills.dex.into_arg(),
+            skills.con.into_arg(),
+            skills.int.into_arg(),
+            skills.wis.into_arg(),
+            skills.cha.into_arg(),
         ]),
     )?;
 
@@ -118,13 +213,13 @@ pub fn fun_seed() -> Result<(), spi::Error> {
         Ok(client
             .update(
                 r#"
-                INSERT INTO "actor" ("name") VALUES
-                    ('Braugnor Quickcleaver'),
-                    ('Jaudenn Runecleaver')
+                INSERT INTO "actor" ("kind_id", "name") VALUES
+                    ($1, 'Braugnor Quickcleaver'),
+                    ($1, 'Jaudenn Runecleaver')
                 RETURNING "id";
                 "#,
                 None,
-                None,
+                Some(vec![kinds[0].into_arg()]),
             )?
             .filter_map(|row| row.get(1).ok().flatten())
             .collect())
@@ -151,15 +246,64 @@ pub fn fun_seed() -> Result<(), spi::Error> {
         Some(vec![
             actors[0].into_arg(),
             actors[1].into_arg(),
-            base,
-            base_str,
-            base_dex,
-            base_con,
-            base_int,
-            base_wis,
-            base_cha,
-            dwarf,
-            elf,
+            traits.base.into_arg(),
+            traits.base_str.into_arg(),
+            traits.base_dex.into_arg(),
+            traits.base_con.into_arg(),
+            traits.base_int.into_arg(),
+            traits.base_wis.into_arg(),
+            traits.base_cha.into_arg(),
+            traits.dwarf.into_arg(),
+            traits.elf.into_arg(),
+        ]),
+    )?;
+
+    Ok(actors)
+}
+
+fn seed_gears(actor1: pgrx::Uuid, actor2: pgrx::Uuid, skills: &Skills) -> Result<(), spi::Error> {
+    let kinds = Spi::connect(|mut client| -> Result<Vec<pgrx::Uuid>, spi::Error> {
+        Ok(client
+            .update(
+                r#"
+                INSERT INTO "gear_kind" ("name") VALUES
+                    ('melee'),
+                    ('finesse'),
+                    ('ranged'),
+                    ('thrown')
+                RETURNING "id";
+                "#,
+                None,
+                None,
+            )?
+            .filter_map(|row| row.get(1).ok().flatten())
+            .collect())
+    })?;
+
+    let melee = kinds[0].into_arg();
+    let finesse = kinds[1].into_arg();
+    let ranged = kinds[2].into_arg();
+    let thrown = kinds[3].into_arg();
+
+    Spi::run_with_args(
+        r#"
+        INSERT INTO "gear_skill" VALUES
+            ($1, $5),
+            ($2, $5),
+            ($2, $6),
+            ($3, $7),
+            ($4, $7),
+            ($4, $8);
+        "#,
+        Some(vec![
+            melee,
+            finesse,
+            ranged,
+            thrown,
+            skills.att_mel.into_arg(),
+            skills.att_fin.into_arg(),
+            skills.att_ran.into_arg(),
+            skills.att_thr.into_arg(),
         ]),
     )?;
 
@@ -167,13 +311,13 @@ pub fn fun_seed() -> Result<(), spi::Error> {
         Ok(client
             .update(
                 r#"
-                INSERT INTO "gear" ("name") VALUES
-                    ('warhammer'),
-                    ('rapier')
+                INSERT INTO "gear" ("kind_id", "name") VALUES
+                    ($1, 'warhammer'),
+                    ($2, 'rapier')
                 RETURNING "id";
                 "#,
                 None,
-                None,
+                Some(vec![melee, finesse]),
             )?
             .filter_map(|row| row.get(1).ok().flatten())
             .collect())
@@ -184,15 +328,6 @@ pub fn fun_seed() -> Result<(), spi::Error> {
 
     Spi::run_with_args(
         r#"
-        INSERT INTO "gear_trait" VALUES
-            ($1, $3),
-            ($2, $4);
-        "#,
-        Some(vec![warhammer, rapier, att_mel_trait, att_fin_trait]),
-    )?;
-
-    Spi::run_with_args(
-        r#"
         INSERT INTO "actor_gear" VALUES
             ($1, $3),
             ($1, $4),
@@ -200,13 +335,24 @@ pub fn fun_seed() -> Result<(), spi::Error> {
             ($2, $4);
         "#,
         Some(vec![
-            actors[0].into_arg(),
-            actors[1].into_arg(),
+            actor1.into_arg(),
+            actor2.into_arg(),
             warhammer,
             rapier,
         ]),
     )?;
 
+    Ok(())
+}
+
+#[pg_extern]
+pub fn fun_seed() -> Result<(), spi::Error> {
+    let game = seed_game()?;
+    let skills = seed_skills(game)?;
+    let traits = seed_traits()?;
+    seed_rule_nums(&skills, &traits)?;
+    let actors = seed_actors(&skills, &traits)?;
+    seed_gears(actors[0], actors[1], &skills)?;
     Ok(())
 }
 

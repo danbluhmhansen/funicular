@@ -18,14 +18,14 @@ fn impl_pg_migration(item: proc_macro2::TokenStream) -> proc_macro2::TokenStream
     quote! {
         #[pgrx::pg_extern]
         pub fn #up() -> core::result::Result<(), pgrx::spi::Error> {
-            if !Spi::get_one_with_args::<bool>(
-                r#"SELECT EXISTS (SELECT 1 FROM "_migration" WHERE "name" = $1 LIMIT 1);"#,
+            if Spi::get_one_with_args::<bool>(
+                r#"SELECT NOT EXISTS (SELECT 1 FROM "_migration" WHERE "name" = $1 LIMIT 1);"#,
                 vec![(
                     PgBuiltInOids::TEXTOID.oid(),
                     #migration.into_datum(),
                 )],
             )
-            .is_ok_and(|o| !o.is_some_and(|b| !b))
+            .is_ok_and(|o| o.is_some_and(|b| b))
             {
                 Spi::run(include_str!(#path_up))?;
             }
