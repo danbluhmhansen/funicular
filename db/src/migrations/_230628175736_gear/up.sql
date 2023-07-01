@@ -5,6 +5,7 @@ CREATE TABLE "public"."gear_kind" (
 );
 
 COMMENT ON TABLE "gear_kind" IS 'A kind of gear, like equipment or consumables.';
+GRANT SELECT ON "gear_kind" TO "anon";
 
 CREATE TABLE "public"."gear_skill" (
     "kind_id"  uuid NOT NULL REFERENCES "gear_kind"("id") ON DELETE CASCADE ON UPDATE CASCADE,
@@ -13,6 +14,7 @@ CREATE TABLE "public"."gear_skill" (
 );
 
 COMMENT ON TABLE "gear_skill" IS 'Connection between gear kinds and skills.';
+GRANT SELECT ON "gear_skill" TO "anon";
 
 CREATE TABLE "public"."gear" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
@@ -22,6 +24,7 @@ CREATE TABLE "public"."gear" (
 );
 
 COMMENT ON TABLE "gear" IS 'Equipment or gear used by actors.';
+GRANT SELECT ON "gear" TO "anon";
 
 CREATE TABLE "public"."actor_gear" (
     "actor_id" uuid NOT NULL REFERENCES "actor"("id") ON DELETE CASCADE ON UPDATE CASCADE,
@@ -31,6 +34,7 @@ CREATE TABLE "public"."actor_gear" (
 );
 
 COMMENT ON TABLE "actor_gear" IS 'Connection between actors and gears.';
+GRANT SELECT ON "actor_gear" TO "anon";
 
 CREATE TABLE "public"."gear_trait" (
     "gear_id"  uuid NOT NULL REFERENCES "gear"("id")  ON DELETE CASCADE ON UPDATE CASCADE,
@@ -40,6 +44,7 @@ CREATE TABLE "public"."gear_trait" (
 );
 
 COMMENT ON TABLE "gear_trait" IS 'Connection between gears and traits.';
+GRANT SELECT ON "gear_trait" TO "anon";
 
 CREATE VIEW "gear_num_skill" AS
 SELECT
@@ -60,6 +65,9 @@ LEFT JOIN "gear_trait"   ON "gear_trait"."gear_id"   = "gear"."id" AND "gear_tra
 LEFT JOIN  "actor_trait" ON "actor_trait"."actor_id" = "actor"."id" AND "actor_trait"."trait_id" = "trait"."id"
 GROUP BY "actor_gear"."actor_id", "gear"."id", COALESCE("sub_skill"."sub_id", "gear_skill"."skill_id")
 ORDER BY 1, 2, 3;
+
+COMMENT ON VIEW "gear_num_skill" IS $$View of an actor's gear's current skill values.$$;
+GRANT SELECT ON "gear_num_skill" TO "anon";
 
 INSERT INTO "public"."_migration" VALUES ('230628175736_gear');
 NOTIFY pgrst, 'reload schema';

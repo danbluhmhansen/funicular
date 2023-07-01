@@ -5,6 +5,7 @@ CREATE TABLE "public"."game" (
 );
 
 COMMENT ON TABLE "game" IS 'Collection of rules for a specific game.';
+GRANT SELECT ON "game" TO "anon";
 
 CREATE TABLE "public"."skill" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
@@ -14,11 +15,15 @@ CREATE TABLE "public"."skill" (
 );
 
 COMMENT ON TABLE "skill" IS 'Describes a specific attribute or skill of an entity like actors or items.';
+GRANT SELECT ON "skill" TO "anon";
 
 CREATE TABLE "public"."sub_skill" (
     "sup_id" uuid NOT NULL REFERENCES "skill"("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "sub_id" uuid NOT NULL REFERENCES "skill"("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+COMMENT ON TABLE "sub_skill" IS 'Describes a skill that inherits values of another skill.';
+GRANT SELECT ON "sub_skill" TO "anon";
 
 CREATE TABLE "public"."trait" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
@@ -27,6 +32,7 @@ CREATE TABLE "public"."trait" (
 );
 
 COMMENT ON TABLE "trait" IS 'Describes a specific trait or effect of an entity like actors or items.';
+GRANT SELECT ON "trait" TO "anon";
 
 CREATE TABLE "public"."rule_num" (
     "skill_id" uuid NOT NULL REFERENCES "skill"("id") ON DELETE CASCADE ON UPDATE CASCADE,
@@ -36,6 +42,7 @@ CREATE TABLE "public"."rule_num" (
 );
 
 COMMENT ON TABLE "rule_num" IS 'Describes a numeric rule of a trait, which skill to affect and by what amount';
+GRANT SELECT ON "rule_num" TO "anon";
 
 INSERT INTO "public"."_migration" VALUES ('230625095922_game');
 NOTIFY pgrst, 'reload schema';

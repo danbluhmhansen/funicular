@@ -5,6 +5,7 @@ CREATE TABLE "public"."actor_kind" (
 );
 
 COMMENT ON TABLE "actor_kind" IS 'A kind of actor, like player or enemy.';
+GRANT SELECT ON "actor_kind" TO "anon";
 
 CREATE TABLE "public"."actor_skill" (
     "kind_id"  uuid NOT NULL REFERENCES "actor_kind"("id") ON DELETE CASCADE ON UPDATE CASCADE,
@@ -13,6 +14,7 @@ CREATE TABLE "public"."actor_skill" (
 );
 
 COMMENT ON TABLE "actor_skill" IS 'Connection between actor kinds and skills.';
+GRANT SELECT ON "actor_skill" TO "anon";
 
 CREATE TABLE "public"."actor" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
@@ -22,6 +24,7 @@ CREATE TABLE "public"."actor" (
 );
 
 COMMENT ON TABLE "actor" IS 'An individual controlled by a Game Master or player.';
+GRANT SELECT ON "actor" TO "anon";
 
 CREATE TABLE "public"."actor_trait" (
     "actor_id" uuid NOT NULL REFERENCES "actor"("id") ON DELETE CASCADE ON UPDATE CASCADE,
@@ -31,6 +34,7 @@ CREATE TABLE "public"."actor_trait" (
 );
 
 COMMENT ON TABLE "actor_trait" IS 'Connection between actors and traits.';
+GRANT SELECT ON "actor_trait" TO "anon";
 
 CREATE VIEW "actor_num_skill" AS
 SELECT
@@ -45,6 +49,9 @@ JOIN      "trait"        ON "trait"."id"             = "rule_num"."trait_id"
 LEFT JOIN  "actor_trait" ON "actor_trait"."actor_id" = "actor"."id" AND "actor_trait"."trait_id" = "trait"."id"
 GROUP BY "actor"."id", COALESCE("sub_skill"."sub_id", "actor_skill"."skill_id")
 ORDER BY 1, 2;
+
+COMMENT ON VIEW "actor_num_skill" IS $$View of actor's current skill values.$$;
+GRANT SELECT ON "actor_num_skill" TO "anon";
 
 INSERT INTO "public"."_migration" VALUES ('230625105931_actor');
 NOTIFY pgrst, 'reload schema';
