@@ -23,8 +23,8 @@ def main [name: string] {
   let path = $"db/src/migrations/_($migration)"
   mkdir $path
 
-  $"INSERT INTO \"_migration\" VALUES \('($migration)'\);
+  $"INSERT INTO \"public\".\"_migration\" VALUES \('($migration)'\);
 NOTIFY pgrst, 'reload schema';\n" | save $"($path)/up.sql"
-  $"DELETE FROM \"_migration\" WHERE \"name\" = '($migration)';
+  $"DELETE FROM \"public\".\"_migration\" WHERE \"name\" = '($migration)';
 NOTIFY pgrst, 'reload schema';\n" | save $"($path)/down.sql"
 }

@@ -1,4 +1,4 @@
-CREATE TABLE "gear_kind" (
+CREATE TABLE "public"."gear_kind" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
     "name"        text NOT NULL,
     "description" text
@@ -6,7 +6,7 @@ CREATE TABLE "gear_kind" (
 
 COMMENT ON TABLE "gear_kind" IS 'A kind of gear, like equipment or consumables.';
 
-CREATE TABLE "gear_skill" (
+CREATE TABLE "public"."gear_skill" (
     "kind_id"  uuid NOT NULL REFERENCES "gear_kind"("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "skill_id" uuid NOT NULL REFERENCES "skill"("id")     ON DELETE CASCADE ON UPDATE CASCADE,
     PRIMARY KEY ("kind_id", "skill_id")
@@ -14,7 +14,7 @@ CREATE TABLE "gear_skill" (
 
 COMMENT ON TABLE "gear_skill" IS 'Connection between gear kinds and skills.';
 
-CREATE TABLE "gear" (
+CREATE TABLE "public"."gear" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
     "kind_id"     uuid NOT NULL REFERENCES "gear_kind"("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "name"        text NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE "gear" (
 
 COMMENT ON TABLE "gear" IS 'Equipment or gear used by actors.';
 
-CREATE TABLE "actor_gear" (
+CREATE TABLE "public"."actor_gear" (
     "actor_id" uuid NOT NULL REFERENCES "actor"("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "gear_id"  uuid NOT NULL REFERENCES "gear"("id")  ON DELETE CASCADE ON UPDATE CASCADE,
     "amount"   int  DEFAULT 1,
@@ -32,7 +32,7 @@ CREATE TABLE "actor_gear" (
 
 COMMENT ON TABLE "actor_gear" IS 'Connection between actors and gears.';
 
-CREATE TABLE "gear_trait" (
+CREATE TABLE "public"."gear_trait" (
     "gear_id"  uuid NOT NULL REFERENCES "gear"("id")  ON DELETE CASCADE ON UPDATE CASCADE,
     "trait_id" uuid NOT NULL REFERENCES "trait"("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "amount"   int  DEFAULT 1,
@@ -61,5 +61,5 @@ LEFT JOIN  "actor_trait" ON "actor_trait"."actor_id" = "actor"."id" AND "actor_t
 GROUP BY "actor_gear"."actor_id", "gear"."id", COALESCE("sub_skill"."sub_id", "gear_skill"."skill_id")
 ORDER BY 1, 2, 3;
 
-INSERT INTO "_migration" VALUES ('230628175736_gear');
+INSERT INTO "public"."_migration" VALUES ('230628175736_gear');
 NOTIFY pgrst, 'reload schema';

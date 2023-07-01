@@ -1,1 +1,1 @@
-DROP TABLE "_migration";
+DROP TABLE "public"."_migration";

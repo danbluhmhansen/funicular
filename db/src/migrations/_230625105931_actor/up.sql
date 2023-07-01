@@ -1,4 +1,4 @@
-CREATE TABLE "actor_kind" (
+CREATE TABLE "public"."actor_kind" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
     "name"        text NOT NULL,
     "description" text
@@ -6,7 +6,7 @@ CREATE TABLE "actor_kind" (
 
 COMMENT ON TABLE "actor_kind" IS 'A kind of actor, like player or enemy.';
 
-CREATE TABLE "actor_skill" (
+CREATE TABLE "public"."actor_skill" (
     "kind_id"  uuid NOT NULL REFERENCES "actor_kind"("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "skill_id" uuid NOT NULL REFERENCES "skill"("id")      ON DELETE CASCADE ON UPDATE CASCADE,
     PRIMARY KEY ("kind_id", "skill_id")
@@ -14,7 +14,7 @@ CREATE TABLE "actor_skill" (
 
 COMMENT ON TABLE "actor_skill" IS 'Connection between actor kinds and skills.';
 
-CREATE TABLE "actor" (
+CREATE TABLE "public"."actor" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
     "kind_id"     uuid NOT NULL REFERENCES "actor_kind"("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "name"        text NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE "actor" (
 
 COMMENT ON TABLE "actor" IS 'An individual controlled by a Game Master or player.';
 
-CREATE TABLE "actor_trait" (
+CREATE TABLE "public"."actor_trait" (
     "actor_id" uuid NOT NULL REFERENCES "actor"("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "trait_id" uuid NOT NULL REFERENCES "trait"("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "amount"   int  DEFAULT 1,
@@ -46,5 +46,5 @@ LEFT JOIN  "actor_trait" ON "actor_trait"."actor_id" = "actor"."id" AND "actor_t
 GROUP BY "actor"."id", COALESCE("sub_skill"."sub_id", "actor_skill"."skill_id")
 ORDER BY 1, 2;
 
-INSERT INTO "_migration" VALUES ('230625105931_actor');
+INSERT INTO "public"."_migration" VALUES ('230625105931_actor');
 NOTIFY pgrst, 'reload schema';
