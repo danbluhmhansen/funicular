@@ -1,10 +1,11 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
+import { Head } from "$fresh/runtime.ts";
 import {
   ActorApi,
   ActorNumSkillApi,
   createConfiguration,
   SkillApi,
-} from "../../api-client/index.ts";
+} from "~apis";
 
 interface ActorAggregate {
   name: string;
@@ -53,35 +54,50 @@ export const handler: Handlers<void | ActorAggregate> = {
 export default function Page({ data }: PageProps<void | ActorAggregate>) {
   if (!data) {
     return (
-      <div class="mx-auto">
-        <h1>Skills not found.</h1>
-      </div>
+      <>
+        <Head>
+          <title>Funicular - Not found</title>
+        </Head>
+        <div class="mx-auto">
+          <h1>Actor not found.</h1>
+        </div>
+      </>
     );
   }
 
   if (!data.skills) {
     return (
-      <div class="mx-auto">
-        {data.name}
-      </div>
+      <>
+        <Head>
+          <title>Funicular - {data.name}</title>
+        </Head>
+        <div class="mx-auto">
+          {data.name}
+        </div>
+      </>
     );
   }
 
   return (
-    <div class="mx-auto">
-      {data.name}
-      <table>
-        <thead>
-          <tr>
-            {data.skills.map((s) => <th key={s.key}>{s.key}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            {data.skills.map((s) => <td key={s.key}>{s.value}</td>)}
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <>
+      <Head>
+        <title>Funicular - {data.name}</title>
+      </Head>
+      <div class="mx-auto">
+        {data.name}
+        <table>
+          <thead>
+            <tr>
+              {data.skills.map((s) => <th key={s.key}>{s.key}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {data.skills.map((s) => <td key={s.key}>{s.value}</td>)}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }

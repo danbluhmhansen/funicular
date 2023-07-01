@@ -1,6 +1,7 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { ActorApi, createConfiguration } from "../api-client/index.ts";
-import { Actor } from "../api-client/models/Actor.ts";
+import { ActorApi, createConfiguration } from "~apis";
+import { Actor } from "~api-models/Actor.ts";
+import { Head } from "$fresh/runtime.ts";
 
 export const handler: Handlers<void | Actor[]> = {
   async GET(_, ctx) {
@@ -15,23 +16,28 @@ export default function Page({ data }: PageProps<void | Actor[]>) {
   }
 
   return (
-    <table class="table-auto border-collapse mx-auto">
-      <thead>
-        <tr>
-          <th>Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((c) => (
-          <tr key={c.id}>
-            <td>
-              <a href={`/actors/${c.id}`}>
-                {c.name}
-              </a>
-            </td>
+    <>
+      <Head>
+        <title>Funicular - Actors</title>
+      </Head>
+      <table class="table-auto border-collapse mx-auto">
+        <thead>
+          <tr>
+            <th>Name</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {data.map((c) => (
+            <tr key={c.id}>
+              <td>
+                <a href={`/actors/${c.id}`}>
+                  {c.name}
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 }
