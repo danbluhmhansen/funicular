@@ -5,7 +5,7 @@ RUN apt install -y clang
 
 WORKDIR /funicular
 COPY . .
-RUN cargo install --locked cargo-pgrx@0.9.6
+RUN cargo install --locked cargo-pgrx@0.9.7
 RUN cargo pgrx init --pg15 download
 RUN cargo pgrx package --manifest-path db/Cargo.toml --pg-config /root/.pgrx/15.3/pgrx-install/bin/pg_config --out-dir .
 
