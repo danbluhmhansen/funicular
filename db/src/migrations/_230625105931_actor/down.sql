@@ -1,3 +1,4 @@
+DROP VIEW  "actor_num_skill";
 DROP TABLE "actor_trait";
 DROP TABLE "actor";
 DROP TABLE "actor_skill";

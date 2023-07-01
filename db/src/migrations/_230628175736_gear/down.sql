@@ -1,3 +1,4 @@
+DROP VIEW  "gear_num_skill";
 DROP TABLE "gear_trait";
 DROP TABLE "actor_gear";
 DROP TABLE "gear";
