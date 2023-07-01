@@ -1,16 +1,17 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
-import Character from "~models/character.ts";
+import { ActorApi, createConfiguration } from "../api-client/index.ts";
+import { Actor } from "../api-client/models/Actor.ts";
 
-export const handler: Handlers<Character[] | null> = {
+export const handler: Handlers<void | Actor[]> = {
   async GET(_, ctx) {
-    const resp = await fetch("http://localhost:3000/character");
-    return ctx.render(resp.status === 200 ? await resp.json() : null);
+    const api = new ActorApi(createConfiguration());
+    return ctx.render(await api.actorGet());
   },
 };
 
-export default function Page({ data }: PageProps<Character[] | null>) {
+export default function Page({ data }: PageProps<void | Actor[]>) {
   if (!data) {
-    return <h1>No characters...</h1>;
+    return <h1>No actors...</h1>;
   }
 
   return (
@@ -24,7 +25,7 @@ export default function Page({ data }: PageProps<Character[] | null>) {
         {data.map((c) => (
           <tr key={c.id}>
             <td>
-              <a href={`/characters/${c.id}`}>
+              <a href={`/actors/${c.id}`}>
                 {c.name}
               </a>
             </td>
