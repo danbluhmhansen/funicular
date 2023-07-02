@@ -21,13 +21,13 @@ export default function Page({ data }: PageProps<void | Actor[]>) {
       </Head>
       <table class="table-auto border-collapse mx-auto">
         <thead>
-          <tr>
+          <tr class="px-4 py-2">
             <th>Name</th>
           </tr>
         </thead>
         <tbody>
           {data.map((c) => (
-            <tr key={c.id}>
+            <tr key={c.id} class="px-4 py-2">
               <td>
                 <a href={`/actors/${c.id}`}>
                   {c.name}

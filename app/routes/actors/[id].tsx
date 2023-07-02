@@ -78,12 +78,16 @@ export default function Page({ data }: PageProps<void | ActorAggregate>) {
         <table>
           <thead>
             <tr>
-              {data.skills.map((s) => <th key={s.key}>{s.key}</th>)}
+              {data.skills.map((s) => (
+                <th key={s.key} class="px-4 py-2">{s.key}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
             <tr>
-              {data.skills.map((s) => <td key={s.key}>{s.value}</td>)}
+              {data.skills.map((s) => (
+                <td key={s.key} class="px-4 py-2">{s.value}</td>
+              ))}
             </tr>
           </tbody>
         </table>
