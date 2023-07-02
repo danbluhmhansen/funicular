@@ -19,6 +19,3 @@ target/
 # JetBrains
 .idea/
 *.iml
-
-# Funicular
-app/dist/

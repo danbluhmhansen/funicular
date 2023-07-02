@@ -1,11 +1,6 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
-import {
-  ActorApi,
-  ActorNumSkillApi,
-  createConfiguration,
-  SkillApi,
-} from "~apis";
+import { actorGet, actorNumSkillGet, skillGet } from "~apis";
 
 interface ActorAggregate {
   name: string;
@@ -19,17 +14,12 @@ export const handler: Handlers<void | ActorAggregate> = {
   async GET(_, ctx) {
     const { id } = ctx.params;
 
-    const config = createConfiguration();
-    const actorApi = new ActorApi(config);
-    const actorNumSkillApi = new ActorNumSkillApi(config);
-    const skillApi = new SkillApi(config);
-
-    const actors = await actorApi.actorGet({ id: `eq.${id}` });
+    const actors = await actorGet({ id: `eq.${id}` });
     const actor = actors ? actors[0] : undefined;
 
-    const skills = await skillApi.skillGet();
+    const skills = await skillGet();
 
-    const actorSkills = await actorNumSkillApi.actorNumSkillGet({
+    const actorSkills = await actorNumSkillGet({
       actorId: `eq.${id}`,
     });
 

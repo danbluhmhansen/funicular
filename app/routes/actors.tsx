@@ -1,12 +1,11 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { ActorApi, createConfiguration } from "~apis";
+import { actorGet } from "~apis";
 import { Actor } from "~api-models/Actor.ts";
 import { Head } from "$fresh/runtime.ts";
 
 export const handler: Handlers<void | Actor[]> = {
   async GET(_, ctx) {
-    const api = new ActorApi(createConfiguration());
-    return ctx.render(await api.actorGet());
+    return ctx.render(await actorGet());
   },
 };
 
