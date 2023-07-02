@@ -8,7 +8,6 @@
     "~components/": "./components/",
     "~islands/": "./islands/",
     "~apis": "./api-client/index.ts",
-    "~api-models/": "./api-client/models/",
     "$fresh/": "https://deno.land/x/fresh@1.2.0/",
     "preact": "https://esm.sh/preact@10.15.1",
     "preact/": "https://esm.sh/preact@10.15.1/",

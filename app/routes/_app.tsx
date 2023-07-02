@@ -10,6 +10,9 @@ export default function App({ Component }: AppProps) {
               <a href="/">Home</a>
             </li>
             <li>
+              <a href="/games">Games</a>
+            </li>
+            <li>
               <a href="/actors">Actors</a>
             </li>
           </ul>
