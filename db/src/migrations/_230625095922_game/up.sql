@@ -1,6 +1,7 @@
 CREATE TABLE "public"."game" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
-    "name"        text NOT NULL,
+    "name"        text NOT NULL UNIQUE,
+    "created"     timestamp GENERATED ALWAYS AS (uuid7_time("id")) STORED,
     "description" text
 );
 

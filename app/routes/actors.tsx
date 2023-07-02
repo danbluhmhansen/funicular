@@ -1,6 +1,5 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { actorGet } from "~apis";
-import { Actor } from "~api-models/Actor.ts";
+import { Actor, actorGet } from "~apis";
 import { Head } from "$fresh/runtime.ts";
 
 export const handler: Handlers<void | Actor[]> = {

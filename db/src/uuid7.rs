@@ -2,8 +2,8 @@ use chrono::{Datelike, NaiveDate, NaiveDateTime, Timelike};
 use pgrx::prelude::*;
 use rand::rngs::ThreadRng;
 
-#[pg_extern]
-pub fn uuid7_to_time(uuid: pgrx::Uuid) -> Result<pgrx::Timestamp, &'static str> {
+#[pg_extern(immutable)]
+fn uuid7_time(uuid: pgrx::Uuid) -> Result<pgrx::Timestamp, &'static str> {
     if uuid[6] >> 4 == 7 {
         let ts = &uuid[0..6];
         let ms = (ts[0] as i64) << 40
@@ -33,12 +33,12 @@ pub fn uuid7_to_time(uuid: pgrx::Uuid) -> Result<pgrx::Timestamp, &'static str> 
 }
 
 #[pg_extern]
-pub fn gen_rand_uuid7() -> Result<pgrx::Uuid, String> {
+fn gen_rand_uuid7() -> Result<pgrx::Uuid, String> {
     pgrx::Uuid::from_slice(uuid7::uuid7().as_bytes())
 }
 
 #[pg_extern]
-pub fn gen_uuid7(ts: pgrx::Timestamp) -> Result<pgrx::Uuid, String> {
+fn gen_uuid7(ts: pgrx::Timestamp) -> Result<pgrx::Uuid, String> {
     let (h, m, s, ms) = ts.to_hms_micro();
     if let Some(datetime) =
         NaiveDate::from_ymd_opt(ts.year(), u32::from(ts.month()), u32::from(ts.day()))
@@ -71,7 +71,7 @@ mod tests {
                 2023, 5, 29, 10, 36, 0.724
             ))),
             Spi::get_one_with_args::<pgrx::Timestamp>(
-                "SELECT uuid7_to_time($1);",
+                "SELECT uuid7_time($1);",
                 vec![(
                     PgBuiltInOids::UUIDOID.oid(),
                     pgrx::Uuid::from_bytes(UUID).into_datum(),
@@ -93,7 +93,7 @@ mod tests {
         assert_eq!(
             Ok(Some(ts)),
             Spi::get_one_with_args::<pgrx::Timestamp>(
-                "SELECT uuid7_to_time($1);",
+                "SELECT uuid7_time($1);",
                 vec![(PgBuiltInOids::UUIDOID.oid(), uuid.into_datum(),)],
             )
         );
