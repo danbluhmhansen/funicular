@@ -4,8 +4,8 @@ import { Game, gameGet } from "~apis";
 
 export const handler: Handlers<void | Game> = {
   async GET(_, ctx) {
-    const { id } = ctx.params;
-    const games = await gameGet({ id: `eq.${id}` });
+    const { name } = ctx.params;
+    const games = await gameGet({ name: `eq.${name}` });
     return ctx.render(games ? games[0] : undefined);
   },
 };
@@ -33,7 +33,13 @@ export default function Page({ data }: PageProps<void | Game>) {
         {data.name}
         <ul>
           <li>
-            <a href={`${data.id}/skills`}>Skills</a>
+            <a href={`${data.name}/actors`}>Actors</a>
+          </li>
+          <li>
+            <a href={`${data.name}/skills`}>Skills</a>
+          </li>
+          <li>
+            <a href={`${data.name}/traits`}>Traits</a>
           </li>
         </ul>
       </div>

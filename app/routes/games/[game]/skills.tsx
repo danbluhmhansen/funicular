@@ -4,8 +4,10 @@ import { Skill, skillGet } from "~apis";
 
 export const handler: Handlers<void | Skill[]> = {
   async GET(_, ctx) {
-    const { game_id } = ctx.params;
-    return ctx.render(await skillGet({ gameId: `eq.${game_id}` }));
+    const { game } = ctx.params;
+    return ctx.render(
+      await skillGet({ select: `*,game!inner()&game.name=eq.${game}'` }),
+    );
   },
 };
 
@@ -26,9 +28,9 @@ export default function Page({ data }: PageProps<void | Skill[]>) {
           </tr>
         </thead>
         <tbody>
-          {data.map((c) => (
-            <tr key={c.id} class="px-4 py-2">
-              <td>{c.name}</td>
+          {data.map((s) => (
+            <tr key={s.id} class="px-4 py-2">
+              <td>{s.name}</td>
             </tr>
           ))}
         </tbody>

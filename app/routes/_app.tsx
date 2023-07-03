@@ -12,9 +12,6 @@ export default function App({ Component }: AppProps) {
             <li>
               <a href="/games">Games</a>
             </li>
-            <li>
-              <a href="/actors">Actors</a>
-            </li>
           </ul>
         </nav>
       </header>

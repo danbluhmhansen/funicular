@@ -12,20 +12,28 @@ interface ActorAggregate {
 
 export const handler: Handlers<void | ActorAggregate> = {
   async GET(_, ctx) {
-    const { id } = ctx.params;
+    const { game, actor } = ctx.params;
 
-    const actors = await actorGet({ id: `eq.${id}` });
-    const actor = actors ? actors[0] : undefined;
+    const actors = await actorGet({
+      select:
+        `*,actor_kind!inner(game!inner())&actor_kind.game.name=eq.${game}&name=ilike.${
+          actor.replace("-", " ")
+        }`,
+    });
+    const actorModel = actors ? actors[0] : undefined;
 
-    const skills = await skillGet();
-
-    const actorSkills = await actorNumSkillGet({
-      actorId: `eq.${id}`,
+    const skills = await skillGet({
+      select: `*,game!inner()&game.name=eq.${game}'`,
     });
 
-    if (actor && skills && actorSkills) {
+    const actorSkills = await actorNumSkillGet({
+      select: `*,game!inner()&game.name=eq.${game}`,
+      actorId: `eq.${actorModel?.id}`,
+    });
+
+    if (actorModel && skills && actorSkills) {
       return ctx.render({
-        name: actor.name,
+        name: actorModel.name,
         skills: actorSkills.map((skill, i) => {
           return {
             key: skills[i].name,
@@ -33,8 +41,8 @@ export const handler: Handlers<void | ActorAggregate> = {
           };
         }),
       });
-    } else if (actor) {
-      return ctx.render({ name: actor.name });
+    } else if (actorModel) {
+      return ctx.render({ name: actorModel.name });
     } else {
       return ctx.render(undefined);
     }

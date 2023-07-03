@@ -25,11 +25,11 @@ export default function Page({ data }: PageProps<void | Game[]>) {
           </tr>
         </thead>
         <tbody>
-          {data.map((c) => (
-            <tr key={c.id} class="px-4 py-2">
+          {data.map((g) => (
+            <tr key={g.id} class="px-4 py-2">
               <td>
-                <a href={`games/${c.id}`}>
-                  {c.name}
+                <a href={`games/${g.name}`}>
+                  {g.name}
                 </a>
               </td>
             </tr>
