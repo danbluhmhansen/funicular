@@ -1,7 +1,10 @@
 CREATE TABLE "public"."gear_kind" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
+    "game_id"     uuid NOT NULL REFERENCES "game"("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "name"        text NOT NULL,
-    "description" text
+    "created"     timestamp GENERATED ALWAYS AS (uuid7_time("id")) STORED,
+    "description" text,
+    UNIQUE ("game_id", "name")
 );
 
 COMMENT ON TABLE "gear_kind" IS 'A kind of gear, like equipment or consumables.';
@@ -20,7 +23,9 @@ CREATE TABLE "public"."gear" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
     "kind_id"     uuid NOT NULL REFERENCES "gear_kind"("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "name"        text NOT NULL,
-    "description" text
+    "created"     timestamp GENERATED ALWAYS AS (uuid7_time("id")) STORED,
+    "description" text,
+    UNIQUE ("kind_id", "name")
 );
 
 COMMENT ON TABLE "gear" IS 'Equipment or gear used by actors.';
@@ -48,6 +53,7 @@ GRANT SELECT ON "gear_trait" TO "anon";
 
 CREATE VIEW "gear_num_skill" AS
 SELECT
+    "gear_kind"."game_id"                                         AS "game_id",
     "actor_gear"."actor_id"                                       AS "actor_id",
     "gear"."id"                                                   AS "gear_id",
     COALESCE("sub_skill"."sub_id", "gear_skill"."skill_id")       AS "skill_id",
@@ -55,16 +61,17 @@ SELECT
         "rule_num"."value" * COALESCE("actor_trait"."amount", 0) +
         "rule_num"."value" * COALESCE("gear_trait"."amount",  0)) AS "value"
 FROM "public"."gear"
-JOIN      "actor_gear"   ON "actor_gear"."gear_id"   = "gear"."id"
-JOIN      "actor"        ON "actor"."id"             = "actor_gear"."actor_id"
-JOIN      "gear_skill"   ON "gear_skill"."kind_id"   = "gear"."kind_id"
-LEFT JOIN "sub_skill"    ON "sub_skill"."sub_id"     = "gear_skill"."skill_id"
-JOIN      "rule_num"     ON "rule_num"."skill_id"    = ANY(ARRAY["gear_skill"."skill_id", "sub_skill"."sup_id"])
-JOIN      "trait"        ON "trait"."id"             = "rule_num"."trait_id"
-LEFT JOIN "gear_trait"   ON "gear_trait"."gear_id"   = "gear"."id" AND "gear_trait"."trait_id" = "trait"."id"
-LEFT JOIN  "actor_trait" ON "actor_trait"."actor_id" = "actor"."id" AND "actor_trait"."trait_id" = "trait"."id"
-GROUP BY "actor_gear"."actor_id", "gear"."id", COALESCE("sub_skill"."sub_id", "gear_skill"."skill_id")
-ORDER BY 1, 2, 3;
+JOIN      "gear_kind"   ON "gear_kind"."id"         = "gear"."kind_id"
+JOIN      "actor_gear"  ON "actor_gear"."gear_id"   = "gear"."id"
+JOIN      "actor"       ON "actor"."id"             = "actor_gear"."actor_id"
+JOIN      "gear_skill"  ON "gear_skill"."kind_id"   = "gear"."kind_id"
+LEFT JOIN "sub_skill"   ON "sub_skill"."sub_id"     = "gear_skill"."skill_id"
+JOIN      "rule_num"    ON "rule_num"."skill_id"    = ANY(ARRAY["gear_skill"."skill_id", "sub_skill"."sup_id"])
+JOIN      "trait"       ON "trait"."id"             = "rule_num"."trait_id"
+LEFT JOIN "gear_trait"  ON "gear_trait"."gear_id"   = "gear"."id" AND "gear_trait"."trait_id" = "trait"."id"
+LEFT JOIN "actor_trait" ON "actor_trait"."actor_id" = "actor"."id" AND "actor_trait"."trait_id" = "trait"."id"
+GROUP BY "gear_kind"."game_id", "actor_gear"."actor_id", "gear"."id", COALESCE("sub_skill"."sub_id", "gear_skill"."skill_id")
+ORDER BY 1, 2, 3, 4;
 
 COMMENT ON VIEW "gear_num_skill" IS $$View of an actor's gear's current skill values.$$;
 GRANT SELECT ON "gear_num_skill" TO "anon";

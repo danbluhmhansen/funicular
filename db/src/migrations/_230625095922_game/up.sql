@@ -12,7 +12,9 @@ CREATE TABLE "public"."skill" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
     "game_id"     uuid NOT NULL REFERENCES "game"("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "name"        text NOT NULL,
-    "description" text
+    "created"     timestamp GENERATED ALWAYS AS (uuid7_time("id")) STORED,
+    "description" text,
+    UNIQUE ("game_id", "name")
 );
 
 COMMENT ON TABLE "skill" IS 'Describes a specific attribute or skill of an entity like actors or items.';
@@ -28,8 +30,11 @@ GRANT SELECT ON "sub_skill" TO "anon";
 
 CREATE TABLE "public"."trait" (
     "id"          uuid PRIMARY KEY DEFAULT gen_rand_uuid7(),
+    "game_id"     uuid NOT NULL REFERENCES "game"("id") ON DELETE CASCADE ON UPDATE CASCADE,
     "name"        text NOT NULL,
-    "description" text
+    "created"     timestamp GENERATED ALWAYS AS (uuid7_time("id")) STORED,
+    "description" text,
+    UNIQUE ("game_id", "name")
 );
 
 COMMENT ON TABLE "trait" IS 'Describes a specific trait or effect of an entity like actors or items.';

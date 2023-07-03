@@ -94,27 +94,27 @@ struct Traits {
     elf: pgrx::Uuid,
 }
 
-fn seed_traits() -> Result<Traits, spi::Error> {
+fn seed_traits(game: pgrx::Uuid) -> Result<Traits, spi::Error> {
     let traits = Spi::connect(|mut client| -> Result<Vec<pgrx::Uuid>, spi::Error> {
         Ok(client
             .update(
                 r#"
-                INSERT INTO "trait" ("name") VALUES
-                    ('base'),
-                    ('base_str'),
-                    ('base_dex'),
-                    ('base_con'),
-                    ('base_int'),
-                    ('base_wis'),
-                    ('base_cha'),
-                    ('dwarf'),
-                    ('elf'),
-                    ('att_mel'),
-                    ('att_fin')
+                INSERT INTO "trait" ("game_id" ,"name") VALUES
+                    ($1, 'base'),
+                    ($1, 'base_str'),
+                    ($1, 'base_dex'),
+                    ($1, 'base_con'),
+                    ($1, 'base_int'),
+                    ($1, 'base_wis'),
+                    ($1, 'base_cha'),
+                    ($1, 'dwarf'),
+                    ($1, 'elf'),
+                    ($1, 'att_mel'),
+                    ($1, 'att_fin')
                 RETURNING "id";
                 "#,
                 None,
-                None,
+                Some(vec![game.into_arg()]),
             )?
             .filter_map(|row| row.get(1).ok().flatten())
             .collect())
@@ -172,17 +172,21 @@ fn seed_rule_nums(skills: &Skills, traits: &Traits) -> Result<(), spi::Error> {
     )
 }
 
-fn seed_actors(skills: &Skills, traits: &Traits) -> Result<Vec<pgrx::Uuid>, spi::Error> {
+fn seed_actors(
+    game: pgrx::Uuid,
+    skills: &Skills,
+    traits: &Traits,
+) -> Result<Vec<pgrx::Uuid>, spi::Error> {
     let kinds = Spi::connect(|mut client| -> Result<Vec<pgrx::Uuid>, spi::Error> {
         Ok(client
             .update(
                 r#"
-                INSERT INTO "actor_kind" ("name") VALUES
-                    ('player')
+                INSERT INTO "actor_kind" ("game_id", "name") VALUES
+                    ($1, 'player')
                 RETURNING "id";
                 "#,
                 None,
-                None,
+                Some(vec![game.into_arg()]),
             )?
             .filter_map(|row| row.get(1).ok().flatten())
             .collect())
@@ -261,20 +265,25 @@ fn seed_actors(skills: &Skills, traits: &Traits) -> Result<Vec<pgrx::Uuid>, spi:
     Ok(actors)
 }
 
-fn seed_gears(actor1: pgrx::Uuid, actor2: pgrx::Uuid, skills: &Skills) -> Result<(), spi::Error> {
+fn seed_gears(
+    game: pgrx::Uuid,
+    actor1: pgrx::Uuid,
+    actor2: pgrx::Uuid,
+    skills: &Skills,
+) -> Result<(), spi::Error> {
     let kinds = Spi::connect(|mut client| -> Result<Vec<pgrx::Uuid>, spi::Error> {
         Ok(client
             .update(
                 r#"
-                INSERT INTO "gear_kind" ("name") VALUES
-                    ('melee'),
-                    ('finesse'),
-                    ('ranged'),
-                    ('thrown')
+                INSERT INTO "gear_kind" ("game_id", "name") VALUES
+                    ($1, 'melee'),
+                    ($1, 'finesse'),
+                    ($1, 'ranged'),
+                    ($1, 'thrown')
                 RETURNING "id";
                 "#,
                 None,
-                None,
+                Some(vec![game.into_arg()]),
             )?
             .filter_map(|row| row.get(1).ok().flatten())
             .collect())
@@ -349,10 +358,10 @@ fn seed_gears(actor1: pgrx::Uuid, actor2: pgrx::Uuid, skills: &Skills) -> Result
 pub fn fun_seed() -> Result<(), spi::Error> {
     let game = seed_game()?;
     let skills = seed_skills(game)?;
-    let traits = seed_traits()?;
+    let traits = seed_traits(game)?;
     seed_rule_nums(&skills, &traits)?;
-    let actors = seed_actors(&skills, &traits)?;
-    seed_gears(actors[0], actors[1], &skills)?;
+    let actors = seed_actors(game, &skills, &traits)?;
+    seed_gears(game, actors[0], actors[1], &skills)?;
     Ok(())
 }
 
