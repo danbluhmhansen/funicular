@@ -4,26 +4,13 @@ import { Game, gameGet } from "~apis";
 
 export const handler: Handlers<void | Game> = {
   async GET(_, ctx) {
-    const { name } = ctx.params;
-    const games = await gameGet({ name: `eq.${name}` });
-    return ctx.render(games ? games[0] : undefined);
+    const { game } = ctx.params;
+    const games = await gameGet({ name: `eq.${game}` });
+    return games && games[0] ? ctx.render(games[0]) : ctx.renderNotFound();
   },
 };
 
-export default function Page({ data }: PageProps<void | Game>) {
-  if (!data) {
-    return (
-      <>
-        <Head>
-          <title>Funicular - Not found</title>
-        </Head>
-        <div class="mx-auto">
-          <h1>Game not found.</h1>
-        </div>
-      </>
-    );
-  }
-
+export default function Page({ data }: PageProps<Game>) {
   return (
     <>
       <Head>
