@@ -1,6 +1,7 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { Trait, traitGet } from "~apis";
+import { Breadcrumb } from "~components/breadcrumb.tsx";
 
 export const handler: Handlers<void | Trait[]> = {
   async GET(_, ctx) {
@@ -11,7 +12,9 @@ export const handler: Handlers<void | Trait[]> = {
   },
 };
 
-export default function Page({ data }: PageProps<void | Trait[]>) {
+export default function Page(
+  { data, params: { game }, url: { pathname } }: PageProps<void | Trait[]>,
+) {
   if (!data) {
     return <h1>No traits...</h1>;
   }
@@ -21,20 +24,26 @@ export default function Page({ data }: PageProps<void | Trait[]>) {
       <Head>
         <title>Funicular - Traits</title>
       </Head>
-      <table class="table-auto border-collapse mx-auto">
-        <thead>
-          <tr class="px-4 py-2">
-            <th>Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((t) => (
-            <tr key={t.id} class="px-4 py-2">
-              <td>{t.name}</td>
+      <div class="mx-auto">
+        <Breadcrumb path={pathname}>
+          <span>{game}</span>
+          <span>Traits</span>
+        </Breadcrumb>
+        <table class="table-auto border-collapse mx-auto">
+          <thead>
+            <tr class="px-4 py-2">
+              <th>Name</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((t) => (
+              <tr key={t.id} class="px-4 py-2">
+                <td>{t.name}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }

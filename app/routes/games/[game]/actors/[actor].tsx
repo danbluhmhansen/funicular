@@ -1,6 +1,7 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { actorGet, actorNumSkillGet, skillGet } from "~apis";
+import { Breadcrumb } from "~components/breadcrumb.tsx";
 
 interface ActorAggregate {
   name: string;
@@ -49,7 +50,11 @@ export const handler: Handlers<void | ActorAggregate> = {
   },
 };
 
-export default function Page({ data }: PageProps<void | ActorAggregate>) {
+export default function Page(
+  { data, params: { game }, url: { pathname } }: PageProps<
+    void | ActorAggregate
+  >,
+) {
   if (!data) {
     return (
       <>
@@ -82,6 +87,11 @@ export default function Page({ data }: PageProps<void | ActorAggregate>) {
         <title>Funicular - {data.name}</title>
       </Head>
       <div class="mx-auto">
+        <Breadcrumb path={pathname}>
+          <span>{game}</span>
+          <span>Actors</span>
+          <span>{data.name}</span>
+        </Breadcrumb>
         {data.name}
         <table>
           <thead>
