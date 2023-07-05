@@ -3,16 +3,18 @@ import { TbChevronRight } from "react-icons/tb";
 
 interface BreadcrumbProps extends JSX.HTMLAttributes {
   path: string;
+  separator?: JSX.Element | undefined;
 }
 
 export function Breadcrumb(props: BreadcrumbProps) {
   const children = props.children as ComponentChild[];
-  const path = props.path;
+  const { path, separator } = props;
+  const sep = separator ?? <TbChevronRight />;
 
   const segments = path.split("/").slice(1).map((_p, i, s) => {
     return "/" + s.slice(0, i + 1).join("/");
-  }).slice(1).map((s, i) => {
-    return { href: s, child: children[i] };
+  }).slice(1).map((href, i) => {
+    return { href, child: children[i] };
   });
 
   const links = segments.slice(0, -1);
@@ -21,15 +23,27 @@ export function Breadcrumb(props: BreadcrumbProps) {
   return (
     <nav class="flex">
       <ol class="inline-flex items-center">
-        {links.map((l, i) => (
-          <a href={l.href} class="inline-flex items-center">
-            {i !== 0 && <TbChevronRight />}
-            {l.child}
-          </a>
+        {links.map(({ href, child }, i) => (
+          <li key={i}>
+            {i === 0
+              ? (
+                <a href={href} class="inline-flex items-center">
+                  {child}
+                </a>
+              )
+              : (
+                <div class="flex items-center">
+                  {sep}
+                  <a href={href} class="inline-flex items-center">
+                    {child}
+                  </a>
+                </div>
+              )}
+          </li>
         ))}
         <li>
           <div class="flex items-center">
-            <TbChevronRight />
+            {sep}
             {current}
           </div>
         </li>
