@@ -1,33 +1,12 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
-import {
-  Actor,
-  ActorGear,
-  ActorKind,
-  actorNumSkillGet,
-  ActorTrait,
-  Gear,
-  Skill,
-  Trait,
-} from "~apis";
+import { Actor, actorNumSkillGet, Gear, Skill, Trait } from "~apis";
 import { Breadcrumb } from "~components/breadcrumb.tsx";
 
-interface IActorKind extends ActorKind {
+interface ActorQuery extends Actor {
   skill: Skill[];
-}
-
-interface IActorTrait extends ActorTrait {
-  trait: Trait;
-}
-
-interface IActorGear extends ActorGear {
-  gear: Gear;
-}
-
-interface IActor extends Actor {
-  actor_kind: IActorKind;
-  actor_trait: IActorTrait[];
-  actor_gear: IActorGear[];
+  trait: Trait[];
+  gear: Gear[];
 }
 
 interface ActorAggregate {
@@ -44,9 +23,9 @@ export const handler: Handlers<void | ActorAggregate> = {
 
     const select = [
       "*",
-      "actor_kind!inner(game!inner(),skill(name))",
-      "actor_trait(trait(name))",
-      "actor_gear(gear(name))",
+      "...actor_kind!inner(game!inner(),skill(name))",
+      "trait:actor_trait(...trait(name))",
+      "gear:actor_gear(...gear(name))",
     ].join(",");
 
     const query = [
@@ -56,22 +35,22 @@ export const handler: Handlers<void | ActorAggregate> = {
 
     const url = `http://localhost:3000/actor?select=${select}&${query}`;
 
-    const actorModel: IActor = await (await fetch(url, {
+    const actorQuery: ActorQuery = await (await fetch(url, {
       headers: {
         Accept: "application/vnd.pgrst.object+json",
       },
     })).json();
 
-    const skills = actorModel.actor_kind.skill;
+    const skills = actorQuery.skill;
 
     const actorSkills = await actorNumSkillGet({
       select: `*,game!inner()&game.name=eq.${game}`,
-      actorId: `eq.${actorModel?.id}`,
+      actorId: `eq.${actorQuery?.id}`,
     });
 
-    if (actorModel && skills && actorSkills) {
+    if (actorQuery && skills && actorSkills) {
       return ctx.render({
-        name: actorModel.name,
+        name: actorQuery.name,
         skills: actorSkills.map((skill, i) => {
           return {
             key: skills[i].name,
@@ -79,10 +58,10 @@ export const handler: Handlers<void | ActorAggregate> = {
           };
         }),
       });
-    } else if (actorModel) {
-      return ctx.render({ name: actorModel.name });
+    } else if (actorQuery) {
+      return ctx.render({ name: actorQuery.name });
     } else {
-      return ctx.render(undefined);
+      return ctx.renderNotFound();
     }
   },
 };

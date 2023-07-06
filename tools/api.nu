@@ -3,9 +3,9 @@
 def main [--url (-u) = "http://localhost:3000/"] {
   let select = ([
     "*",
-    "actor_kind!inner(game!inner(),skill(name))",
-    "actor_trait(trait(name))",
-    "actor_gear(gear(name))",
+    "...actor_kind!inner(game!inner(),skill(name))",
+    "trait:actor_trait(...trait(name))",
+    "gear:actor_gear(...gear(name))",
   ] | str join ",")
   let query = ([
     "actor_kind.game.name=eq.foo",
