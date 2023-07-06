@@ -1,7 +1,34 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
-import { actorGet, actorNumSkillGet, skillGet } from "~apis";
+import {
+  Actor,
+  ActorGear,
+  ActorKind,
+  actorNumSkillGet,
+  ActorTrait,
+  Gear,
+  Skill,
+  Trait,
+} from "~apis";
 import { Breadcrumb } from "~components/breadcrumb.tsx";
+
+interface IActorKind extends ActorKind {
+  skill: Skill[];
+}
+
+interface IActorTrait extends ActorTrait {
+  trait: Trait;
+}
+
+interface IActorGear extends ActorGear {
+  gear: Gear;
+}
+
+interface IActor extends Actor {
+  actor_kind: IActorKind;
+  actor_trait: IActorTrait[];
+  actor_gear: IActorGear[];
+}
 
 interface ActorAggregate {
   name: string;
@@ -15,17 +42,29 @@ export const handler: Handlers<void | ActorAggregate> = {
   async GET(_, ctx) {
     const { game, actor } = ctx.params;
 
-    const actors = await actorGet({
-      select:
-        `*,actor_kind!inner(game!inner())&actor_kind.game.name=eq.${game}&name=ilike.${
-          actor.replace("-", " ")
-        }`,
-    });
-    const actorModel = actors ? actors[0] : undefined;
+    const select = [
+      "*",
+      "actor_kind!inner(game!inner(),skill(name))",
+      "actor_trait(trait(name))",
+      "actor_gear(gear(name))",
+    ].join(",");
 
-    const skills = await skillGet({
-      select: `*,game!inner()&game.name=eq.${game}'`,
-    });
+    const query = [
+      `actor_kind.game.name=eq.${game}`,
+      `name=ilike.${actor.replace("-", " ")}`,
+    ].join("&");
+
+    const url = `http://localhost:3000/actor?select=${select}&${query}`;
+
+    const actorModel: IActor = await (await fetch(url, {
+      headers: {
+        Accept: "application/vnd.pgrst.object+json",
+      },
+    })).json();
+
+    console.log(actorModel);
+
+    const skills = actorModel.actor_kind.skill;
 
     const actorSkills = await actorNumSkillGet({
       select: `*,game!inner()&game.name=eq.${game}`,
