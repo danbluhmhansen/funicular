@@ -62,8 +62,6 @@ export const handler: Handlers<void | ActorAggregate> = {
       },
     })).json();
 
-    console.log(actorModel);
-
     const skills = actorModel.actor_kind.skill;
 
     const actorSkills = await actorNumSkillGet({
