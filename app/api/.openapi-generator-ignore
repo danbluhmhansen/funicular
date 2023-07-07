@@ -1,0 +1,12 @@
+apis/
+auth/
+types/
+
+*.md
+configuration.ts
+git_push.sh
+http/isomorphic-fetch.ts
+index.ts
+middleware.ts
+servers.ts
+util.ts

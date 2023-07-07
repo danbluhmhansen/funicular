@@ -1,6 +1,6 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
-import { Actor, ActorNumSkill, Gear, Skill, Trait } from "~apis";
+import { Actor, ActorNumSkill, Gear, Skill, Trait } from "~api-models";
 import { Breadcrumb } from "~components/breadcrumb.tsx";
 
 interface ActorQuery extends Actor {

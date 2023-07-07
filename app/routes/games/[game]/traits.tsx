@@ -1,13 +1,15 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
-import { Trait, traitGet } from "~apis";
+import { Trait } from "~api-models";
 import { Breadcrumb } from "~components/breadcrumb.tsx";
 
 export const handler: Handlers<void | Trait[]> = {
   async GET(_, ctx) {
     const { game } = ctx.params;
     return ctx.render(
-      await traitGet({ select: `*,game!inner()&game.name=eq.${game}'` }),
+      await (await fetch(
+        `http://localhost:3000/trait?select=*,game!inner()&game.name=eq.${game}`,
+      )).json(),
     );
   },
 };

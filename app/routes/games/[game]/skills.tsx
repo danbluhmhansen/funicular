@@ -1,13 +1,15 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
-import { Skill, skillGet } from "~apis";
+import { Skill } from "~api-models";
 import { Breadcrumb } from "~components/breadcrumb.tsx";
 
 export const handler: Handlers<void | Skill[]> = {
   async GET(_, ctx) {
     const { game } = ctx.params;
     return ctx.render(
-      await skillGet({ select: `*,game!inner()&game.name=eq.${game}'` }),
+      await (await fetch(
+        `http://localhost:3000/skill?select=*,game!inner()&game.name=eq.${game}`,
+      )).json(),
     );
   },
 };

@@ -1,11 +1,12 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
-import { Game, gameGet } from "~apis";
+import { Game } from "~api-models";
 
 export const handler: Handlers<void | Game> = {
   async GET(_, ctx) {
     const { game } = ctx.params;
-    const games = await gameGet({ name: `eq.${game}` });
+    const games =
+      await (await fetch(`http://localhost:3000/game?name=eq.${game}`)).json();
     return games && games[0] ? ctx.render(games[0]) : ctx.renderNotFound();
   },
 };

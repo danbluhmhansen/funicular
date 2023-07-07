@@ -7,4 +7,6 @@
 
 dist/
 
-api/
+api/models/
+api/http/
+api/rxjsStub.ts
