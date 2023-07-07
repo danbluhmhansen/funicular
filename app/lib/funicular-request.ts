@@ -3,10 +3,16 @@ interface FunicularRequest extends RequestInit {
 
   fetch(): Promise<Response>;
 
-  path(input: string): FunicularRequest;
-  select(input: string | string[]): FunicularRequest;
+  get(): FunicularRequest;
+  post(body?: BodyInit): FunicularRequest;
+  put(body?: BodyInit): FunicularRequest;
+  delete(): FunicularRequest;
 
   single(): FunicularRequest;
+
+  path(input: string | string[]): FunicularRequest;
+
+  select(input: string | string[]): FunicularRequest;
 
   eq(key: string, value: string): FunicularRequest;
   ilike(key: string, value: string): FunicularRequest;
@@ -15,20 +21,40 @@ interface FunicularRequest extends RequestInit {
 export function funicularRequest(): FunicularRequest {
   return {
     url: new URL("", Deno.env.get("SERVER") ?? "http://localhost:3000/"),
+
     fetch() {
       return fetch(this.url, this);
     },
-    path(input) {
-      this.url.pathname = input;
-      return this;
+
+    get() {
+      return {
+        method: "GET",
+        body: undefined,
+        ...this,
+      };
     },
-    select(input) {
-      this.url.searchParams.set(
-        "select",
-        typeof input === "object" ? input.join(",") : input,
-      );
-      return this;
+    post(body) {
+      return {
+        method: "POST",
+        body,
+        ...this,
+      };
     },
+    put(body) {
+      return {
+        method: "PUT",
+        body,
+        ...this,
+      };
+    },
+    delete() {
+      return {
+        method: "DELETE",
+        body: undefined,
+        ...this,
+      };
+    },
+
     single() {
       return {
         headers: {
@@ -38,6 +64,20 @@ export function funicularRequest(): FunicularRequest {
         ...this,
       };
     },
+
+    path(input) {
+      this.url.pathname = typeof input === "object" ? input.join("/") : input;
+      return this;
+    },
+
+    select(input) {
+      this.url.searchParams.set(
+        "select",
+        typeof input === "object" ? input.join(",") : input,
+      );
+      return this;
+    },
+
     eq(key, value) {
       this.url.searchParams.set(key, "eq." + value);
       return this;
