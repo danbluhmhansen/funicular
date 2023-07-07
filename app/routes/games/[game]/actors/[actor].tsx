@@ -2,6 +2,7 @@ import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { Actor, Gear, Skill, Trait } from "~api-models";
 import { Breadcrumb } from "~components/breadcrumb.tsx";
+import { funicularRequest } from "~lib/funicular-request.ts";
 
 interface SkillMap extends Skill {
   value: number;
@@ -17,26 +18,15 @@ export const handler: Handlers<ActorMap> = {
   async GET(_, ctx) {
     const { game, actor } = ctx.params;
 
-    const select = [
+    const actorRes = await funicularRequest().path("actor").select([
       "name",
       "gears:actor_gear(...gear(name))",
       "skills:actor_num_skill(...skill(name),value)",
       "traits:actor_trait(...trait(name))",
       "...actor_kind!inner(game!inner())",
-    ].join(",");
+    ]).eq("actor_kind.game.name", game).ilike("name", actor.replace("-", " "))
+      .single().fetch();
 
-    const query = [
-      `actor_kind.game.name=eq.${game}`,
-      `name=ilike.${actor.replace("-", " ")}`,
-    ].join("&");
-
-    const url = `http://localhost:3000/actor?select=${select}&${query}`;
-
-    const actorRes = await fetch(url, {
-      headers: {
-        Accept: "application/vnd.pgrst.object+json",
-      },
-    });
     const actorMap: ActorMap = await actorRes.json();
 
     return actorMap ? ctx.render(actorMap) : ctx.renderNotFound();

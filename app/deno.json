@@ -2,11 +2,13 @@
   "lock": false,
   "tasks": {
     "start": "deno run -A --watch=static/,routes/ dev.ts",
-    "update": "deno run -A -r https://fresh.deno.dev/update ."
+    "update": "deno run -A -r https://fresh.deno.dev/update .",
+    "gen-api": "cd api && openapi-generator-cli generate --config config.yml --generator-name typescript --input-spec http://localhost:3000"
   },
   "imports": {
     "~components/": "./components/",
     "~islands/": "./islands/",
+    "~lib/": "./lib/",
     "~api-models": "./api/models/all.ts",
     "$fresh/": "https://deno.land/x/fresh@1.2.0/",
     "preact": "https://esm.sh/preact@10.15.1",
