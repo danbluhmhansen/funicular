@@ -1,6 +1,6 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
-import { Actor, actorNumSkillGet, Gear, Skill, Trait } from "~apis";
+import { Actor, ActorNumSkill, Gear, Skill, Trait } from "~apis";
 import { Breadcrumb } from "~components/breadcrumb.tsx";
 
 interface ActorQuery extends Actor {
@@ -35,18 +35,19 @@ export const handler: Handlers<void | ActorAggregate> = {
 
     const url = `http://localhost:3000/actor?select=${select}&${query}`;
 
-    const actorQuery: ActorQuery = await (await fetch(url, {
+    const actorRes = await fetch(url, {
       headers: {
         Accept: "application/vnd.pgrst.object+json",
       },
-    })).json();
+    });
+    const actorQuery: ActorQuery = await actorRes.json();
 
     const skills = actorQuery.skill;
 
-    const actorSkills = await actorNumSkillGet({
-      select: `*,game!inner()&game.name=eq.${game}`,
-      actorId: `eq.${actorQuery?.id}`,
-    });
+    const actorSkillsRes = await fetch(
+      `http://localhost:3000/actor_num_skill?actor_id=eq.${actorQuery?.id}`,
+    );
+    const actorSkills: ActorNumSkill[] = await actorSkillsRes.json();
 
     if (actorQuery && skills && actorSkills) {
       return ctx.render({
@@ -68,35 +69,9 @@ export const handler: Handlers<void | ActorAggregate> = {
 
 export default function Page(
   { data, params: { game }, url: { pathname } }: PageProps<
-    void | ActorAggregate
+    ActorAggregate
   >,
 ) {
-  if (!data) {
-    return (
-      <>
-        <Head>
-          <title>Funicular - Not found</title>
-        </Head>
-        <div class="mx-auto">
-          <h1>Actor not found.</h1>
-        </div>
-      </>
-    );
-  }
-
-  if (!data.skills) {
-    return (
-      <>
-        <Head>
-          <title>Funicular - {data.name}</title>
-        </Head>
-        <div class="mx-auto">
-          {data.name}
-        </div>
-      </>
-    );
-  }
-
   return (
     <>
       <Head>
@@ -109,22 +84,24 @@ export default function Page(
           <span>{data.name}</span>
         </Breadcrumb>
         {data.name}
-        <table>
-          <thead>
-            <tr>
-              {data.skills.map((s) => (
-                <th key={s.key} class="px-4 py-2">{s.key}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              {data.skills.map((s) => (
-                <td key={s.key} class="px-4 py-2">{s.value}</td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
+        {data.skills && (
+          <table>
+            <thead>
+              <tr>
+                {data.skills.map((s) => (
+                  <th key={s.key} class="px-4 py-2">{s.key}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {data.skills.map((s) => (
+                  <td key={s.key} class="px-4 py-2">{s.value}</td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        )}
       </div>
     </>
   );
