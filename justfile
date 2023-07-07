@@ -17,3 +17,8 @@ sqlc command:
 
 sqlf file:
   psql postgresql://postgres:postgres@localhost:5432/funicular --csv --file """{{file}}"""
+
+app gen:
+  #!/usr/bin/env nu
+  cd app/api
+  openapi-generator-cli generate --config config.yml --generator-name typescript --input-spec http://localhost:3000
