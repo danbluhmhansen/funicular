@@ -4,25 +4,21 @@ import { Skill } from "~api-models";
 import { Breadcrumb } from "~components/breadcrumb.tsx";
 import funRequest from "~lib/funicular-request.ts";
 
-export const handler: Handlers<void | Skill[]> = {
+export const handler: Handlers<Skill[]> = {
   async GET(_, ctx) {
     const { game } = ctx.params;
-    return ctx.render(
-      await (await funRequest().path("skill").select([
-        "*",
-        "game!inner()",
-      ]).eq("game.name", game).fetch()).json(),
-    );
+    const data = await funRequest().path("skill").select([
+      "*",
+      "game!inner()",
+    ]).eq("game.name", game).json();
+    console.log(data);
+    return ctx.render(data);
   },
 };
 
 export default function Page(
-  { data, params: { game }, url: { pathname } }: PageProps<void | Skill[]>,
+  { data, params: { game }, url: { pathname } }: PageProps<Skill[]>,
 ) {
-  if (!data) {
-    return <h1>No skills...</h1>;
-  }
-
   return (
     <>
       <Head>
@@ -33,20 +29,26 @@ export default function Page(
           <span>{game}</span>
           <span>Skills</span>
         </Breadcrumb>
-        <table class="table-auto border-collapse mx-auto">
-          <thead>
-            <tr class="px-4 py-2">
-              <th>Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((s) => (
-              <tr key={s.id} class="px-4 py-2">
-                <td>{s.name}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {data.length > 0
+          ? (
+            <table class="table-auto border-collapse mx-auto">
+              <thead>
+                <tr class="px-4 py-2">
+                  <th>Name</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((s) => (
+                  <tr key={s.id} class="px-4 py-2">
+                    <td>{s.name}</td>
+                    <td>{s.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )
+          : <p>No skills...</p>}
       </div>
     </>
   );

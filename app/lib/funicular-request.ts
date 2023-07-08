@@ -21,6 +21,11 @@ class FunRequest {
     return fetch(this.url, this.init);
   }
 
+  async json() {
+    const response = await this.fetch();
+    return response.json();
+  }
+
   get() {
     this.init.method = "GET";
     this.init.body = undefined;

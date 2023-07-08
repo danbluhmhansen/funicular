@@ -27,14 +27,17 @@ export function Breadcrumb(props: BreadcrumbProps) {
           <li key={i}>
             {i === 0
               ? (
-                <a href={href} class="inline-flex items-center">
+                <a href={href} class="inline-flex items-center hover:underline">
                   {child}
                 </a>
               )
               : (
                 <div class="flex items-center">
                   {sep}
-                  <a href={href} class="inline-flex items-center">
+                  <a
+                    href={href}
+                    class="inline-flex items-center hover:underline"
+                  >
                     {child}
                   </a>
                 </div>

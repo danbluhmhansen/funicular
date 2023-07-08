@@ -18,18 +18,16 @@ export const handler: Handlers<ActorMap> = {
   async GET(_, ctx) {
     const { game, actor } = ctx.params;
 
-    const actorRes = await funRequest().path("actor").select([
+    const data = await funRequest().path("actor").select([
       "name",
       "gears:actor_gear(...gear(name))",
       "skills:actor_num_skill(...skill(name),value)",
       "traits:actor_trait(...trait(name))",
       "...actor_kind!inner(game!inner())",
     ]).eq("actor_kind.game.name", game).ilike("name", actor.replace("-", " "))
-      .single().fetch();
+      .single().json();
 
-    const actorMap: ActorMap = await actorRes.json();
-
-    return actorMap ? ctx.render(actorMap) : ctx.renderNotFound();
+    return data ? ctx.render(data) : ctx.renderNotFound();
   },
 };
 

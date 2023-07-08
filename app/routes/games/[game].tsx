@@ -6,10 +6,9 @@ import funRequest from "~lib/funicular-request.ts";
 export const handler: Handlers<void | Game> = {
   async GET(_, ctx) {
     const { game } = ctx.params;
-    const gameModel =
-      await (await funRequest().path("game").eq("name", game).single()
-        .fetch()).json();
-    return gameModel ? ctx.render(gameModel) : ctx.renderNotFound();
+    const data = await funRequest().path("game").eq("name", game).single()
+      .json();
+    return data ? ctx.render(data) : ctx.renderNotFound();
   },
 };
 
@@ -23,13 +22,13 @@ export default function Page({ data }: PageProps<Game>) {
         <h1 class="text-xl">{data.name}</h1>
         <ul>
           <li>
-            <a href={`${data.name}/actors`}>Actors</a>
+            <a href={`${data.name}/actors`} class="hover:underline">Actors</a>
           </li>
           <li>
-            <a href={`${data.name}/skills`}>Skills</a>
+            <a href={`${data.name}/skills`} class="hover:underline">Skills</a>
           </li>
           <li>
-            <a href={`${data.name}/traits`}>Traits</a>
+            <a href={`${data.name}/traits`} class="hover:underline">Traits</a>
           </li>
         </ul>
       </div>
