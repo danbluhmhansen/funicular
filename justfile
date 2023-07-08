@@ -1,10 +1,16 @@
+set positional-arguments
+
+alias a := app
 alias t := test
 
 default:
   @just --list
 
-test crate='':
-  cargo test {{ if crate == 'app' { '--bin funicular_app' } else if crate == 'db' { '--lib db' } else { '' } }}
+app *args='':
+  cd app && deno task "$@"
+
+test:
+  cargo test
 
 add migration name:
   nu tools/migrations/add.nu {{name}}

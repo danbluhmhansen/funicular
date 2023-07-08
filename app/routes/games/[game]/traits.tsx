@@ -2,14 +2,16 @@ import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { Trait } from "~api-models";
 import { Breadcrumb } from "~components/breadcrumb.tsx";
+import funRequest from "~lib/funicular-request.ts";
 
 export const handler: Handlers<void | Trait[]> = {
   async GET(_, ctx) {
     const { game } = ctx.params;
     return ctx.render(
-      await (await fetch(
-        `http://localhost:3000/trait?select=*,game!inner()&game.name=eq.${game}`,
-      )).json(),
+      await (await funRequest().path("trait").select([
+        "*",
+        "game!inner()",
+      ]).eq("game.name", game).fetch()).json(),
     );
   },
 };

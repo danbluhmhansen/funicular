@@ -1,13 +1,15 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { Game } from "~api-models";
+import funRequest from "~lib/funicular-request.ts";
 
 export const handler: Handlers<void | Game> = {
   async GET(_, ctx) {
     const { game } = ctx.params;
-    const games =
-      await (await fetch(`http://localhost:3000/game?name=eq.${game}`)).json();
-    return games && games[0] ? ctx.render(games[0]) : ctx.renderNotFound();
+    const gameModel =
+      await (await funRequest().path("game").eq("name", game).single()
+        .fetch()).json();
+    return gameModel ? ctx.render(gameModel) : ctx.renderNotFound();
   },
 };
 

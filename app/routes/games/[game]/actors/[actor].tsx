@@ -2,7 +2,7 @@ import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { Actor, Gear, Skill, Trait } from "~api-models";
 import { Breadcrumb } from "~components/breadcrumb.tsx";
-import { funicularRequest } from "~lib/funicular-request.ts";
+import funRequest from "~lib/funicular-request.ts";
 
 interface SkillMap extends Skill {
   value: number;
@@ -18,7 +18,7 @@ export const handler: Handlers<ActorMap> = {
   async GET(_, ctx) {
     const { game, actor } = ctx.params;
 
-    const actorRes = await funicularRequest().path("actor").select([
+    const actorRes = await funRequest().path("actor").select([
       "name",
       "gears:actor_gear(...gear(name))",
       "skills:actor_num_skill(...skill(name),value)",

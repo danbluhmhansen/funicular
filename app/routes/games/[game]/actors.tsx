@@ -3,14 +3,16 @@ import { Actor } from "~api-models";
 import { Head } from "$fresh/runtime.ts";
 import { slug } from "https://deno.land/x/slug@v1.1.0/mod.ts";
 import { Breadcrumb } from "~components/breadcrumb.tsx";
+import funRequest from "~lib/funicular-request.ts";
 
 export const handler: Handlers<void | Actor[]> = {
   async GET(_, ctx) {
     const { game } = ctx.params;
     return ctx.render(
-      await (await fetch(
-        `http://localhost:3000/actor?select=*,actor_kind!inner(game!inner())&actor_kind.game.name=eq.${game}`,
-      )).json(),
+      await (await funRequest().path("actor").select([
+        "*",
+        "actor_kind!inner(game!inner())",
+      ]).eq("actor_kind.game.name", game).fetch()).json(),
     );
   },
 };

@@ -1,90 +1,74 @@
-interface FunicularRequest extends RequestInit {
-  url: URL;
-
-  fetch(): Promise<Response>;
-
-  get(): FunicularRequest;
-  post(body?: BodyInit): FunicularRequest;
-  put(body?: BodyInit): FunicularRequest;
-  delete(): FunicularRequest;
-
-  single(): FunicularRequest;
-
-  path(input: string | string[]): FunicularRequest;
-
-  select(input: string | string[]): FunicularRequest;
-
-  eq(key: string, value: string): FunicularRequest;
-  ilike(key: string, value: string): FunicularRequest;
+export default function funRequest() {
+  return new FunRequest(
+    new URL(
+      "",
+      Deno.env.get("SERVER") ?? "http://localhost:3000/",
+    ),
+    {},
+  );
 }
 
-export function funicularRequest(): FunicularRequest {
-  return {
-    url: new URL("", Deno.env.get("SERVER") ?? "http://localhost:3000/"),
+class FunRequest {
+  constructor(url: URL, init: RequestInit) {
+    this.url = url;
+    this.init = init;
+  }
 
-    fetch() {
-      return fetch(this.url, this);
-    },
+  private init: RequestInit;
+  private url: URL;
 
-    get() {
-      return {
-        method: "GET",
-        body: undefined,
-        ...this,
-      };
-    },
-    post(body) {
-      return {
-        method: "POST",
-        body,
-        ...this,
-      };
-    },
-    put(body) {
-      return {
-        method: "PUT",
-        body,
-        ...this,
-      };
-    },
-    delete() {
-      return {
-        method: "DELETE",
-        body: undefined,
-        ...this,
-      };
-    },
+  fetch() {
+    return fetch(this.url, this.init);
+  }
 
-    single() {
-      return {
-        headers: {
-          Accept: "application/vnd.pgrst.object+json",
-          ...this.headers,
-        },
-        ...this,
-      };
-    },
+  get() {
+    this.init.method = "GET";
+    this.init.body = undefined;
+    return this;
+  }
+  post(body?: BodyInit) {
+    this.init.method = "POST";
+    this.init.body = body;
+    return this;
+  }
+  put(body?: BodyInit) {
+    this.init.method = "PUT";
+    this.init.body = body;
+    return this;
+  }
+  delete() {
+    this.init.method = "DELETE";
+    this.init.body = undefined;
+    return this;
+  }
 
-    path(input) {
-      this.url.pathname = typeof input === "object" ? input.join("/") : input;
-      return this;
-    },
+  single() {
+    this.init.headers = {
+      ...this.init.headers,
+      Accept: "application/vnd.pgrst.object+json",
+    };
+    return this;
+  }
 
-    select(input) {
-      this.url.searchParams.set(
-        "select",
-        typeof input === "object" ? input.join(",") : input,
-      );
-      return this;
-    },
+  path(input: string | string[]) {
+    this.url.pathname = typeof input === "object" ? input.join("/") : input;
+    return this;
+  }
 
-    eq(key, value) {
-      this.url.searchParams.set(key, "eq." + value);
-      return this;
-    },
-    ilike(key, value) {
-      this.url.searchParams.set(key, "ilike." + value);
-      return this;
-    },
-  };
+  select(input: string | string[]) {
+    this.url.searchParams.set(
+      "select",
+      typeof input === "object" ? input.join(",") : input,
+    );
+    return this;
+  }
+
+  eq(key: string, value: string) {
+    this.url.searchParams.set(key, "eq." + value);
+    return this;
+  }
+  ilike(key: string, value: string) {
+    this.url.searchParams.set(key, "ilike." + value);
+    return this;
+  }
 }

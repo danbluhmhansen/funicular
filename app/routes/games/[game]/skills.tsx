@@ -2,14 +2,16 @@ import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { Skill } from "~api-models";
 import { Breadcrumb } from "~components/breadcrumb.tsx";
+import funRequest from "~lib/funicular-request.ts";
 
 export const handler: Handlers<void | Skill[]> = {
   async GET(_, ctx) {
     const { game } = ctx.params;
     return ctx.render(
-      await (await fetch(
-        `http://localhost:3000/skill?select=*,game!inner()&game.name=eq.${game}`,
-      )).json(),
+      await (await funRequest().path("skill").select([
+        "*",
+        "game!inner()",
+      ]).eq("game.name", game).fetch()).json(),
     );
   },
 };
