@@ -9,9 +9,9 @@ interface SkillMap extends Skill {
 }
 
 interface ActorMap extends Actor {
-  gears: Gear[];
-  skills: SkillMap[];
-  traits: Trait[];
+  gears: Gear[] | undefined;
+  skills: SkillMap[] | undefined;
+  traits: Trait[] | undefined;
 }
 
 export const handler: Handlers<ActorMap> = {
@@ -49,7 +49,7 @@ export default function Page(
           <span>Actors</span>
           <span>{data.name}</span>
         </Breadcrumb>
-        {data.name}
+        <h1 class="text-xl">{data.name}</h1>
         {data.skills && (
           <table>
             <thead>
@@ -67,6 +67,22 @@ export default function Page(
               </tr>
             </tbody>
           </table>
+        )}
+        {data.gears && (
+          <>
+            <h2 class="text-lg">Gear</h2>
+            <ul>
+              {data.gears.map((g) => <li key={g.name}>{g.name}</li>)}
+            </ul>
+          </>
+        )}
+        {data.traits && (
+          <>
+            <h2 class="text-lg">Traits</h2>
+            <ul>
+              {data.traits.map((t) => <li key={t.name}>{t.name}</li>)}
+            </ul>
+          </>
         )}
       </div>
     </>

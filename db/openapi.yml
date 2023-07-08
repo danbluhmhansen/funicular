@@ -1,0 +1,4845 @@
+openapi: 3.1.0
+info:
+  title: standard public schema
+  description: ""
+  version: 11.1.0
+externalDocs:
+  description: PostgREST Documentation
+  url: https://postgrest.org/en/v11.1/api.html
+servers:
+- url: http://127.0.0.1:3000/
+paths:
+  /:
+    get:
+      tags:
+      - Introspection
+      summary: OpenAPI description (this document)
+      responses:
+        200:
+          description: OK
+          content: {}
+  /gear:
+    get:
+      tags:
+      - gear
+      summary: Equipment or gear used by actors.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: kind_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/gear'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/gear'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/gear'
+        206:
+          description: Partial Content
+          content: {}
+    post:
+      tags:
+      - gear
+      summary: Equipment or gear used by actors.
+      parameters:
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+          - resolution=ignore-duplicates
+          - resolution=merge-duplicates
+      requestBody:
+        description: gear
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/gear'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/gear'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/gear'
+        required: false
+      responses:
+        201:
+          description: Created
+          content: {}
+      x-codegen-request-body-name: gear
+    delete:
+      tags:
+      - gear
+      summary: Equipment or gear used by actors.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: kind_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      responses:
+        204:
+          description: No Content
+          content: {}
+    patch:
+      tags:
+      - gear
+      summary: Equipment or gear used by actors.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: kind_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      requestBody:
+        description: gear
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/gear'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/gear'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/gear'
+        required: false
+      responses:
+        204:
+          description: No Content
+          content: {}
+      x-codegen-request-body-name: gear
+  /sub_skill:
+    get:
+      tags:
+      - sub_skill
+      summary: Describes a skill that inherits values of another skill.
+      parameters:
+      - name: sup_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: sub_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/sub_skill'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/sub_skill'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/sub_skill'
+        206:
+          description: Partial Content
+          content: {}
+    post:
+      tags:
+      - sub_skill
+      summary: Describes a skill that inherits values of another skill.
+      parameters:
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+          - resolution=ignore-duplicates
+          - resolution=merge-duplicates
+      requestBody:
+        description: sub_skill
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/sub_skill'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/sub_skill'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/sub_skill'
+        required: false
+      responses:
+        201:
+          description: Created
+          content: {}
+      x-codegen-request-body-name: sub_skill
+    delete:
+      tags:
+      - sub_skill
+      summary: Describes a skill that inherits values of another skill.
+      parameters:
+      - name: sup_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: sub_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      responses:
+        204:
+          description: No Content
+          content: {}
+    patch:
+      tags:
+      - sub_skill
+      summary: Describes a skill that inherits values of another skill.
+      parameters:
+      - name: sup_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: sub_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      requestBody:
+        description: sub_skill
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/sub_skill'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/sub_skill'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/sub_skill'
+        required: false
+      responses:
+        204:
+          description: No Content
+          content: {}
+      x-codegen-request-body-name: sub_skill
+  /actor_skill:
+    get:
+      tags:
+      - actor_skill
+      summary: Connection between actor kinds and skills.
+      parameters:
+      - name: kind_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: skill_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor_skill'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor_skill'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor_skill'
+        206:
+          description: Partial Content
+          content: {}
+    post:
+      tags:
+      - actor_skill
+      summary: Connection between actor kinds and skills.
+      parameters:
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+          - resolution=ignore-duplicates
+          - resolution=merge-duplicates
+      requestBody:
+        description: actor_skill
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/actor_skill'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/actor_skill'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/actor_skill'
+        required: false
+      responses:
+        201:
+          description: Created
+          content: {}
+      x-codegen-request-body-name: actor_skill
+    delete:
+      tags:
+      - actor_skill
+      summary: Connection between actor kinds and skills.
+      parameters:
+      - name: kind_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: skill_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      responses:
+        204:
+          description: No Content
+          content: {}
+    patch:
+      tags:
+      - actor_skill
+      summary: Connection between actor kinds and skills.
+      parameters:
+      - name: kind_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: skill_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      requestBody:
+        description: actor_skill
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/actor_skill'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/actor_skill'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/actor_skill'
+        required: false
+      responses:
+        204:
+          description: No Content
+          content: {}
+      x-codegen-request-body-name: actor_skill
+  /actor:
+    get:
+      tags:
+      - actor
+      summary: An individual controlled by a Game Master or player.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: kind_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor'
+        206:
+          description: Partial Content
+          content: {}
+    post:
+      tags:
+      - actor
+      summary: An individual controlled by a Game Master or player.
+      parameters:
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+          - resolution=ignore-duplicates
+          - resolution=merge-duplicates
+      requestBody:
+        description: actor
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/actor'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/actor'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/actor'
+        required: false
+      responses:
+        201:
+          description: Created
+          content: {}
+      x-codegen-request-body-name: actor
+    delete:
+      tags:
+      - actor
+      summary: An individual controlled by a Game Master or player.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: kind_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      responses:
+        204:
+          description: No Content
+          content: {}
+    patch:
+      tags:
+      - actor
+      summary: An individual controlled by a Game Master or player.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: kind_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      requestBody:
+        description: actor
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/actor'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/actor'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/actor'
+        required: false
+      responses:
+        204:
+          description: No Content
+          content: {}
+      x-codegen-request-body-name: actor
+  /actor_kind:
+    get:
+      tags:
+      - actor_kind
+      summary: A kind of actor, like player or enemy.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: game_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor_kind'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor_kind'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor_kind'
+        206:
+          description: Partial Content
+          content: {}
+    post:
+      tags:
+      - actor_kind
+      summary: A kind of actor, like player or enemy.
+      parameters:
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+          - resolution=ignore-duplicates
+          - resolution=merge-duplicates
+      requestBody:
+        description: actor_kind
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/actor_kind'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/actor_kind'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/actor_kind'
+        required: false
+      responses:
+        201:
+          description: Created
+          content: {}
+      x-codegen-request-body-name: actor_kind
+    delete:
+      tags:
+      - actor_kind
+      summary: A kind of actor, like player or enemy.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: game_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      responses:
+        204:
+          description: No Content
+          content: {}
+    patch:
+      tags:
+      - actor_kind
+      summary: A kind of actor, like player or enemy.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: game_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      requestBody:
+        description: actor_kind
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/actor_kind'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/actor_kind'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/actor_kind'
+        required: false
+      responses:
+        204:
+          description: No Content
+          content: {}
+      x-codegen-request-body-name: actor_kind
+  /actor_gear:
+    get:
+      tags:
+      - actor_gear
+      summary: Connection between actors and gears.
+      parameters:
+      - name: actor_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: gear_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: amount
+        in: query
+        schema:
+          type: string
+          format: integer
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor_gear'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor_gear'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor_gear'
+        206:
+          description: Partial Content
+          content: {}
+    post:
+      tags:
+      - actor_gear
+      summary: Connection between actors and gears.
+      parameters:
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+          - resolution=ignore-duplicates
+          - resolution=merge-duplicates
+      requestBody:
+        description: actor_gear
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/actor_gear'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/actor_gear'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/actor_gear'
+        required: false
+      responses:
+        201:
+          description: Created
+          content: {}
+      x-codegen-request-body-name: actor_gear
+    delete:
+      tags:
+      - actor_gear
+      summary: Connection between actors and gears.
+      parameters:
+      - name: actor_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: gear_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: amount
+        in: query
+        schema:
+          type: string
+          format: integer
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      responses:
+        204:
+          description: No Content
+          content: {}
+    patch:
+      tags:
+      - actor_gear
+      summary: Connection between actors and gears.
+      parameters:
+      - name: actor_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: gear_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: amount
+        in: query
+        schema:
+          type: string
+          format: integer
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      requestBody:
+        description: actor_gear
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/actor_gear'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/actor_gear'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/actor_gear'
+        required: false
+      responses:
+        204:
+          description: No Content
+          content: {}
+      x-codegen-request-body-name: actor_gear
+  /skill:
+    get:
+      tags:
+      - skill
+      summary: Describes a specific attribute or skill of an entity like actors or
+        items.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: game_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/skill'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/skill'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/skill'
+        206:
+          description: Partial Content
+          content: {}
+    post:
+      tags:
+      - skill
+      summary: Describes a specific attribute or skill of an entity like actors or
+        items.
+      parameters:
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+          - resolution=ignore-duplicates
+          - resolution=merge-duplicates
+      requestBody:
+        description: skill
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/skill'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/skill'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/skill'
+        required: false
+      responses:
+        201:
+          description: Created
+          content: {}
+      x-codegen-request-body-name: skill
+    delete:
+      tags:
+      - skill
+      summary: Describes a specific attribute or skill of an entity like actors or
+        items.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: game_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      responses:
+        204:
+          description: No Content
+          content: {}
+    patch:
+      tags:
+      - skill
+      summary: Describes a specific attribute or skill of an entity like actors or
+        items.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: game_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      requestBody:
+        description: skill
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/skill'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/skill'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/skill'
+        required: false
+      responses:
+        204:
+          description: No Content
+          content: {}
+      x-codegen-request-body-name: skill
+  /gear_trait:
+    get:
+      tags:
+      - gear_trait
+      summary: Connection between gears and traits.
+      parameters:
+      - name: gear_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: trait_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: amount
+        in: query
+        schema:
+          type: string
+          format: integer
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/gear_trait'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/gear_trait'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/gear_trait'
+        206:
+          description: Partial Content
+          content: {}
+    post:
+      tags:
+      - gear_trait
+      summary: Connection between gears and traits.
+      parameters:
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+          - resolution=ignore-duplicates
+          - resolution=merge-duplicates
+      requestBody:
+        description: gear_trait
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/gear_trait'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/gear_trait'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/gear_trait'
+        required: false
+      responses:
+        201:
+          description: Created
+          content: {}
+      x-codegen-request-body-name: gear_trait
+    delete:
+      tags:
+      - gear_trait
+      summary: Connection between gears and traits.
+      parameters:
+      - name: gear_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: trait_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: amount
+        in: query
+        schema:
+          type: string
+          format: integer
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      responses:
+        204:
+          description: No Content
+          content: {}
+    patch:
+      tags:
+      - gear_trait
+      summary: Connection between gears and traits.
+      parameters:
+      - name: gear_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: trait_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: amount
+        in: query
+        schema:
+          type: string
+          format: integer
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      requestBody:
+        description: gear_trait
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/gear_trait'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/gear_trait'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/gear_trait'
+        required: false
+      responses:
+        204:
+          description: No Content
+          content: {}
+      x-codegen-request-body-name: gear_trait
+  /trait:
+    get:
+      tags:
+      - trait
+      summary: Describes a specific trait or effect of an entity like actors or items.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: game_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/trait'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/trait'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/trait'
+        206:
+          description: Partial Content
+          content: {}
+    post:
+      tags:
+      - trait
+      summary: Describes a specific trait or effect of an entity like actors or items.
+      parameters:
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+          - resolution=ignore-duplicates
+          - resolution=merge-duplicates
+      requestBody:
+        description: trait
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/trait'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/trait'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/trait'
+        required: false
+      responses:
+        201:
+          description: Created
+          content: {}
+      x-codegen-request-body-name: trait
+    delete:
+      tags:
+      - trait
+      summary: Describes a specific trait or effect of an entity like actors or items.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: game_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      responses:
+        204:
+          description: No Content
+          content: {}
+    patch:
+      tags:
+      - trait
+      summary: Describes a specific trait or effect of an entity like actors or items.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: game_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      requestBody:
+        description: trait
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/trait'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/trait'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/trait'
+        required: false
+      responses:
+        204:
+          description: No Content
+          content: {}
+      x-codegen-request-body-name: trait
+  /gear_kind:
+    get:
+      tags:
+      - gear_kind
+      summary: A kind of gear, like equipment or consumables.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: game_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/gear_kind'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/gear_kind'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/gear_kind'
+        206:
+          description: Partial Content
+          content: {}
+    post:
+      tags:
+      - gear_kind
+      summary: A kind of gear, like equipment or consumables.
+      parameters:
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+          - resolution=ignore-duplicates
+          - resolution=merge-duplicates
+      requestBody:
+        description: gear_kind
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/gear_kind'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/gear_kind'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/gear_kind'
+        required: false
+      responses:
+        201:
+          description: Created
+          content: {}
+      x-codegen-request-body-name: gear_kind
+    delete:
+      tags:
+      - gear_kind
+      summary: A kind of gear, like equipment or consumables.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: game_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      responses:
+        204:
+          description: No Content
+          content: {}
+    patch:
+      tags:
+      - gear_kind
+      summary: A kind of gear, like equipment or consumables.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: game_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      requestBody:
+        description: gear_kind
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/gear_kind'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/gear_kind'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/gear_kind'
+        required: false
+      responses:
+        204:
+          description: No Content
+          content: {}
+      x-codegen-request-body-name: gear_kind
+  /rule_num:
+    get:
+      tags:
+      - rule_num
+      summary: Describes a numeric rule of a trait, which skill to affect and by what
+        amount
+      parameters:
+      - name: skill_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: trait_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: value
+        in: query
+        schema:
+          type: string
+          format: numeric
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/rule_num'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/rule_num'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/rule_num'
+        206:
+          description: Partial Content
+          content: {}
+    post:
+      tags:
+      - rule_num
+      summary: Describes a numeric rule of a trait, which skill to affect and by what
+        amount
+      parameters:
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+          - resolution=ignore-duplicates
+          - resolution=merge-duplicates
+      requestBody:
+        description: rule_num
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/rule_num'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/rule_num'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/rule_num'
+        required: false
+      responses:
+        201:
+          description: Created
+          content: {}
+      x-codegen-request-body-name: rule_num
+    delete:
+      tags:
+      - rule_num
+      summary: Describes a numeric rule of a trait, which skill to affect and by what
+        amount
+      parameters:
+      - name: skill_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: trait_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: value
+        in: query
+        schema:
+          type: string
+          format: numeric
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      responses:
+        204:
+          description: No Content
+          content: {}
+    patch:
+      tags:
+      - rule_num
+      summary: Describes a numeric rule of a trait, which skill to affect and by what
+        amount
+      parameters:
+      - name: skill_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: trait_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: value
+        in: query
+        schema:
+          type: string
+          format: numeric
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      requestBody:
+        description: rule_num
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/rule_num'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/rule_num'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/rule_num'
+        required: false
+      responses:
+        204:
+          description: No Content
+          content: {}
+      x-codegen-request-body-name: rule_num
+  /actor_trait:
+    get:
+      tags:
+      - actor_trait
+      summary: Connection between actors and traits.
+      parameters:
+      - name: actor_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: trait_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: amount
+        in: query
+        schema:
+          type: string
+          format: integer
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor_trait'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor_trait'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor_trait'
+        206:
+          description: Partial Content
+          content: {}
+    post:
+      tags:
+      - actor_trait
+      summary: Connection between actors and traits.
+      parameters:
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+          - resolution=ignore-duplicates
+          - resolution=merge-duplicates
+      requestBody:
+        description: actor_trait
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/actor_trait'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/actor_trait'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/actor_trait'
+        required: false
+      responses:
+        201:
+          description: Created
+          content: {}
+      x-codegen-request-body-name: actor_trait
+    delete:
+      tags:
+      - actor_trait
+      summary: Connection between actors and traits.
+      parameters:
+      - name: actor_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: trait_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: amount
+        in: query
+        schema:
+          type: string
+          format: integer
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      responses:
+        204:
+          description: No Content
+          content: {}
+    patch:
+      tags:
+      - actor_trait
+      summary: Connection between actors and traits.
+      parameters:
+      - name: actor_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: trait_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: amount
+        in: query
+        schema:
+          type: string
+          format: integer
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      requestBody:
+        description: actor_trait
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/actor_trait'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/actor_trait'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/actor_trait'
+        required: false
+      responses:
+        204:
+          description: No Content
+          content: {}
+      x-codegen-request-body-name: actor_trait
+  /actor_num_skill:
+    get:
+      tags:
+      - actor_num_skill
+      summary: View of actor's current skill values.
+      parameters:
+      - name: game_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: actor_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: skill_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: value
+        in: query
+        schema:
+          type: string
+          format: numeric
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor_num_skill'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor_num_skill'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/actor_num_skill'
+        206:
+          description: Partial Content
+          content: {}
+  /game:
+    get:
+      tags:
+      - game
+      summary: Collection of rules for a specific game.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/game'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/game'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/game'
+        206:
+          description: Partial Content
+          content: {}
+    post:
+      tags:
+      - game
+      summary: Collection of rules for a specific game.
+      parameters:
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+          - resolution=ignore-duplicates
+          - resolution=merge-duplicates
+      requestBody:
+        description: game
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/game'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/game'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/game'
+        required: false
+      responses:
+        201:
+          description: Created
+          content: {}
+      x-codegen-request-body-name: game
+    delete:
+      tags:
+      - game
+      summary: Collection of rules for a specific game.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      responses:
+        204:
+          description: No Content
+          content: {}
+    patch:
+      tags:
+      - game
+      summary: Collection of rules for a specific game.
+      parameters:
+      - name: id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: name
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: created
+        in: query
+        schema:
+          type: string
+          format: timestamp without time zone
+      - name: description
+        in: query
+        schema:
+          type: string
+          format: text
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      requestBody:
+        description: game
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/game'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/game'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/game'
+        required: false
+      responses:
+        204:
+          description: No Content
+          content: {}
+      x-codegen-request-body-name: game
+  /gear_skill:
+    get:
+      tags:
+      - gear_skill
+      summary: Connection between gear kinds and skills.
+      parameters:
+      - name: kind_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: skill_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/gear_skill'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/gear_skill'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/gear_skill'
+        206:
+          description: Partial Content
+          content: {}
+    post:
+      tags:
+      - gear_skill
+      summary: Connection between gear kinds and skills.
+      parameters:
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+          - resolution=ignore-duplicates
+          - resolution=merge-duplicates
+      requestBody:
+        description: gear_skill
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/gear_skill'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/gear_skill'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/gear_skill'
+        required: false
+      responses:
+        201:
+          description: Created
+          content: {}
+      x-codegen-request-body-name: gear_skill
+    delete:
+      tags:
+      - gear_skill
+      summary: Connection between gear kinds and skills.
+      parameters:
+      - name: kind_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: skill_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      responses:
+        204:
+          description: No Content
+          content: {}
+    patch:
+      tags:
+      - gear_skill
+      summary: Connection between gear kinds and skills.
+      parameters:
+      - name: kind_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: skill_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - return=representation
+          - return=minimal
+          - return=none
+      requestBody:
+        description: gear_skill
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/gear_skill'
+          application/vnd.pgrst.object+json:
+            schema:
+              $ref: '#/components/schemas/gear_skill'
+          text/csv:
+            schema:
+              $ref: '#/components/schemas/gear_skill'
+        required: false
+      responses:
+        204:
+          description: No Content
+          content: {}
+      x-codegen-request-body-name: gear_skill
+  /gear_num_skill:
+    get:
+      tags:
+      - gear_num_skill
+      summary: View of an actor's gear's current skill values.
+      parameters:
+      - name: game_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: actor_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: gear_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: skill_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: value
+        in: query
+        schema:
+          type: string
+          format: numeric
+      - name: select
+        in: query
+        description: Filtering Columns
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: Ordering
+        schema:
+          type: string
+      - name: Range
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Range-Unit
+        in: header
+        description: Limiting and Pagination
+        schema:
+          type: string
+          default: items
+      - name: offset
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Limiting and Pagination
+        schema:
+          type: string
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - count=none
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/gear_num_skill'
+            application/vnd.pgrst.object+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/gear_num_skill'
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/gear_num_skill'
+        206:
+          description: Partial Content
+          content: {}
+  /rpc/migrations_up:
+    get:
+      tags:
+      - (rpc) migrations_up
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) migrations_up
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          application/vnd.pgrst.object+json:
+            schema:
+              type: object
+          text/csv:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+  /rpc/uuid7_time:
+    get:
+      tags:
+      - (rpc) uuid7_time
+      parameters:
+      - name: uuid
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) uuid7_time
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - uuid
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  format: uuid
+          application/vnd.pgrst.object+json:
+            schema:
+              required:
+              - uuid
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  format: uuid
+          text/csv:
+            schema:
+              required:
+              - uuid
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  format: uuid
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+  /rpc/gen_rand_uuid7:
+    get:
+      tags:
+      - (rpc) gen_rand_uuid7
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) gen_rand_uuid7
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          application/vnd.pgrst.object+json:
+            schema:
+              type: object
+          text/csv:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+  /rpc/_230625105931_actor_down:
+    get:
+      tags:
+      - (rpc) _230625105931_actor_down
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) _230625105931_actor_down
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          application/vnd.pgrst.object+json:
+            schema:
+              type: object
+          text/csv:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+  /rpc/migrations_down:
+    get:
+      tags:
+      - (rpc) migrations_down
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) migrations_down
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          application/vnd.pgrst.object+json:
+            schema:
+              type: object
+          text/csv:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+  /rpc/gen_uuid7:
+    get:
+      tags:
+      - (rpc) gen_uuid7
+      parameters:
+      - name: ts
+        in: query
+        required: true
+        schema:
+          type: string
+          format: timestamp without time zone
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) gen_uuid7
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - ts
+              type: object
+              properties:
+                ts:
+                  type: string
+                  format: timestamp without time zone
+          application/vnd.pgrst.object+json:
+            schema:
+              required:
+              - ts
+              type: object
+              properties:
+                ts:
+                  type: string
+                  format: timestamp without time zone
+          text/csv:
+            schema:
+              required:
+              - ts
+              type: object
+              properties:
+                ts:
+                  type: string
+                  format: timestamp without time zone
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+  /rpc/fun_seed:
+    get:
+      tags:
+      - (rpc) fun_seed
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) fun_seed
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          application/vnd.pgrst.object+json:
+            schema:
+              type: object
+          text/csv:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+  /rpc/_230625095802_auth_down:
+    get:
+      tags:
+      - (rpc) _230625095802_auth_down
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) _230625095802_auth_down
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          application/vnd.pgrst.object+json:
+            schema:
+              type: object
+          text/csv:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+  /rpc/_230625095922_game_up:
+    get:
+      tags:
+      - (rpc) _230625095922_game_up
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) _230625095922_game_up
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          application/vnd.pgrst.object+json:
+            schema:
+              type: object
+          text/csv:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+  /rpc/_230628175736_gear_up:
+    get:
+      tags:
+      - (rpc) _230628175736_gear_up
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) _230628175736_gear_up
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          application/vnd.pgrst.object+json:
+            schema:
+              type: object
+          text/csv:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+  /rpc/_230628175736_gear_down:
+    get:
+      tags:
+      - (rpc) _230628175736_gear_down
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) _230628175736_gear_down
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          application/vnd.pgrst.object+json:
+            schema:
+              type: object
+          text/csv:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+  /rpc/_230625105931_actor_up:
+    get:
+      tags:
+      - (rpc) _230625105931_actor_up
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) _230625105931_actor_up
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          application/vnd.pgrst.object+json:
+            schema:
+              type: object
+          text/csv:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+  /rpc/_000000000000_migrations_up:
+    get:
+      tags:
+      - (rpc) _000000000000_migrations_up
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) _000000000000_migrations_up
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          application/vnd.pgrst.object+json:
+            schema:
+              type: object
+          text/csv:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+  /rpc/_230625095922_game_down:
+    get:
+      tags:
+      - (rpc) _230625095922_game_down
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) _230625095922_game_down
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          application/vnd.pgrst.object+json:
+            schema:
+              type: object
+          text/csv:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+  /rpc/_230625095802_auth_up:
+    get:
+      tags:
+      - (rpc) _230625095802_auth_up
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) _230625095802_auth_up
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          application/vnd.pgrst.object+json:
+            schema:
+              type: object
+          text/csv:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+  /rpc/_000000000000_migrations_down:
+    get:
+      tags:
+      - (rpc) _000000000000_migrations_down
+      responses:
+        200:
+          description: OK
+          content: {}
+    post:
+      tags:
+      - (rpc) _000000000000_migrations_down
+      parameters:
+      - name: Prefer
+        in: header
+        description: Preference
+        schema:
+          type: string
+          enum:
+          - params=single-object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          application/vnd.pgrst.object+json:
+            schema:
+              type: object
+          text/csv:
+            schema:
+              type: object
+        required: true
+      responses:
+        200:
+          description: OK
+          content: {}
+      x-codegen-request-body-name: args
+components:
+  schemas:
+    gear:
+      required:
+      - id
+      - kind_id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+          format: uuid
+        kind_id:
+          type: string
+          description: |-
+            Note:
+            This is a Foreign Key to `gear_kind.id`.<fk table='gear_kind' column='id'/>
+          format: uuid
+        name:
+          type: string
+          format: text
+        created:
+          type: string
+          format: timestamp without time zone
+        description:
+          type: string
+          format: text
+      description: Equipment or gear used by actors.
+    sub_skill:
+      required:
+      - sub_id
+      - sup_id
+      type: object
+      properties:
+        sup_id:
+          type: string
+          description: |-
+            Note:
+            This is a Foreign Key to `skill.id`.<fk table='skill' column='id'/>
+          format: uuid
+        sub_id:
+          type: string
+          description: |-
+            Note:
+            This is a Foreign Key to `skill.id`.<fk table='skill' column='id'/>
+          format: uuid
+      description: Describes a skill that inherits values of another skill.
+    actor_skill:
+      required:
+      - kind_id
+      - skill_id
+      type: object
+      properties:
+        kind_id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+            This is a Foreign Key to `actor_kind.id`.<fk table='actor_kind' column='id'/>
+          format: uuid
+        skill_id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+            This is a Foreign Key to `skill.id`.<fk table='skill' column='id'/>
+          format: uuid
+      description: Connection between actor kinds and skills.
+    actor:
+      required:
+      - id
+      - kind_id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+          format: uuid
+        kind_id:
+          type: string
+          description: |-
+            Note:
+            This is a Foreign Key to `actor_kind.id`.<fk table='actor_kind' column='id'/>
+          format: uuid
+        name:
+          type: string
+          format: text
+        created:
+          type: string
+          format: timestamp without time zone
+        description:
+          type: string
+          format: text
+      description: An individual controlled by a Game Master or player.
+    actor_kind:
+      required:
+      - game_id
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+          format: uuid
+        game_id:
+          type: string
+          description: |-
+            Note:
+            This is a Foreign Key to `game.id`.<fk table='game' column='id'/>
+          format: uuid
+        name:
+          type: string
+          format: text
+        created:
+          type: string
+          format: timestamp without time zone
+        description:
+          type: string
+          format: text
+      description: A kind of actor, like player or enemy.
+    actor_gear:
+      required:
+      - actor_id
+      - gear_id
+      type: object
+      properties:
+        actor_id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+            This is a Foreign Key to `actor.id`.<fk table='actor' column='id'/>
+          format: uuid
+        gear_id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+            This is a Foreign Key to `gear.id`.<fk table='gear' column='id'/>
+          format: uuid
+        amount:
+          type: integer
+          format: integer
+      description: Connection between actors and gears.
+    skill:
+      required:
+      - game_id
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+          format: uuid
+        game_id:
+          type: string
+          description: |-
+            Note:
+            This is a Foreign Key to `game.id`.<fk table='game' column='id'/>
+          format: uuid
+        name:
+          type: string
+          format: text
+        created:
+          type: string
+          format: timestamp without time zone
+        description:
+          type: string
+          format: text
+      description: Describes a specific attribute or skill of an entity like actors
+        or items.
+    gear_trait:
+      required:
+      - gear_id
+      - trait_id
+      type: object
+      properties:
+        gear_id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+            This is a Foreign Key to `gear.id`.<fk table='gear' column='id'/>
+          format: uuid
+        trait_id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+            This is a Foreign Key to `trait.id`.<fk table='trait' column='id'/>
+          format: uuid
+        amount:
+          type: integer
+          format: integer
+      description: Connection between gears and traits.
+    trait:
+      required:
+      - game_id
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+          format: uuid
+        game_id:
+          type: string
+          description: |-
+            Note:
+            This is a Foreign Key to `game.id`.<fk table='game' column='id'/>
+          format: uuid
+        name:
+          type: string
+          format: text
+        created:
+          type: string
+          format: timestamp without time zone
+        description:
+          type: string
+          format: text
+      description: Describes a specific trait or effect of an entity like actors or
+        items.
+    gear_kind:
+      required:
+      - game_id
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+          format: uuid
+        game_id:
+          type: string
+          description: |-
+            Note:
+            This is a Foreign Key to `game.id`.<fk table='game' column='id'/>
+          format: uuid
+        name:
+          type: string
+          format: text
+        created:
+          type: string
+          format: timestamp without time zone
+        description:
+          type: string
+          format: text
+      description: A kind of gear, like equipment or consumables.
+    rule_num:
+      required:
+      - skill_id
+      - trait_id
+      - value
+      type: object
+      properties:
+        skill_id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+            This is a Foreign Key to `skill.id`.<fk table='skill' column='id'/>
+          format: uuid
+        trait_id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+            This is a Foreign Key to `trait.id`.<fk table='trait' column='id'/>
+          format: uuid
+        value:
+          type: number
+          format: numeric
+      description: Describes a numeric rule of a trait, which skill to affect and
+        by what amount
+    actor_trait:
+      required:
+      - actor_id
+      - trait_id
+      type: object
+      properties:
+        actor_id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+            This is a Foreign Key to `actor.id`.<fk table='actor' column='id'/>
+          format: uuid
+        trait_id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+            This is a Foreign Key to `trait.id`.<fk table='trait' column='id'/>
+          format: uuid
+        amount:
+          type: integer
+          format: integer
+      description: Connection between actors and traits.
+    actor_num_skill:
+      type: object
+      properties:
+        game_id:
+          type: string
+          format: uuid
+        actor_id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+          format: uuid
+        skill_id:
+          type: string
+          format: uuid
+        value:
+          type: number
+          format: numeric
+      description: View of actor's current skill values.
+    game:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+          format: uuid
+        name:
+          type: string
+          format: text
+        created:
+          type: string
+          format: timestamp without time zone
+        description:
+          type: string
+          format: text
+      description: Collection of rules for a specific game.
+    gear_skill:
+      required:
+      - kind_id
+      - skill_id
+      type: object
+      properties:
+        kind_id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+            This is a Foreign Key to `gear_kind.id`.<fk table='gear_kind' column='id'/>
+          format: uuid
+        skill_id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+            This is a Foreign Key to `skill.id`.<fk table='skill' column='id'/>
+          format: uuid
+      description: Connection between gear kinds and skills.
+    gear_num_skill:
+      type: object
+      properties:
+        game_id:
+          type: string
+          description: |-
+            Note:
+            This is a Foreign Key to `game.id`.<fk table='game' column='id'/>
+          format: uuid
+        actor_id:
+          type: string
+          description: |-
+            Note:
+            This is a Foreign Key to `actor.id`.<fk table='actor' column='id'/>
+          format: uuid
+        gear_id:
+          type: string
+          description: |-
+            Note:
+            This is a Primary Key.<pk/>
+          format: uuid
+        skill_id:
+          type: string
+          format: uuid
+        value:
+          type: number
+          format: numeric
+      description: View of an actor's gear's current skill values.
+  parameters:
+    preferParams:
+      name: Prefer
+      in: header
+      description: Preference
+      schema:
+        type: string
+        enum:
+        - params=single-object
+    preferReturn:
+      name: Prefer
+      in: header
+      description: Preference
+      schema:
+        type: string
+        enum:
+        - return=representation
+        - return=minimal
+        - return=none
+    preferCount:
+      name: Prefer
+      in: header
+      description: Preference
+      schema:
+        type: string
+        enum:
+        - count=none
+    preferPost:
+      name: Prefer
+      in: header
+      description: Preference
+      schema:
+        type: string
+        enum:
+        - return=representation
+        - return=minimal
+        - return=none
+        - resolution=ignore-duplicates
+        - resolution=merge-duplicates
+    select:
+      name: select
+      in: query
+      description: Filtering Columns
+      schema:
+        type: string
+    on_conflict:
+      name: on_conflict
+      in: query
+      description: On Conflict
+      schema:
+        type: string
+    order:
+      name: order
+      in: query
+      description: Ordering
+      schema:
+        type: string
+    range:
+      name: Range
+      in: header
+      description: Limiting and Pagination
+      schema:
+        type: string
+    rangeUnit:
+      name: Range-Unit
+      in: header
+      description: Limiting and Pagination
+      schema:
+        type: string
+        default: items
+    offset:
+      name: offset
+      in: query
+      description: Limiting and Pagination
+      schema:
+        type: string
+    limit:
+      name: limit
+      in: query
+      description: Limiting and Pagination
+      schema:
+        type: string
+    rowFilter.gear.id:
+      name: id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.gear.kind_id:
+      name: kind_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.gear.name:
+      name: name
+      in: query
+      schema:
+        type: string
+        format: text
+    rowFilter.gear.created:
+      name: created
+      in: query
+      schema:
+        type: string
+        format: timestamp without time zone
+    rowFilter.gear.description:
+      name: description
+      in: query
+      schema:
+        type: string
+        format: text
+    rowFilter.sub_skill.sup_id:
+      name: sup_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.sub_skill.sub_id:
+      name: sub_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.actor_skill.kind_id:
+      name: kind_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.actor_skill.skill_id:
+      name: skill_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.actor.id:
+      name: id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.actor.kind_id:
+      name: kind_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.actor.name:
+      name: name
+      in: query
+      schema:
+        type: string
+        format: text
+    rowFilter.actor.created:
+      name: created
+      in: query
+      schema:
+        type: string
+        format: timestamp without time zone
+    rowFilter.actor.description:
+      name: description
+      in: query
+      schema:
+        type: string
+        format: text
+    rowFilter.actor_kind.id:
+      name: id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.actor_kind.game_id:
+      name: game_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.actor_kind.name:
+      name: name
+      in: query
+      schema:
+        type: string
+        format: text
+    rowFilter.actor_kind.created:
+      name: created
+      in: query
+      schema:
+        type: string
+        format: timestamp without time zone
+    rowFilter.actor_kind.description:
+      name: description
+      in: query
+      schema:
+        type: string
+        format: text
+    rowFilter.actor_gear.actor_id:
+      name: actor_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.actor_gear.gear_id:
+      name: gear_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.actor_gear.amount:
+      name: amount
+      in: query
+      schema:
+        type: string
+        format: integer
+    rowFilter.skill.id:
+      name: id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.skill.game_id:
+      name: game_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.skill.name:
+      name: name
+      in: query
+      schema:
+        type: string
+        format: text
+    rowFilter.skill.created:
+      name: created
+      in: query
+      schema:
+        type: string
+        format: timestamp without time zone
+    rowFilter.skill.description:
+      name: description
+      in: query
+      schema:
+        type: string
+        format: text
+    rowFilter.gear_trait.gear_id:
+      name: gear_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.gear_trait.trait_id:
+      name: trait_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.gear_trait.amount:
+      name: amount
+      in: query
+      schema:
+        type: string
+        format: integer
+    rowFilter.trait.id:
+      name: id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.trait.game_id:
+      name: game_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.trait.name:
+      name: name
+      in: query
+      schema:
+        type: string
+        format: text
+    rowFilter.trait.created:
+      name: created
+      in: query
+      schema:
+        type: string
+        format: timestamp without time zone
+    rowFilter.trait.description:
+      name: description
+      in: query
+      schema:
+        type: string
+        format: text
+    rowFilter.gear_kind.id:
+      name: id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.gear_kind.game_id:
+      name: game_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.gear_kind.name:
+      name: name
+      in: query
+      schema:
+        type: string
+        format: text
+    rowFilter.gear_kind.created:
+      name: created
+      in: query
+      schema:
+        type: string
+        format: timestamp without time zone
+    rowFilter.gear_kind.description:
+      name: description
+      in: query
+      schema:
+        type: string
+        format: text
+    rowFilter.rule_num.skill_id:
+      name: skill_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.rule_num.trait_id:
+      name: trait_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.rule_num.value:
+      name: value
+      in: query
+      schema:
+        type: string
+        format: numeric
+    rowFilter.actor_trait.actor_id:
+      name: actor_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.actor_trait.trait_id:
+      name: trait_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.actor_trait.amount:
+      name: amount
+      in: query
+      schema:
+        type: string
+        format: integer
+    rowFilter.actor_num_skill.game_id:
+      name: game_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.actor_num_skill.actor_id:
+      name: actor_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.actor_num_skill.skill_id:
+      name: skill_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.actor_num_skill.value:
+      name: value
+      in: query
+      schema:
+        type: string
+        format: numeric
+    rowFilter.game.id:
+      name: id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.game.name:
+      name: name
+      in: query
+      schema:
+        type: string
+        format: text
+    rowFilter.game.created:
+      name: created
+      in: query
+      schema:
+        type: string
+        format: timestamp without time zone
+    rowFilter.game.description:
+      name: description
+      in: query
+      schema:
+        type: string
+        format: text
+    rowFilter.gear_skill.kind_id:
+      name: kind_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.gear_skill.skill_id:
+      name: skill_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.gear_num_skill.game_id:
+      name: game_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.gear_num_skill.actor_id:
+      name: actor_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.gear_num_skill.gear_id:
+      name: gear_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.gear_num_skill.skill_id:
+      name: skill_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    rowFilter.gear_num_skill.value:
+      name: value
+      in: query
+      schema:
+        type: string
+        format: numeric
+  requestBodies:
+    body.gear:
+      description: gear
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/gear'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/gear'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/gear'
+      required: false
+    body.sub_skill:
+      description: sub_skill
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/sub_skill'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/sub_skill'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/sub_skill'
+      required: false
+    body.actor_skill:
+      description: actor_skill
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/actor_skill'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/actor_skill'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/actor_skill'
+      required: false
+    body.actor:
+      description: actor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/actor'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/actor'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/actor'
+      required: false
+    body.actor_kind:
+      description: actor_kind
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/actor_kind'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/actor_kind'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/actor_kind'
+      required: false
+    body.actor_gear:
+      description: actor_gear
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/actor_gear'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/actor_gear'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/actor_gear'
+      required: false
+    body.skill:
+      description: skill
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/skill'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/skill'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/skill'
+      required: false
+    body.gear_trait:
+      description: gear_trait
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/gear_trait'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/gear_trait'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/gear_trait'
+      required: false
+    body.trait:
+      description: trait
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/trait'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/trait'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/trait'
+      required: false
+    body.gear_kind:
+      description: gear_kind
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/gear_kind'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/gear_kind'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/gear_kind'
+      required: false
+    body.rule_num:
+      description: rule_num
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/rule_num'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/rule_num'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/rule_num'
+      required: false
+    body.actor_trait:
+      description: actor_trait
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/actor_trait'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/actor_trait'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/actor_trait'
+      required: false
+    body.actor_num_skill:
+      description: actor_num_skill
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/actor_num_skill'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/actor_num_skill'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/actor_num_skill'
+      required: false
+    body.game:
+      description: game
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/game'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/game'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/game'
+      required: false
+    body.gear_skill:
+      description: gear_skill
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/gear_skill'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/gear_skill'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/gear_skill'
+      required: false
+    body.gear_num_skill:
+      description: gear_num_skill
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/gear_num_skill'
+        application/vnd.pgrst.object+json:
+          schema:
+            $ref: '#/components/schemas/gear_num_skill'
+        text/csv:
+          schema:
+            $ref: '#/components/schemas/gear_num_skill'
+      required: false
+

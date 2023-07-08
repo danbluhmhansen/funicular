@@ -20,7 +20,7 @@ export default function Page({ data }: PageProps<Game>) {
         <title>Funicular - {data.name}</title>
       </Head>
       <div class="mx-auto">
-        {data.name}
+        <h1 class="text-xl">{data.name}</h1>
         <ul>
           <li>
             <a href={`${data.name}/actors`}>Actors</a>

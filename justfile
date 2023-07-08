@@ -19,7 +19,7 @@ rm migration:
   nu tools/migrations/rm.nu
 
 sqlc command:
-  psql postgresql://postgres:postgres@localhost:5432/funicular --csv --command """{{command}}"""
+  pgcli postgresql://postgres:postgres@localhost:5432/funicular --csv --command """{{command}}"""
 
 sqlf file:
-  psql postgresql://postgres:postgres@localhost:5432/funicular --csv --file """{{file}}"""
+  pgcli postgresql://postgres:postgres@localhost:5432/funicular --csv --file """{{file}}"""
