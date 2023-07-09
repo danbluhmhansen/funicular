@@ -19,6 +19,7 @@
     "twind": "https://esm.sh/twind@0.16.19",
     "twind/": "https://esm.sh/twind@0.16.19/",
     "$std/": "https://deno.land/std@0.190.0/",
+    "@headlessui/react": "https://esm.sh/@headlessui/react@1.7.15?alias=react:preact/compat,react-dom:preact/compat,@types/react:preact/compatt&external=preact/compat",
     "react-icons/ai": "https://deno.land/x/react_icons_ai@1.0.9/mod.ts",
     "react-icons/bs": "https://deno.land/x/react_icons_bs@1.0.9/mod.ts",
     "react-icons/bi": "https://deno.land/x/react_icons_bi@1.0.9/mod.ts",
