@@ -1,9 +1,8 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { Button } from "~components/button.tsx";
 import { Game } from "~api-models";
 import { Head } from "$fresh/runtime.ts";
 import funRequest from "~lib/funicular-request.ts";
-import { TbPlus } from "react-icons/tb";
+import Dialog from "~islands/dialog.tsx";
 
 export const handler: Handlers<Game[]> = {
   async GET(_, ctx) {
@@ -20,10 +19,7 @@ export default function Page({ data }: PageProps<Game[]>) {
       </Head>
       <div class="mx-auto">
         <div class="flex flex-row items-center justify-between space-x-4 p-4">
-          <Button>
-            <TbPlus class="mr-1" />
-            Add
-          </Button>
+          <Dialog />
         </div>
         {data.length > 0
           ? (
