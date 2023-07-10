@@ -1,36 +1,27 @@
-import { useState } from "preact/hooks";
+import { JSX } from "preact";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "preact/compat";
+import { Button } from "~components/button.tsx";
+import { useSignal } from "@preact/signals";
 
-export default function Modal() {
-  const [isOpen, setIsOpen] = useState(false);
+interface ModalProps {
+  title: JSX.Element | string;
+  description: JSX.Element | string;
+}
 
-  function closeModal() {
-    setIsOpen(false);
-  }
-
-  function openModal() {
-    setIsOpen(true);
-  }
+export default function Modal({ title, description }: ModalProps) {
+  const show = useSignal(false);
 
   return (
     <>
-      <div class=" inset-0 flex items-center justify-center">
-        <button
-          type="button"
-          onClick={openModal}
-          class="rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
-        >
-          Open dialog
-        </button>
-      </div>
+      <Button onClick={() => show.value = true}>
+        Open dialog
+      </Button>
 
-      <Transition appear show={isOpen} as={Fragment}>
+      <Transition appear show={show.value} as={Fragment}>
         <Dialog
-          as="div"
-          /* @ts-ignore */
           class="relative z-10"
-          onClose={closeModal}
+          onClose={() => show.value = false}
         >
           <Transition.Child
             as={Fragment}
@@ -55,29 +46,33 @@ export default function Modal() {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel class="
+                  w-full
+                  max-w-md
+                  transform
+                  overflow-hidden
+                  rounded-2xl
+                  bg-slate-900
+                  p-6
+                  text-left
+                  align-middle
+                  shadow-xl
+                  transition-all">
                   <Dialog.Title
                     as="h3"
                     /* @ts-ignore */
-                    class="text-lg font-medium leading-6 text-gray-900"
+                    class="text-lg font-medium leading-6 text-white"
                   >
-                    Payment successful
+                    {title}
                   </Dialog.Title>
-                  <div class="mt-2">
-                    <p class="text-sm text-gray-500">
-                      Your payment has been successfully submitted. We’ve sent
-                      you an email with all of the details of your order.
-                    </p>
-                  </div>
+                  <Dialog.Description class="mt-2 text-sm text-white">
+                    {description}
+                  </Dialog.Description>
 
                   <div class="mt-4">
-                    <button
-                      type="button"
-                      class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      onClick={closeModal}
-                    >
-                      Got it, thanks!
-                    </button>
+                    <Button onClick={() => show.value = false}>
+                      Ok
+                    </Button>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

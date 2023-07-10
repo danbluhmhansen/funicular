@@ -19,7 +19,7 @@ export default function Page({ data }: PageProps<Game[]>) {
       </Head>
       <div class="mx-auto">
         <div class="flex flex-row items-center justify-between space-x-4 p-4">
-          <Dialog />
+          <Dialog title="foo" description="bar" />
         </div>
         {data.length > 0
           ? (
