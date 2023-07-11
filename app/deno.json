@@ -9,6 +9,7 @@
     "~components/": "./components/",
     "~islands/": "./islands/",
     "~lib/": "./lib/",
+    "~models/": "./models/",
     "~api-models": "./api/models/all.ts",
     "$fresh/": "https://deno.land/x/fresh@1.2.0/",
     "preact": "https://esm.sh/preact@10.15.1",

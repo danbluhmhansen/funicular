@@ -15,6 +15,7 @@ import * as $9 from "./routes/games/[game]/traits.tsx";
 import * as $10 from "./routes/index.tsx";
 import * as $$0 from "./islands/counter.tsx";
 import * as $$1 from "./islands/dialog.tsx";
+import * as $$2 from "./islands/game-grid.tsx";
 
 const manifest = {
   routes: {
@@ -33,6 +34,7 @@ const manifest = {
   islands: {
     "./islands/counter.tsx": $$0,
     "./islands/dialog.tsx": $$1,
+    "./islands/game-grid.tsx": $$2,
   },
   baseUrl: import.meta.url,
 };

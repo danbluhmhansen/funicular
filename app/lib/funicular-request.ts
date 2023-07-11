@@ -56,14 +56,14 @@ class FunRequest {
   }
 
   path(input: string | string[]) {
-    this.url.pathname = typeof input === "object" ? input.join("/") : input;
+    this.url.pathname = Array.isArray(input) ? input.join("/") : input;
     return this;
   }
 
   select(input: string | string[]) {
     this.url.searchParams.set(
       "select",
-      typeof input === "object" ? input.join(",") : input,
+      Array.isArray(input) ? input.join(",") : input,
     );
     return this;
   }
