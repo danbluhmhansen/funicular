@@ -2,15 +2,14 @@ import { ComponentChildren } from "preact";
 import { Dialog as Modal, Transition } from "@headlessui/react";
 import { Fragment } from "preact/compat";
 import { Button } from "~components/button.tsx";
-import { useSignal } from "@preact/signals";
+import { Signal } from "@preact/signals";
 
 interface DialogProps {
+  show: Signal<boolean>;
   children?: ComponentChildren;
 }
 
-export default function Dialog({ children }: DialogProps) {
-  const show = useSignal(false);
-
+export default function Dialog({ show, children }: DialogProps) {
   return (
     <>
       <Button onClick={() => show.value = true}>

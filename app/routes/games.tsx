@@ -5,6 +5,7 @@ import funRequest from "~lib/funicular-request.ts";
 import GameGrid from "~islands/game-grid.tsx";
 import { useSignal } from "@preact/signals";
 import { auditTrack } from "~models/audit.ts";
+import { Button } from "~components/button.tsx";
 
 export const handler: Handlers<Game[]> = {
   async GET(_, ctx) {

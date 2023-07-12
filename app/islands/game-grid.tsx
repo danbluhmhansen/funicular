@@ -1,42 +1,54 @@
-import { Signal } from "@preact/signals";
+import { Signal, useSignal } from "@preact/signals";
 import { Game } from "~api-models";
 import { Button } from "~components/button.tsx";
 import { Audit, auditAdd } from "~models/audit.ts";
 import Dialog from "~islands/dialog.tsx";
-import { Dialog as Modal } from "@headlessui/react";
 
 interface GameGridProps {
   audits: Signal<Audit<Game>[]>;
 }
 
 export default function GameGrid({ audits }: GameGridProps) {
+  const show = useSignal(false);
+  const newName = useSignal("");
+
   return (
     <>
       <div class="flex flex-row items-center justify-between space-x-4 p-4">
-        <Button
-          onClick={() =>
-            audits.value = [
-              auditAdd({ id: crypto.randomUUID(), name: "" }),
-              ...audits.value,
-            ]}
-        >
-          Add
-        </Button>
-        <Dialog>
-          <Modal.Title
-            as="h3"
-            /* @ts-ignore */
-            class="text-lg font-medium leading-6 text-white"
-          >
+        <Dialog show={show}>
+          <h3 class="text-lg font-medium leading-6 text-white">
             Title
-          </Modal.Title>
-          <Modal.Description class="mt-2 text-sm text-white">
-            Description
-          </Modal.Description>
-
+          </h3>
+          <div>
+            <input
+              type="text"
+              name="name"
+              onChange={(n) => newName.value = n.currentTarget.value}
+              class="
+              bg(gray-50 dark:gray-700)
+              border(& gray-300 dark:gray-600 focus:primary-600 dark:focus:primary-500)
+              text(sm gray-900 dark:white)
+              ring(focus:primary-600 dark:focus:primary-500)
+              rounded-lg
+              block
+              w-full
+              p-2.5
+              dark:placeholder-gray-400
+              "
+            />
+          </div>
+          <p class="mt-2 text-sm text-white">Description</p>
           <div class="mt-4">
-            <Button>
-              Ok
+            <Button
+              onClick={() => {
+                audits.value = [
+                  auditAdd({ id: crypto.randomUUID(), name: newName.value }),
+                  ...audits.value,
+                ];
+                show.value = false;
+              }}
+            >
+              Add
             </Button>
           </div>
         </Dialog>
