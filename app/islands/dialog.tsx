@@ -1,15 +1,14 @@
-import { JSX } from "preact";
-import { Dialog, Transition } from "@headlessui/react";
+import { ComponentChildren } from "preact";
+import { Dialog as Modal, Transition } from "@headlessui/react";
 import { Fragment } from "preact/compat";
 import { Button } from "~components/button.tsx";
 import { useSignal } from "@preact/signals";
 
-interface ModalProps {
-  title: JSX.Element | string;
-  description: JSX.Element | string;
+interface DialogProps {
+  children?: ComponentChildren;
 }
 
-export default function Modal({ title, description }: ModalProps) {
+export default function Dialog({ children }: DialogProps) {
   const show = useSignal(false);
 
   return (
@@ -19,7 +18,7 @@ export default function Modal({ title, description }: ModalProps) {
       </Button>
 
       <Transition appear show={show.value} as={Fragment}>
-        <Dialog
+        <Modal
           class="relative z-10"
           onClose={() => show.value = false}
         >
@@ -46,7 +45,7 @@ export default function Modal({ title, description }: ModalProps) {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel class="
+                <Modal.Panel class="
                   w-full
                   max-w-md
                   transform
@@ -58,27 +57,12 @@ export default function Modal({ title, description }: ModalProps) {
                   align-middle
                   shadow-xl
                   transition-all">
-                  <Dialog.Title
-                    as="h3"
-                    /* @ts-ignore */
-                    class="text-lg font-medium leading-6 text-white"
-                  >
-                    {title}
-                  </Dialog.Title>
-                  <Dialog.Description class="mt-2 text-sm text-white">
-                    {description}
-                  </Dialog.Description>
-
-                  <div class="mt-4">
-                    <Button onClick={() => show.value = false}>
-                      Ok
-                    </Button>
-                  </div>
-                </Dialog.Panel>
+                  {children}
+                </Modal.Panel>
               </Transition.Child>
             </div>
           </div>
-        </Dialog>
+        </Modal>
       </Transition>
     </>
   );

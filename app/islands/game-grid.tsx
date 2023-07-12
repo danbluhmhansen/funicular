@@ -2,6 +2,8 @@ import { Signal } from "@preact/signals";
 import { Game } from "~api-models";
 import { Button } from "~components/button.tsx";
 import { Audit, auditAdd } from "~models/audit.ts";
+import Dialog from "~islands/dialog.tsx";
+import { Dialog as Modal } from "@headlessui/react";
 
 interface GameGridProps {
   audits: Signal<Audit<Game>[]>;
@@ -14,12 +16,30 @@ export default function GameGrid({ audits }: GameGridProps) {
         <Button
           onClick={() =>
             audits.value = [
-              auditAdd({ id: crypto.randomUUID(), name: "test" }),
+              auditAdd({ id: crypto.randomUUID(), name: "" }),
               ...audits.value,
             ]}
         >
           Add
         </Button>
+        <Dialog>
+          <Modal.Title
+            as="h3"
+            /* @ts-ignore */
+            class="text-lg font-medium leading-6 text-white"
+          >
+            Title
+          </Modal.Title>
+          <Modal.Description class="mt-2 text-sm text-white">
+            Description
+          </Modal.Description>
+
+          <div class="mt-4">
+            <Button>
+              Ok
+            </Button>
+          </div>
+        </Dialog>
       </div>
       {audits.value.length > 0
         ? (
