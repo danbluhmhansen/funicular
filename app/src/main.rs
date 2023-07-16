@@ -1,4 +1,4 @@
-use gloo_net::http::Request;
+use postgrest::Postgrest;
 use serde::Deserialize;
 use yew::prelude::*;
 
@@ -18,14 +18,16 @@ fn App() -> Html {
         use_effect_with_deps(
             move |_| {
                 wasm_bindgen_futures::spawn_local(async move {
-                    let fetched_games: Vec<Game> =
-                        Request::get("http://localhost:3000/game?select=name")
-                            .send()
-                            .await
-                            .unwrap()
-                            .json()
-                            .await
-                            .unwrap();
+                    let client = Postgrest::new("http://localhost:3000");
+                    let fetched_games: Vec<Game> = client
+                        .from("game")
+                        .select("name")
+                        .execute()
+                        .await
+                        .unwrap()
+                        .json()
+                        .await
+                        .unwrap();
                     games.set(fetched_games);
                 });
                 || ()
