@@ -1,16 +1,8 @@
-set positional-arguments
-
-alias a := app
-alias t := test
-
 default:
   @just --list
 
-app *args='':
-  cd app && deno task "$@"
-
-test:
-  cargo test
+app:
+  cd app && trunk serve
 
 add migration name:
   nu tools/migrations/add.nu {{name}}

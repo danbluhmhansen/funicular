@@ -18,17 +18,16 @@ fn App() -> Html {
         use_effect_with_deps(
             move |_| {
                 wasm_bindgen_futures::spawn_local(async move {
-                    let client = Postgrest::new("http://localhost:3000");
-                    let fetched_games: Vec<Game> = client
+                    if let Ok(response) = Postgrest::new("http://localhost:3000")
                         .from("game")
                         .select("name")
                         .execute()
                         .await
-                        .unwrap()
-                        .json()
-                        .await
-                        .unwrap();
-                    games.set(fetched_games);
+                    {
+                        if let Ok(fetched_games) = response.json().await {
+                            games.set(fetched_games);
+                        }
+                    }
                 });
                 || ()
             },
