@@ -1,12 +1,2 @@
-# dotenv environment variable files
-.env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
-
 dist/
-
-api/models/
-api/http/
-api/rxjsStub.ts
+static/railwind.css
