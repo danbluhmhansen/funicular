@@ -36,10 +36,19 @@ fn App() -> Html {
     }
 
     html! {
-        <div class="container mx-auto dark:text-white">
-            {games.iter().map(|game| html! {
-            <p>{game.clone().name}</p>
-        }).collect::<Vec<_>>()}
+        <div class="flex flex-col min-h-screen">
+            <header class="mx-auto p-4">
+                <nav>
+                    <ul class="flex flex-row justify-between space-x-8">
+                        <li>
+                            <a href="/">{"Home"}</a>
+                        </li>
+                        <li>
+                          <a href="/games">{"Games"}</a>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
         </div>
     }
 }
