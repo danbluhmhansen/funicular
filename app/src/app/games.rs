@@ -16,7 +16,7 @@ struct Game {
 async fn fetch_games() -> Result<Vec<Game>, reqwest::Error> {
     Postgrest::new("http://localhost:3000")
         .from("game")
-        .select("name")
+        .select("id,name")
         .execute()
         .await?
         .json::<Vec<Game>>()
@@ -25,14 +25,13 @@ async fn fetch_games() -> Result<Vec<Game>, reqwest::Error> {
 
 #[hook]
 fn use_games() -> SuspensionResult<Vec<Game>> {
-    // TODO: handle unwrap
-    Ok((*(use_future(fetch_games)?.as_ref().unwrap())).clone())
+    Ok(use_future(fetch_games)?.as_deref().unwrap().to_vec())
 }
 
 #[function_component]
 fn Content() -> HtmlResult {
     let games = use_games()?;
-    if games.len() > 0 {
+    if !games.is_empty() {
         Ok(html! {
             <table class="table-auto border-collapse mx-auto">
                 <thead>
@@ -43,7 +42,7 @@ fn Content() -> HtmlResult {
                 <tbody>
                     {games.iter().map(|g|
                         html! {
-                            <tr class="px-4 py-2">
+                            <tr key={g.id.as_ref().unwrap().clone()} class="px-4 py-2">
                                 <td>
                                     {g.name.clone()}
                                 </td>
