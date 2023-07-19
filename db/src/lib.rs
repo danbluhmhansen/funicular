@@ -3,7 +3,6 @@
 use pgrx::prelude::*;
 
 mod into_pgrx_arg;
-mod migrations;
 mod seed;
 mod uuid7;
 
