@@ -2,12 +2,7 @@ use crate::into_pgrx_arg::IntoPgrxArg;
 use pgrx::prelude::*;
 
 fn seed_game() -> Result<pgrx::Uuid, spi::Error> {
-    Ok(
-        Spi::get_one::<pgrx::Uuid>(
-            r#"INSERT INTO "game" ("name") VALUES ('foo') RETURNING "id";"#,
-        )?
-        .unwrap(),
-    )
+    Ok(Spi::get_one::<pgrx::Uuid>(r#"INSERT INTO "game" ("name") VALUES ('foo') RETURNING "id";"#)?.unwrap())
 }
 
 struct Skills {
@@ -172,11 +167,7 @@ fn seed_rule_nums(skills: &Skills, traits: &Traits) -> Result<(), spi::Error> {
     )
 }
 
-fn seed_actors(
-    game: pgrx::Uuid,
-    skills: &Skills,
-    traits: &Traits,
-) -> Result<Vec<pgrx::Uuid>, spi::Error> {
+fn seed_actors(game: pgrx::Uuid, skills: &Skills, traits: &Traits) -> Result<Vec<pgrx::Uuid>, spi::Error> {
     let kinds = Spi::connect(|mut client| -> Result<Vec<pgrx::Uuid>, spi::Error> {
         Ok(client
             .update(
@@ -265,12 +256,7 @@ fn seed_actors(
     Ok(actors)
 }
 
-fn seed_gears(
-    game: pgrx::Uuid,
-    actor1: pgrx::Uuid,
-    actor2: pgrx::Uuid,
-    skills: &Skills,
-) -> Result<(), spi::Error> {
+fn seed_gears(game: pgrx::Uuid, actor1: pgrx::Uuid, actor2: pgrx::Uuid, skills: &Skills) -> Result<(), spi::Error> {
     let kinds = Spi::connect(|mut client| -> Result<Vec<pgrx::Uuid>, spi::Error> {
         Ok(client
             .update(
@@ -343,12 +329,7 @@ fn seed_gears(
             ($2, $3),
             ($2, $4);
         "#,
-        Some(vec![
-            actor1.into_arg(),
-            actor2.into_arg(),
-            warhammer,
-            rapier,
-        ]),
+        Some(vec![actor1.into_arg(), actor2.into_arg(), warhammer, rapier]),
     )?;
 
     Ok(())

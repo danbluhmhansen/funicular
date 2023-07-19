@@ -40,9 +40,8 @@ fn gen_rand_uuid7() -> Result<pgrx::Uuid, String> {
 #[pg_extern]
 fn gen_uuid7(ts: pgrx::Timestamp) -> Result<pgrx::Uuid, String> {
     let (h, m, s, ms) = ts.to_hms_micro();
-    if let Some(datetime) =
-        NaiveDate::from_ymd_opt(ts.year(), u32::from(ts.month()), u32::from(ts.day()))
-            .and_then(|d| d.and_hms_micro_opt(u32::from(h), u32::from(m), u32::from(s), ms))
+    if let Some(datetime) = NaiveDate::from_ymd_opt(ts.year(), u32::from(ts.month()), u32::from(ts.day()))
+        .and_then(|d| d.and_hms_micro_opt(u32::from(h), u32::from(m), u32::from(s), ms))
     {
         pgrx::Uuid::from_slice(
             uuid7::V7Generator::new(ThreadRng::default())
@@ -60,22 +59,16 @@ mod tests {
     use pgrx::prelude::*;
 
     const UUID: pgrx::UuidBytes = [
-        0x01, 0x88, 0x67, 0x15, 0x04, 0xa4, 0x7a, 0x8a, 0x9c, 0x1d, 0xba, 0x69, 0xf0, 0x3e, 0xb0,
-        0x7d,
+        0x01, 0x88, 0x67, 0x15, 0x04, 0xa4, 0x7a, 0x8a, 0x9c, 0x1d, 0xba, 0x69, 0xf0, 0x3e, 0xb0, 0x7d,
     ];
 
     #[pg_test]
     fn test_uuid7_to_time() {
         assert_eq!(
-            Ok(Some(pgrx::Timestamp::new_unchecked(
-                2023, 5, 29, 10, 36, 0.724
-            ))),
+            Ok(Some(pgrx::Timestamp::new_unchecked(2023, 5, 29, 10, 36, 0.724))),
             Spi::get_one_with_args::<pgrx::Timestamp>(
                 "SELECT uuid7_time($1);",
-                vec![(
-                    PgBuiltInOids::UUIDOID.oid(),
-                    pgrx::Uuid::from_bytes(UUID).into_datum(),
-                )],
+                vec![(PgBuiltInOids::UUIDOID.oid(), pgrx::Uuid::from_bytes(UUID).into_datum(),)],
             )
         );
     }
