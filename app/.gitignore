@@ -1,2 +1,3 @@
 dist/
-static/railwind.css
+static/site.css
+node_modules/

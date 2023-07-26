@@ -1,0 +1,27 @@
+{
+  "name": "funicular",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "bld": "unocss src/**/*.rs index.html --out-file static/site.css",
+    "dev": "npm run bld -- --watch",
+    "min": "npm run bld -- --minify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danbluhmhansen/funicular.git"
+  },
+  "author": "Dan Bluhm Hansen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danbluhmhansen/funicular/issues"
+  },
+  "homepage": "https://github.com/danbluhmhansen/funicular#readme",
+  "dependencies": {
+    "@unocss/reset": "^0.53.6",
+    "daisyui": "^3.5.0",
+    "unocss": "^0.53.6",
+    "unocss-preset-daisy": "^6.0.0"
+  }
+}

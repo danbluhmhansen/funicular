@@ -33,16 +33,16 @@ fn Content() -> HtmlResult {
     let games = use_games()?;
     if !games.is_empty() {
         Ok(html! {
-            <table class="table-auto border-collapse mx-auto">
+            <table class={classes!("table")}>
                 <thead>
-                    <tr class="px-4 py-2">
+                    <tr>
                         <th>{"Name"}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {games.iter().map(|g|
                         html! {
-                            <tr key={g.id.as_ref().unwrap().clone()} class="px-4 py-2">
+                            <tr key={g.id.as_ref().unwrap().clone()}>
                                 <td>
                                     {g.name.clone()}
                                 </td>
@@ -59,9 +59,10 @@ fn Content() -> HtmlResult {
 
 #[function_component]
 pub fn Games() -> Html {
-    let fallback = html! {"fallback"};
+    let fallback =
+        html! {<span class={classes!("loading", "loading-infinity", "loading-lg")}></span>};
     html! {
-        <div class="mx-auto">
+        <div class={classes!("container", "mx-auto", "flex", "flex-col", "items-center")}>
             <h1>{"Games"}</h1>
             <Suspense {fallback}>
                 <Content />

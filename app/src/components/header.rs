@@ -5,17 +5,15 @@ use yew_router::prelude::*;
 #[function_component]
 pub fn Header() -> Html {
     html! {
-        <header class="mx-auto p-4">
-            <nav>
-                <ul class="flex flex-row justify-between space-x-8">
-                    <li>
-                        <Link<AppRoute> to={AppRoute::Home}>{ "Home" }</Link<AppRoute>>
-                    </li>
-                    <li>
-                        <Link<AppRoute> to={AppRoute::Games}>{ "Games" }</Link<AppRoute>>
-                    </li>
+        <header>
+            <div class={classes!("navbar")}>
+                <ul class={classes!("navbar-start")}></ul>
+                <ul class={classes!("navbar-center", "menu", "menu-horizontal")}>
+                    <li><Link<AppRoute> to={AppRoute::Home}>{ "Home" }</Link<AppRoute>></li>
+                    <li><Link<AppRoute> to={AppRoute::Games}>{ "Games" }</Link<AppRoute>></li>
                 </ul>
-            </nav>
+                <ul class={classes!("navbar-end")}></ul>
+            </div>
         </header>
     }
 }

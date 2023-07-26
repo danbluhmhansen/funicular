@@ -6,5 +6,5 @@ port = 8000
 
 [[hooks]]
 stage = "pre_build"
-command = "railwind"
-command_arguments = ["--output", "static/railwind.css", "--include-preflight"]
+command = "npm"
+command_arguments = ["run", "bld"]

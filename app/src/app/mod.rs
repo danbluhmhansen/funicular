@@ -29,11 +29,9 @@ fn switch(routes: AppRoute) -> Html {
 #[function_component]
 pub fn App() -> Html {
     html! {
-        <div class="flex flex-col min-h-screen">
-            <BrowserRouter>
-                <Header />
-                <Switch<AppRoute> render={switch} />
-            </BrowserRouter>
-        </div>
+        <BrowserRouter>
+            <Header />
+            <Switch<AppRoute> render={switch} />
+        </BrowserRouter>
     }
 }
