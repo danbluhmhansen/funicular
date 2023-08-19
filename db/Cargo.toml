@@ -19,6 +19,7 @@ pg_test = []
 chrono = { version = "0.4.26", features = ["serde"] }
 pgrx = { version = "0.9.8" }
 rand = { version = "0.8.5", default-features = false }
+regex = "1.9.3"
 uuid = { version = "1.4.0" }
 uuid7 = { version = "0.6.4", features = ["serde", "uuid"] }
 

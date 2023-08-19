@@ -14,6 +14,13 @@ table "actor" {
     null = false
     type = text
   }
+  column "slug" {
+    type = text
+    as {
+      expr = "slugify(name)"
+      type = STORED
+    }
+  }
   column "created" {
     null = true
     type = timestamp
@@ -35,9 +42,9 @@ table "actor" {
     on_update   = CASCADE
     on_delete   = CASCADE
   }
-  index "actor_kind_id_name_key" {
+  index "actor_kind_id_slug_key" {
     unique  = true
-    columns = [column.kind_id, column.name]
+    columns = [column.kind_id, column.slug]
   }
 }
 table "actor_gear" {
@@ -88,6 +95,13 @@ table "actor_kind" {
     null = false
     type = text
   }
+  column "slug" {
+    type = text
+    as {
+      expr = "slugify(name)"
+      type = STORED
+    }
+  }
   column "created" {
     null = true
     type = timestamp
@@ -109,9 +123,9 @@ table "actor_kind" {
     on_update   = CASCADE
     on_delete   = CASCADE
   }
-  index "actor_kind_game_id_name_key" {
+  index "actor_kind_game_id_slug_key" {
     unique  = true
-    columns = [column.game_id, column.name]
+    columns = [column.game_id, column.slug]
   }
 }
 table "actor_skill" {
@@ -185,6 +199,13 @@ table "game" {
     null = false
     type = text
   }
+  column "slug" {
+    type = text
+    as {
+      expr = "slugify(name)"
+      type = STORED
+    }
+  }
   column "created" {
     null = true
     type = timestamp
@@ -200,9 +221,9 @@ table "game" {
   primary_key {
     columns = [column.id]
   }
-  index "game_name_key" {
+  index "game_slug_key" {
     unique  = true
-    columns = [column.name]
+    columns = [column.slug]
   }
 }
 table "gear" {
@@ -220,6 +241,13 @@ table "gear" {
   column "name" {
     null = false
     type = text
+  }
+  column "slug" {
+    type = text
+    as {
+      expr = "slugify(name)"
+      type = STORED
+    }
   }
   column "created" {
     null = true
@@ -242,9 +270,9 @@ table "gear" {
     on_update   = CASCADE
     on_delete   = CASCADE
   }
-  index "gear_kind_id_name_key" {
+  index "gear_kind_id_slug_key" {
     unique  = true
-    columns = [column.kind_id, column.name]
+    columns = [column.kind_id, column.slug]
   }
 }
 table "gear_kind" {
@@ -262,6 +290,13 @@ table "gear_kind" {
   column "name" {
     null = false
     type = text
+  }
+  column "slug" {
+    type = text
+    as {
+      expr = "slugify(name)"
+      type = STORED
+    }
   }
   column "created" {
     null = true
@@ -284,9 +319,9 @@ table "gear_kind" {
     on_update   = CASCADE
     on_delete   = CASCADE
   }
-  index "gear_kind_game_id_name_key" {
+  index "gear_kind_game_id_slug_key" {
     unique  = true
-    columns = [column.game_id, column.name]
+    columns = [column.game_id, column.slug]
   }
 }
 table "gear_skill" {
@@ -395,6 +430,13 @@ table "skill" {
     null = false
     type = text
   }
+  column "slug" {
+    type = text
+    as {
+      expr = "slugify(name)"
+      type = STORED
+    }
+  }
   column "created" {
     null = true
     type = timestamp
@@ -416,9 +458,9 @@ table "skill" {
     on_update   = CASCADE
     on_delete   = CASCADE
   }
-  index "skill_game_id_name_key" {
+  index "skill_game_id_slug_key" {
     unique  = true
-    columns = [column.game_id, column.name]
+    columns = [column.game_id, column.slug]
   }
 }
 table "sub_skill" {
@@ -461,6 +503,13 @@ table "trait" {
     null = false
     type = text
   }
+  column "slug" {
+    type = text
+    as {
+      expr = "slugify(name)"
+      type = STORED
+    }
+  }
   column "created" {
     null = true
     type = timestamp
@@ -482,9 +531,9 @@ table "trait" {
     on_update   = CASCADE
     on_delete   = CASCADE
   }
-  index "trait_game_id_name_key" {
+  index "trait_game_id_slug_key" {
     unique  = true
-    columns = [column.game_id, column.name]
+    columns = [column.game_id, column.slug]
   }
 }
 schema "public" {

@@ -4,6 +4,7 @@ use pgrx::prelude::*;
 
 mod into_pgrx_arg;
 mod seed;
+mod slugify;
 mod uuid7;
 
 pgrx::pg_module_magic!();

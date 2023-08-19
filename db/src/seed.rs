@@ -2,7 +2,10 @@ use crate::into_pgrx_arg::IntoPgrxArg;
 use pgrx::prelude::*;
 
 fn seed_game() -> Result<pgrx::Uuid, spi::Error> {
-    Ok(Spi::get_one::<pgrx::Uuid>(r#"INSERT INTO "game" ("name") VALUES ('foo') RETURNING "id";"#)?.unwrap())
+    Ok(
+        Spi::get_one::<pgrx::Uuid>(r#"INSERT INTO "game" ("name") VALUES ('Squirrels of Evil') RETURNING "id";"#)?
+            .unwrap(),
+    )
 }
 
 struct Skills {
@@ -24,16 +27,16 @@ fn seed_skills(game: pgrx::Uuid) -> Result<Skills, spi::Error> {
             .update(
                 r#"
                 INSERT INTO "skill" ("game_id", "name") VALUES
-                    ($1, 'str'),
-                    ($1, 'dex'),
-                    ($1, 'con'),
-                    ($1, 'int'),
-                    ($1, 'wis'),
-                    ($1, 'cha'),
-                    ($1, 'att_mel'),
-                    ($1, 'att_fin'),
-                    ($1, 'att_ran'),
-                    ($1, 'att_thr')
+                    ($1, 'Strength'),
+                    ($1, 'Dexterity'),
+                    ($1, 'Constitution'),
+                    ($1, 'Intelligence'),
+                    ($1, 'Wisdom'),
+                    ($1, 'Charisma'),
+                    ($1, 'Attack, Melee'),
+                    ($1, 'Attack, Finesse'),
+                    ($1, 'Attack, Ranged'),
+                    ($1, 'Attack, Thrown')
                 RETURNING "id";
                 "#,
                 None,
@@ -95,17 +98,17 @@ fn seed_traits(game: pgrx::Uuid) -> Result<Traits, spi::Error> {
             .update(
                 r#"
                 INSERT INTO "trait" ("game_id" ,"name") VALUES
-                    ($1, 'base'),
-                    ($1, 'base_str'),
-                    ($1, 'base_dex'),
-                    ($1, 'base_con'),
-                    ($1, 'base_int'),
-                    ($1, 'base_wis'),
-                    ($1, 'base_cha'),
-                    ($1, 'dwarf'),
-                    ($1, 'elf'),
-                    ($1, 'att_mel'),
-                    ($1, 'att_fin')
+                    ($1, 'Base'),
+                    ($1, 'Base, Strength'),
+                    ($1, 'Base, Dexterity'),
+                    ($1, 'Base, Constitution'),
+                    ($1, 'Base, Intelligence'),
+                    ($1, 'Base, Wisdom'),
+                    ($1, 'Base, Charisma'),
+                    ($1, 'Dwarf'),
+                    ($1, 'Elf'),
+                    ($1, 'Attack, Melee'),
+                    ($1, 'Attack, Finesse')
                 RETURNING "id";
                 "#,
                 None,
@@ -173,7 +176,7 @@ fn seed_actors(game: pgrx::Uuid, skills: &Skills, traits: &Traits) -> Result<Vec
             .update(
                 r#"
                 INSERT INTO "actor_kind" ("game_id", "name") VALUES
-                    ($1, 'player')
+                    ($1, 'Player')
                 RETURNING "id";
                 "#,
                 None,
@@ -262,10 +265,10 @@ fn seed_gears(game: pgrx::Uuid, actor1: pgrx::Uuid, actor2: pgrx::Uuid, skills: 
             .update(
                 r#"
                 INSERT INTO "gear_kind" ("game_id", "name") VALUES
-                    ($1, 'melee'),
-                    ($1, 'finesse'),
-                    ($1, 'ranged'),
-                    ($1, 'thrown')
+                    ($1, 'Melee'),
+                    ($1, 'Finesse'),
+                    ($1, 'Ranged'),
+                    ($1, 'Thrown')
                 RETURNING "id";
                 "#,
                 None,
@@ -307,8 +310,8 @@ fn seed_gears(game: pgrx::Uuid, actor1: pgrx::Uuid, actor2: pgrx::Uuid, skills: 
             .update(
                 r#"
                 INSERT INTO "gear" ("kind_id", "name") VALUES
-                    ($1, 'warhammer'),
-                    ($2, 'rapier')
+                    ($1, 'Warhammer'),
+                    ($2, 'Rapier')
                 RETURNING "id";
                 "#,
                 None,
