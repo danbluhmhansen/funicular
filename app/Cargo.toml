@@ -1,14 +1,13 @@
 [package]
-name = "funicular_app"
+name = "htmlr"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-postgrest = "1.5.2"
-reqwest = { version = "0.11.18", features = ["json"] }
-serde = { version = "1.0.171", features = ["derive"] }
-wasm-bindgen-futures = "0.4.37"
-yew = { version = "0.20.0", features = ["csr"] }
-yew-router = "0.17.0"
+axum = "0.6.20"
+axum_typed_multipart = "0.9.0"
+const_format = "0.2.31"
+maud = { version = "0.25.0", features = ["axum"] }
+serde = { version = "1.0.188", features = ["derive"] }
+sqlx = { version = "0.7.1", features = ["runtime-tokio", "tls-native-tls", "postgres", "uuid"] }
+tokio = { version = "1.32.0", features = ["full"] }
