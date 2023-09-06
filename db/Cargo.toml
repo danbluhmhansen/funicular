@@ -13,15 +13,16 @@ default = ["pg15"]
 # pg13 = ["pgrx/pg13", "pgrx-tests/pg13"]
 # pg14 = ["pgrx/pg14", "pgrx-tests/pg14"]
 pg15 = ["pgrx/pg15", "pgrx-tests/pg15"]
+pg16 = ["pgrx/pg16", "pgrx-tests/pg16"]
 pg_test = []
 
 [dependencies]
-chrono = { version = "0.4.26", features = ["serde"] }
-pgrx = { version = "0.9.8" }
+chrono = { version = "0.4.29", features = ["serde"] }
+pgrx = { version = "0.10.0" }
 rand = { version = "0.8.5", default-features = false }
-regex = "1.9.3"
-uuid = { version = "1.4.0" }
-uuid7 = { version = "0.6.4", features = ["serde", "uuid"] }
+regex = "1.9.5"
+uuid = { version = "1.4.1" }
+uuid7 = { version = "0.7.1", features = ["serde", "uuid"] }
 
 [dev-dependencies]
-pgrx-tests = { version = "0.9.8" }
+pgrx-tests = { version = "0.10.0" }

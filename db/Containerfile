@@ -1,11 +1,11 @@
-FROM rust:1.71.0 AS build
+FROM rust:1.72.0 AS build
 
 RUN apt update
 RUN apt install -y clang
 
 WORKDIR /funicular
 COPY . .
-RUN cargo install --locked cargo-pgrx@0.9.8
+RUN cargo install --locked cargo-pgrx@0.10.0
 RUN cargo pgrx init --pg15 download
 RUN cargo pgrx package --manifest-path db/Cargo.toml --pg-config /root/.pgrx/15.4/pgrx-install/bin/pg_config --out-dir .
 

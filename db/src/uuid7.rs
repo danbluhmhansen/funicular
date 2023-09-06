@@ -1,6 +1,5 @@
 use chrono::{Datelike, NaiveDate, NaiveDateTime, Timelike};
 use pgrx::prelude::*;
-use rand::rngs::ThreadRng;
 
 #[pg_extern(immutable)]
 fn uuid7_time(uuid: pgrx::Uuid) -> Result<pgrx::Timestamp, &'static str> {
@@ -44,7 +43,7 @@ fn gen_uuid7(ts: pgrx::Timestamp) -> Result<pgrx::Uuid, String> {
         .and_then(|d| d.and_hms_micro_opt(u32::from(h), u32::from(m), u32::from(s), ms))
     {
         pgrx::Uuid::from_slice(
-            uuid7::V7Generator::new(ThreadRng::default())
+            uuid7::V7Generator::new(rand::rngs::OsRng::default())
                 .generate_or_reset_core(datetime.timestamp_millis() as u64, 10_000)
                 .as_bytes(),
         )
