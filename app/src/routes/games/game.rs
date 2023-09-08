@@ -10,6 +10,7 @@ use sqlx::{Pool, Postgres};
 
 use crate::{components::Page, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, BUTTON_WARNING, DIALOG};
 
+pub mod actors;
 pub mod skills;
 pub mod traits;
 
