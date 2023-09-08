@@ -9,17 +9,19 @@ use serde::Deserialize;
 
 use crate::{components::Page, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, DIALOG};
 
+pub mod actor;
+
 #[derive(Deserialize)]
-pub struct ActorKindsPath {
+pub struct ActorsPath {
     pub game_slug: String,
     pub actor_kind_slug: String,
 }
 
-pub async fn actor_kinds(
-    Path(ActorKindsPath {
+pub async fn actors(
+    Path(ActorsPath {
         game_slug,
         actor_kind_slug,
-    }): Path<ActorKindsPath>,
+    }): Path<ActorsPath>,
     State(state): State<Arc<AppState>>,
 ) -> impl IntoResponse {
     let game = sqlx::query!(
@@ -40,7 +42,7 @@ pub async fn actor_kinds(
             SELECT actor.name, actor.slug
             FROM actor
             JOIN actor_kind ON actor_kind.id = actor.kind_id
-            WHERE actor_kind.slug = $1
+            WHERE actor_kind.slug = $1;
         "#,
         actor_kind_slug
     )

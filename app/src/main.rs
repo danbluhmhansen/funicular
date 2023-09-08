@@ -51,7 +51,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 )
                 .route(
                     "/games/:game_slug/actors/:actor_kind_slug",
-                    get(routes::games::game::actors::actor_kinds),
+                    get(routes::games::game::actors::actors),
+                )
+                .route(
+                    "/games/:game_slug/actors/:actor_kind_slug/:actor_slug",
+                    get(routes::games::game::actors::actor::actor),
                 )
                 .route("/games/:game_slug/skills", get(routes::games::game::skills::skills))
                 .route("/games/:game_slug/traits", get(routes::games::game::traits::traits))
