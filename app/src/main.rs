@@ -49,6 +49,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     "/games/:game_slug",
                     get(routes::games::game::game_get).post(routes::games::game::game_post),
                 )
+                .route("/games/:game_slug/skills", get(routes::games::game::skills::skills))
+                .route("/games/:game_slug/traits", get(routes::games::game::traits::traits))
                 .with_state(shared_state)
                 .into_make_service(),
         )

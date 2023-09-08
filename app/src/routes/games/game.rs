@@ -2,13 +2,16 @@ use std::sync::Arc;
 
 use axum::{
     extract::{Path, State},
-    response::IntoResponse,
+    response::{IntoResponse, Redirect, Response},
 };
 use axum_typed_multipart::{TryFromMultipart, TypedMultipart};
 use maud::{html, Markup};
 use sqlx::{Pool, Postgres};
 
 use crate::{components::Page, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, BUTTON_WARNING, DIALOG};
+
+pub mod skills;
+pub mod traits;
 
 async fn game(game_slug: String, pool: &Pool<Postgres>) -> Markup {
     let game = sqlx::query!(
@@ -33,8 +36,8 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Markup {
     .unwrap();
 
     Page::new(html! {
-        h1 class="text-xl font-bold" { (game.name) }
-        div class="flex flex-row gap-2" {
+        div class="flex flex-row gap-2 justify-center items-center" {
+            h1 class="text-xl font-bold" { (game.name) }
             a href="#edit" class=(BUTTON_WARNING) { span class="w-4 h-4 i-tabler-pencil"; }
         }
         ul class="flex flex-col gap-4" {
@@ -174,13 +177,13 @@ pub struct Payload {
 }
 
 pub async fn game_post(
-    Path(mut game_slug): Path<String>,
+    Path(game_slug): Path<String>,
     State(state): State<Arc<AppState>>,
     TypedMultipart(form): TypedMultipart<Payload>,
-) -> impl IntoResponse {
+) -> Response {
     match form.submit.as_str() {
         "edit" => {
-            game_slug = sqlx::query!(
+            let game_slug = sqlx::query!(
                 "UPDATE game SET name = $1, description = $2 WHERE id = $3 RETURNING slug;",
                 form.name,
                 form.description,
@@ -190,6 +193,8 @@ pub async fn game_post(
             .await
             .unwrap()
             .slug;
+
+            Redirect::to(&format!("/games/{game_slug}")).into_response()
         }
         "add" => {
             sqlx::query!(
@@ -201,6 +206,8 @@ pub async fn game_post(
             .execute(&state.pool)
             .await
             .unwrap();
+
+            game(game_slug, &state.pool).await.into_response()
         }
         "remove" => {
             if form.slugs_all.is_some_and(|a| a) {
@@ -218,9 +225,9 @@ pub async fn game_post(
                 .await
                 .unwrap();
             }
-        }
-        _ => {}
-    }
 
-    game(game_slug, &state.pool).await
+            game(game_slug, &state.pool).await.into_response()
+        }
+        _ => game(game_slug, &state.pool).await.into_response(),
+    }
 }
