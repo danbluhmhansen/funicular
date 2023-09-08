@@ -9,13 +9,13 @@ use crate::{components::Page, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUC
 
 pub mod game;
 
-pub async fn games(pool: &Pool<Postgres>) -> Markup {
+async fn games(pool: &Pool<Postgres>) -> Markup {
     let games = sqlx::query!("SELECT slug, name FROM game;").fetch_all(pool).await;
 
     Page::new(html! {
         h1 class="text-xl font-bold" { "Games" }
         form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center items-center" {
-            div class="overflow-x-auto relative shadow-md rounded" {
+            div class="overflow-x-auto relative shadow-md rounded w-96" {
                 table class="w-full" {
                     caption class="p-3 space-x-2 bg-white dark:bg-slate-800" {
                         a href="#add" class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus"; }
@@ -25,8 +25,10 @@ pub async fn games(pool: &Pool<Postgres>) -> Markup {
                     }
                     thead class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700" {
                         tr {
-                            th class="p-3" { input type="checkbox" name="slugs_all" class="bg-transparent"; }
-                            th class="py-3 px-6" { "Name" }
+                            th class="p-3 text-center" {
+                                input type="checkbox" name="slugs_all" value="true" class="bg-transparent";
+                            }
+                            th class="py-3 px-6 text-left" { "Name" }
                         }
                     }
                     tbody {
@@ -34,7 +36,7 @@ pub async fn games(pool: &Pool<Postgres>) -> Markup {
                             Ok(games) => {
                                 @for game in games {
                                     tr class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700" {
-                                        td class="p-3" {
+                                        td class="p-3 text-center" {
                                             input
                                                 type="checkbox"
                                                 name="slugs"
@@ -89,7 +91,7 @@ pub async fn games(pool: &Pool<Postgres>) -> Markup {
 }
 
 #[derive(TryFromMultipart)]
-pub struct GamesPayload {
+pub struct Payload {
     pub submit: String,
     pub name: Option<String>,
     pub description: Option<String>,
@@ -99,7 +101,7 @@ pub struct GamesPayload {
 
 pub async fn games_post(
     State(state): State<Arc<AppState>>,
-    TypedMultipart(form): TypedMultipart<GamesPayload>,
+    TypedMultipart(form): TypedMultipart<Payload>,
 ) -> impl IntoResponse {
     match form.submit.as_str() {
         "add" => {

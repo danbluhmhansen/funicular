@@ -45,7 +45,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .route("/site.css", get(routes::styles::style))
                 .route("/", get(routes::index::index))
                 .route("/games", get(routes::games::games_get).post(routes::games::games_post))
-                .route("/games/:game_slug", get(routes::games::game::game))
+                .route(
+                    "/games/:game_slug",
+                    get(routes::games::game::game_get).post(routes::games::game::game_post),
+                )
                 .with_state(shared_state)
                 .into_make_service(),
         )
