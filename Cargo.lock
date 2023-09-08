@@ -818,6 +818,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "92b7a17d89690e8bf5aecd1243641a12121cd2462e66a96b36815851cf1af68e"
 
 [[package]]
+name = "funicular_app"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "axum_typed_multipart",
+ "const_format",
+ "maud",
+ "serde",
+ "sqlx",
+ "tokio",
+]
+
+[[package]]
 name = "funicular_db"
 version = "0.1.0"
 dependencies = [
@@ -1046,19 +1059,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5444c27eef6923071f7ebcc33e3444508466a76f7a2b93da00ed6e19f30c1ddb"
 dependencies = [
  "windows-sys",
-]
-
-[[package]]
-name = "htmlr"
-version = "0.1.0"
-dependencies = [
- "axum",
- "axum_typed_multipart",
- "const_format",
- "maud",
- "serde",
- "sqlx",
- "tokio",
 ]
 
 [[package]]

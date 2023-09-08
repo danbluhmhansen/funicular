@@ -12,6 +12,7 @@ const STYLE: &str = include_str!("site.css");
 const BUTTON: &str = "inline-flex items-center py-2 px-4 text-sm font-medium text-center bg-transparent rounded border hover:text-white focus:ring-4 focus:outline-none";
 const BUTTON_PRIMARY: &str = formatcp!("{BUTTON} {}", " text-violet-600 border-violet-600 dark:text-violet-300 dark:border-violet-300 hover:bg-violet-500 focus:ring-violet-400 dark:hover:bg-violet-400 dark:focus:ring-violet-500");
 const BUTTON_SUCCESS: &str = formatcp!("{BUTTON} {}", " text-green-600 border-green-600 dark:text-green-300 dark:border-green-300 hover:bg-green-500 focus:ring-green-400 dark:hover:bg-green-400 dark:focus:ring-green-500");
+const BUTTON_WARNING: &str = formatcp!("{BUTTON} {}", " text-amber-600 border-amber-600 dark:text-amber-300 dark:border-amber-300 hover:bg-amber-500 focus:ring-amber-400 dark:hover:bg-amber-400 dark:focus:ring-amber-500");
 const BUTTON_ERROR: &str = formatcp!("{BUTTON} {}", " text-red-600 border-red-600 dark:text-red-300 dark:border-red-300 hover:bg-red-500 focus:ring-red-400 dark:hover:bg-red-400 dark:focus:ring-red-500");
 
 const DIALOG: &str = "hidden z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm";
