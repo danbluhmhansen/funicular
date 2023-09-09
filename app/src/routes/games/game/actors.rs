@@ -2,12 +2,17 @@ use std::sync::Arc;
 
 use axum::{
     extract::{Path, State},
-    response::IntoResponse,
+    response::{IntoResponse, Response},
 };
+use axum_typed_multipart::TryFromField;
 use maud::html;
 use serde::Deserialize;
+use strum::Display;
 
-use crate::{components::Page, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, DIALOG};
+use crate::{
+    components::Page, routes::not_found, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, CAPTION, DIALOG,
+    THEAD, TR,
+};
 
 pub mod actor;
 
@@ -17,25 +22,42 @@ pub struct ActorsPath {
     pub actor_kind_slug: String,
 }
 
+#[derive(Display, TryFromField)]
+#[strum(serialize_all = "snake_case")]
+pub enum Submit {
+    Add,
+    Remove,
+}
+
 pub async fn actors(
     Path(ActorsPath {
         game_slug,
         actor_kind_slug,
     }): Path<ActorsPath>,
     State(state): State<Arc<AppState>>,
-) -> impl IntoResponse {
+) -> Response {
     let game = sqlx::query!(
         "SELECT id, name, slug, description FROM game WHERE slug = $1;",
         game_slug
     )
     .fetch_one(&state.pool)
-    .await
-    .unwrap();
+    .await;
+
+    if game.is_err() {
+        return not_found().await.into_response();
+    }
+
+    let game = game.unwrap();
 
     let actor_kind = sqlx::query!("SELECT id, name FROM actor_kind WHERE slug = $1", actor_kind_slug)
         .fetch_one(&state.pool)
-        .await
-        .unwrap();
+        .await;
+
+    if actor_kind.is_err() {
+        return not_found().await.into_response();
+    }
+
+    let actor_kind = actor_kind.unwrap();
 
     let actors = sqlx::query!(
         r#"
@@ -55,13 +77,13 @@ pub async fn actors(
             input type="hidden" name="kind_id" value=(actor_kind.id);
             div class="overflow-x-auto relative shadow-md rounded w-96" {
                 table class="w-full" {
-                    caption class="p-3 space-x-2 bg-white dark:bg-slate-800" {
-                        a href="#add" class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus"; }
-                        button type="submit" name="submit" value="remove" class=(BUTTON_ERROR) {
+                    caption class=(CAPTION) {
+                        a href={"#" (Submit::Add)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus"; }
+                        button type="submit" name="submit" value=(Submit::Remove) class=(BUTTON_ERROR) {
                             span class="w-4 h-4 i-tabler-trash";
                         }
                     }
-                    thead class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700" {
+                    thead class=(THEAD) {
                         tr {
                             th class="p-3 text-center" {
                                 input type="checkbox" name="slugs_all" value="true" class="bg-transparent";
@@ -73,7 +95,7 @@ pub async fn actors(
                         @match actors {
                             Ok(actors) => {
                                 @for actor in actors {
-                                    tr class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700" {
+                                    tr class=(TR) {
                                         td class="p-3 text-center" {
                                             input
                                                 type="checkbox"
@@ -101,7 +123,7 @@ pub async fn actors(
         }
     })
     .pre(html! {
-        dialog id="add" class=(DIALOG) {
+        dialog id=(Submit::Add) class=(DIALOG) {
             div class="flex z-10 flex-col gap-4 p-4 max-w-sm rounded border dark:text-white dark:bg-slate-900" {
                 h2 class="text-xl" { "Add " (actor_kind.name) }
                 form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
@@ -118,7 +140,7 @@ pub async fn actors(
                         placeholder="Description"
                         class="rounded invalid:border-red dark:bg-slate-900" {}
                     div class="flex justify-between" {
-                        button type="submit" name="submit" value="add" class=(BUTTON_SUCCESS) {
+                        button type="submit" name="submit" value=(Submit::Add) class=(BUTTON_SUCCESS) {
                             span class="w-4 h-4 i-tabler-check";
                         }
                         a href="#!" class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-x"; }
@@ -128,5 +150,5 @@ pub async fn actors(
             a href="#!" class="fixed inset-0" {}
         }
     })
-    .build()
+    .build().into_response()
 }

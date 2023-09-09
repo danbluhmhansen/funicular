@@ -2,18 +2,31 @@ use std::sync::Arc;
 
 use axum::{
     extract::{Path, State},
-    response::IntoResponse,
+    response::{IntoResponse, Response},
 };
+use axum_typed_multipart::TryFromField;
 use maud::html;
 use serde::Deserialize;
+use strum::Display;
 
-use crate::{components::Page, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_WARNING};
+use crate::{
+    components::Page, routes::not_found, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_WARNING, CAPTION, THEAD, TR,
+};
 
 #[derive(Deserialize)]
 pub struct ActorPath {
     pub game_slug: String,
     pub actor_kind_slug: String,
     pub actor_slug: String,
+}
+
+#[derive(Display, TryFromField)]
+pub enum Submit {
+    Edit,
+    GearAdd,
+    GearRemove,
+    TraitAdd,
+    TraitRemove,
 }
 
 pub async fn actor(
@@ -23,14 +36,19 @@ pub async fn actor(
         actor_slug,
     }): Path<ActorPath>,
     State(state): State<Arc<AppState>>,
-) -> impl IntoResponse {
+) -> Response {
     let game = sqlx::query!(
         "SELECT id, name, slug, description FROM game WHERE slug = $1;",
         game_slug
     )
     .fetch_one(&state.pool)
-    .await
-    .unwrap();
+    .await;
+
+    if game.is_err() {
+        return not_found().await.into_response();
+    }
+
+    let game = game.unwrap();
 
     let actor_kind = sqlx::query!(
         "SELECT id, name FROM actor_kind WHERE slug = $1 AND game_id = $2",
@@ -38,8 +56,13 @@ pub async fn actor(
         game.id
     )
     .fetch_one(&state.pool)
-    .await
-    .unwrap();
+    .await;
+
+    if actor_kind.is_err() {
+        return not_found().await.into_response();
+    }
+
+    let actor_kind = actor_kind.unwrap();
 
     let actor = sqlx::query!(
         r#"
@@ -51,8 +74,13 @@ pub async fn actor(
         actor_kind.id
     )
     .fetch_one(&state.pool)
-    .await
-    .unwrap();
+    .await;
+
+    if actor.is_err() {
+        return not_found().await.into_response();
+    }
+
+    let actor = actor.unwrap();
 
     let skills = sqlx::query!(
         r#"
@@ -66,8 +94,7 @@ pub async fn actor(
         actor.id
     )
     .fetch_all(&state.pool)
-    .await
-    .unwrap();
+    .await;
 
     let actor_gears = sqlx::query!(
         r#"
@@ -80,8 +107,7 @@ pub async fn actor(
         actor.id
     )
     .fetch_all(&state.pool)
-    .await
-    .unwrap();
+    .await;
 
     let actor_traits = sqlx::query!(
         r#"
@@ -94,8 +120,7 @@ pub async fn actor(
         actor.id
     )
     .fetch_all(&state.pool)
-    .await
-    .unwrap();
+    .await;
 
     Page::new(html! {
         ol class="flex flex-row" {
@@ -113,28 +138,38 @@ pub async fn actor(
         }
         div class="flex flex-row gap-2 justify-center items-center" {
             h1 class="text-xl font-bold" { (actor.name) }
-            a href="#edit" class=(BUTTON_WARNING) { span class="w-4 h-4 i-tabler-pencil"; }
+            a href={"#" (Submit::Edit)} class=(BUTTON_WARNING) { span class="w-4 h-4 i-tabler-pencil"; }
         }
-        div class="overflow-x-auto relative shadow-md rounded" {
-            table class="w-full" {
-                thead class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700" {
-                    tr { @for skill in &skills { th class="py-3 px-6 text-left" { (skill.name) } } }
-                }
-                tbody {
-                    tr class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700" {
-                        @for skill in skills {
-                            td class="py-3 px-6 text-center" { (skill.value.unwrap()) }
+        @match skills {
+            Ok(skills) => {
+                div class="overflow-x-auto relative shadow-md rounded" {
+                    table class="w-full" {
+                        thead class=(THEAD) {
+                            tr { @for skill in &skills { th class="py-3 px-6 text-left" { (skill.name) } } }
+                        }
+                        tbody {
+                            tr class=(TR) {
+                                @for skill in skills {
+                                    td class="py-3 px-6 text-center" {
+                                        @match skill.value {
+                                            Some(value) => (value),
+                                            None => "0",
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
+            Err(_) => { "No skills..." }
         }
         h2 class="text-xl font-bold" { "Gear" }
         div class="overflow-x-auto relative shadow-md rounded w-96" {
             table class="w-full" {
-                caption class="p-3 space-x-2 bg-white dark:bg-slate-800" {
-                    a href="#add" class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus"; }
-                    button type="submit" name="submit" value="remove" class=(BUTTON_ERROR) {
+                caption class=(CAPTION) {
+                    a href={"#" (Submit::GearAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus"; }
+                    button type="submit" name="submit" value=(Submit::GearRemove) class=(BUTTON_ERROR) {
                         span class="w-4 h-4 i-tabler-trash";
                     }
                 }
@@ -155,18 +190,28 @@ pub async fn actor(
                     }
                 }
                 tbody {
-                    @for gear in actor_gears {
-                        tr class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700" {
-                            td class="p-3 text-center" {
-                                input
-                                    type="checkbox"
-                                    name="slugs"
-                                    value=(gear.slug)
-                                    class="bg-transparent";
+                    @match actor_gears {
+                        Ok(actor_gears) => {
+                            @for gear in actor_gears {
+                                tr class=(TR) {
+                                    td class="p-3 text-center" {
+                                        input
+                                            type="checkbox"
+                                            name="slugs"
+                                            value=(gear.slug)
+                                            class="bg-transparent";
+                                    }
+                                    td class="py-3 px-6" { (gear.name) }
+                                    td class="py-3 px-6" {
+                                        @match gear.amount {
+                                            Some(amount) => (amount),
+                                            None => "0",
+                                        }
+                                    }
+                                }
                             }
-                            td class="py-3 px-6" { (gear.name) }
-                            td class="py-3 px-6" { (gear.amount.unwrap()) }
                         }
+                        Err(_) => { "No gear..." }
                     }
                 }
             }
@@ -174,9 +219,9 @@ pub async fn actor(
         h2 class="text-xl font-bold" { "traits" }
         div class="overflow-x-auto relative shadow-md rounded w-96" {
             table class="w-full" {
-                caption class="p-3 space-x-2 bg-white dark:bg-slate-800" {
-                    a href="#add" class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus"; }
-                    button type="submit" name="submit" value="remove" class=(BUTTON_ERROR) {
+                caption class=(CAPTION) {
+                    a href={"#" (Submit::TraitAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus"; }
+                    button type="submit" name="submit" value=(Submit::TraitRemove) class=(BUTTON_ERROR) {
                         span class="w-4 h-4 i-tabler-trash";
                     }
                 }
@@ -197,22 +242,33 @@ pub async fn actor(
                     }
                 }
                 tbody {
-                    @for t in actor_traits {
-                        tr class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700" {
-                            td class="p-3 text-center" {
-                                input
-                                    type="checkbox"
-                                    name="slugs"
-                                    value=(t.slug)
-                                    class="bg-transparent";
+                    @match actor_traits {
+                        Ok(actor_traits) => {
+                            @for t in actor_traits {
+                                tr class=(TR) {
+                                    td class="p-3 text-center" {
+                                        input
+                                            type="checkbox"
+                                            name="slugs"
+                                            value=(t.slug)
+                                            class="bg-transparent";
+                                    }
+                                    td class="py-3 px-6" { (t.name) }
+                                    td class="py-3 px-6" {
+                                        @match t.amount {
+                                            Some(amount) => (amount),
+                                            None => "0",
+                                        }
+                                    }
+                                }
                             }
-                            td class="py-3 px-6" { (t.name) }
-                            td class="py-3 px-6" { (t.amount.unwrap()) }
                         }
+                        Err(_) => { "No traits..." }
                     }
                 }
             }
         }
     })
     .build()
+    .into_response()
 }

@@ -1,13 +1,21 @@
 use std::sync::Arc;
 
 use axum::{extract::State, response::IntoResponse};
-use axum_typed_multipart::{TryFromMultipart, TypedMultipart};
+use axum_typed_multipart::{TryFromField, TryFromMultipart, TypedMultipart};
 use maud::{html, Markup};
 use sqlx::{Pool, Postgres};
+use strum::Display;
 
-use crate::{components::Page, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, DIALOG};
+use crate::{components::Page, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, CAPTION, DIALOG, THEAD, TR};
 
 pub mod game;
+
+#[derive(Display, TryFromField)]
+#[strum(serialize_all = "snake_case")]
+pub enum Submit {
+    Add,
+    Remove,
+}
 
 async fn games(pool: &Pool<Postgres>) -> Markup {
     let games = sqlx::query!("SELECT slug, name FROM game;").fetch_all(pool).await;
@@ -17,13 +25,13 @@ async fn games(pool: &Pool<Postgres>) -> Markup {
         form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center items-center" {
             div class="overflow-x-auto relative shadow-md rounded w-96" {
                 table class="w-full" {
-                    caption class="p-3 space-x-2 bg-white dark:bg-slate-800" {
-                        a href="#add" class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus"; }
-                        button type="submit" name="submit" value="remove" class=(BUTTON_ERROR) {
+                    caption class=(CAPTION) {
+                        a href={"#" (Submit::Add)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus"; }
+                        button type="submit" name="submit" value=(Submit::Remove) class=(BUTTON_ERROR) {
                             span class="w-4 h-4 i-tabler-trash";
                         }
                     }
-                    thead class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700" {
+                    thead class=(THEAD) {
                         tr {
                             th class="p-3 text-center" {
                                 input type="checkbox" name="slugs_all" value="true" class="bg-transparent";
@@ -35,7 +43,7 @@ async fn games(pool: &Pool<Postgres>) -> Markup {
                         @match games {
                             Ok(games) => {
                                 @for game in games {
-                                    tr class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700" {
+                                    tr class=(TR) {
                                         td class="p-3 text-center" {
                                             input
                                                 type="checkbox"
@@ -61,7 +69,7 @@ async fn games(pool: &Pool<Postgres>) -> Markup {
         }
     })
     .pre(html! {
-        dialog id="add" class=(DIALOG) {
+        dialog id=(Submit::Add) class=(DIALOG) {
             div class="flex z-10 flex-col gap-4 p-4 max-w-sm rounded border dark:text-white dark:bg-slate-900" {
                 h2 class="text-xl" { "Add Game" }
                 form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
@@ -77,7 +85,7 @@ async fn games(pool: &Pool<Postgres>) -> Markup {
                         placeholder="Description"
                         class="rounded invalid:border-red dark:bg-slate-900" {}
                     div class="flex justify-between" {
-                        button type="submit" name="submit" value="add" class=(BUTTON_SUCCESS) {
+                        button type="submit" name="submit" value=(Submit::Add) class=(BUTTON_SUCCESS) {
                             span class="w-4 h-4 i-tabler-check";
                         }
                         a href="#!" class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-x"; }
@@ -92,7 +100,7 @@ async fn games(pool: &Pool<Postgres>) -> Markup {
 
 #[derive(TryFromMultipart)]
 pub struct Payload {
-    pub submit: String,
+    pub submit: Submit,
     pub name: Option<String>,
     pub description: Option<String>,
     pub slugs_all: Option<bool>,
@@ -103,28 +111,25 @@ pub async fn games_post(
     State(state): State<Arc<AppState>>,
     TypedMultipart(form): TypedMultipart<Payload>,
 ) -> impl IntoResponse {
-    match form.submit.as_str() {
-        "add" => {
-            sqlx::query!(
+    match form.submit {
+        Submit::Add => {
+            let res = sqlx::query!(
                 "INSERT INTO game (name, description) VALUES ($1, $2);",
                 form.name,
                 form.description
             )
             .execute(&state.pool)
-            .await
-            .unwrap();
+            .await;
         }
-        "remove" => {
+        Submit::Remove => {
             if form.slugs_all.is_some_and(|a| a) {
-                sqlx::query!("DELETE FROM game;").execute(&state.pool).await.unwrap();
+                _ = sqlx::query!("DELETE FROM game;").execute(&state.pool).await;
             } else {
-                sqlx::query!("DELETE FROM game WHERE slug = ANY($1);", &form.slugs)
+                let res = sqlx::query!("DELETE FROM game WHERE slug = ANY($1);", &form.slugs)
                     .execute(&state.pool)
-                    .await
-                    .unwrap();
+                    .await;
             }
         }
-        _ => {}
     };
 
     games(&state.pool).await

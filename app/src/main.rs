@@ -17,6 +17,10 @@ const BUTTON_ERROR: &str = formatcp!("{BUTTON} {}", " text-red-600 border-red-60
 
 const DIALOG: &str = "hidden z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm";
 
+const CAPTION: &str = "p-3 space-x-2 bg-white dark:bg-slate-800";
+const THEAD: &str = "text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700";
+const TR: &str = "bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700";
+
 pub struct AppState {
     pool: Pool<Postgres>,
 }
@@ -42,8 +46,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     axum::Server::bind(&"0.0.0.0:1111".parse()?)
         .serve(
             Router::new()
-                .route("/site.css", get(routes::styles::style))
-                .route("/", get(routes::index::index))
+                .route("/site.css", get(routes::style))
+                .route("/", get(routes::index))
                 .route("/games", get(routes::games::games_get).post(routes::games::games_post))
                 .route(
                     "/games/:game_slug",
@@ -59,6 +63,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 )
                 .route("/games/:game_slug/skills", get(routes::games::game::skills::skills))
                 .route("/games/:game_slug/traits", get(routes::games::game::traits::traits))
+                .fallback(get(routes::not_found))
                 .with_state(shared_state)
                 .into_make_service(),
         )

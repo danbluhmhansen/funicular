@@ -4,24 +4,41 @@ use axum::{
     extract::{Path, State},
     response::{IntoResponse, Redirect, Response},
 };
-use axum_typed_multipart::{TryFromMultipart, TypedMultipart};
-use maud::{html, Markup};
+use axum_typed_multipart::{TryFromField, TryFromMultipart, TypedMultipart};
+use maud::html;
 use sqlx::{Pool, Postgres};
+use strum::Display;
 
-use crate::{components::Page, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, BUTTON_WARNING, DIALOG};
+use crate::{
+    components::Page, routes::not_found, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, BUTTON_WARNING,
+    CAPTION, DIALOG,
+};
 
 pub mod actors;
 pub mod skills;
 pub mod traits;
 
-async fn game(game_slug: String, pool: &Pool<Postgres>) -> Markup {
+#[derive(Display, TryFromField)]
+#[strum(serialize_all = "snake_case")]
+pub enum Submit {
+    Add,
+    Edit,
+    Remove,
+}
+
+async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
     let game = sqlx::query!(
         "SELECT id, name, slug, description FROM game WHERE slug = $1;",
         game_slug
     )
     .fetch_one(pool)
-    .await
-    .unwrap();
+    .await;
+
+    if game.is_err() {
+        return not_found().await.into_response();
+    }
+
+    let game = game.unwrap();
 
     let actor_kinds = sqlx::query!(
         r#"
@@ -33,13 +50,12 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Markup {
         game_slug
     )
     .fetch_all(pool)
-    .await
-    .unwrap();
+    .await;
 
     Page::new(html! {
         div class="flex flex-row gap-2 justify-center items-center" {
             h1 class="text-xl font-bold" { (game.name) }
-            a href="#edit" class=(BUTTON_WARNING) { span class="w-4 h-4 i-tabler-pencil"; }
+            a href={"#" (Submit::Edit)} class=(BUTTON_WARNING) { span class="w-4 h-4 i-tabler-pencil"; }
         }
         ul class="flex flex-col gap-4" {
             li class="flex flex-col gap-2" {
@@ -51,9 +67,9 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Markup {
                     input type="hidden" name="game_id" value=(game.id);
                     div class="overflow-x-auto relative shadow-md rounded w-96" {
                         table class="w-full" {
-                            caption class="p-3 space-x-2 bg-white dark:bg-slate-800" {
-                                a href="#add" class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus"; }
-                                button type="submit" name="submit" value="remove" class=(BUTTON_ERROR) {
+                            caption class=(CAPTION) {
+                                a href={"#" (Submit::Add)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus"; }
+                                button type="submit" name="submit" value=(Submit::Remove) class=(BUTTON_ERROR) {
                                     span class="w-4 h-4 i-tabler-trash";
                                 }
                             }
@@ -73,22 +89,35 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Markup {
                                 }
                             }
                             tbody {
-                                @for kind in actor_kinds {
-                                    tr class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700" {
-                                        td class="p-3 text-center" {
-                                            input
-                                                type="checkbox"
-                                                name="slugs"
-                                                value=(kind.slug)
-                                                class="bg-transparent";
-                                        }
-                                        td class="py-3 px-6" {
-                                            a
-                                                href={"/games/" (game.slug) "/actors/" (kind.slug)}
-                                                class="hover:text-violet-500" {
-                                                (kind.name)
+                                @match actor_kinds {
+                                    Ok(actor_kinds) => {
+                                        @for kind in actor_kinds {
+                                            tr class="
+                                                bg-white
+                                                border-b
+                                                last:border-0
+                                                dark:bg-slate-800
+                                                dark:border-slate-700
+                                            " {
+                                                td class="p-3 text-center" {
+                                                    input
+                                                        type="checkbox"
+                                                        name="slugs"
+                                                        value=(kind.slug)
+                                                        class="bg-transparent";
+                                                }
+                                                td class="py-3 px-6" {
+                                                    a
+                                                        href={"/games/" (game.slug) "/actors/" (kind.slug)}
+                                                        class="hover:text-violet-500" {
+                                                        (kind.name)
+                                                    }
+                                                }
                                             }
                                         }
+                                    }
+                                    Err(_) => {
+                                        p { "No actor kinds..." }
                                     }
                                 }
                             }
@@ -105,7 +134,7 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Markup {
         }
     })
     .pre(html! {
-        dialog id="edit" class=(DIALOG) {
+        dialog id=(Submit::Edit) class=(DIALOG) {
             div class="flex z-10 flex-col gap-4 p-4 max-w-sm rounded border dark:text-white dark:bg-slate-900" {
                 h2 class="text-xl" { "Edit Game" }
                 form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
@@ -124,7 +153,7 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Markup {
                         placeholder="Description"
                         class="rounded invalid:border-red dark:bg-slate-900" {}
                     div class="flex justify-between" {
-                        button type="submit" name="submit" value="edit" class=(BUTTON_SUCCESS) {
+                        button type="submit" name="submit" value=(Submit::Edit) class=(BUTTON_SUCCESS) {
                             span class="w-4 h-4 i-tabler-check";
                         }
                         a href="#!" class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-x"; }
@@ -133,7 +162,7 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Markup {
             }
             a href="#!" class="fixed inset-0" {}
         }
-        dialog id="add" class=(DIALOG) {
+        dialog id=(Submit::Add) class=(DIALOG) {
             div class="flex z-10 flex-col gap-4 p-4 max-w-sm rounded border dark:text-white dark:bg-slate-900" {
                 h2 class="text-xl" { "Add Actor Kind" }
                 form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
@@ -150,7 +179,7 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Markup {
                         placeholder="Description"
                         class="rounded invalid:border-red dark:bg-slate-900" {}
                     div class="flex justify-between" {
-                        button type="submit" name="submit" value="add" class=(BUTTON_SUCCESS) {
+                        button type="submit" name="submit" value=(Submit::Add) class=(BUTTON_SUCCESS) {
                             span class="w-4 h-4 i-tabler-check";
                         }
                         a href="#!" class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-x"; }
@@ -160,7 +189,7 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Markup {
             a href="#!" class="fixed inset-0" {}
         }
     })
-    .build()
+    .build().into_response()
 }
 
 pub async fn game_get(Path(game_slug): Path<String>, State(state): State<Arc<AppState>>) -> impl IntoResponse {
@@ -169,7 +198,7 @@ pub async fn game_get(Path(game_slug): Path<String>, State(state): State<Arc<App
 
 #[derive(TryFromMultipart)]
 pub struct Payload {
-    pub submit: String,
+    pub submit: Submit,
     pub name: Option<String>,
     pub description: Option<String>,
     pub game_id: Option<uuid::Uuid>,
@@ -182,53 +211,55 @@ pub async fn game_post(
     State(state): State<Arc<AppState>>,
     TypedMultipart(form): TypedMultipart<Payload>,
 ) -> Response {
-    match form.submit.as_str() {
-        "edit" => {
-            let game_slug = sqlx::query!(
+    match form.submit {
+        Submit::Edit => {
+            let game_res = sqlx::query!(
                 "UPDATE game SET name = $1, description = $2 WHERE id = $3 RETURNING slug;",
                 form.name,
                 form.description,
                 form.game_id
             )
             .fetch_one(&state.pool)
-            .await
-            .unwrap()
-            .slug;
+            .await;
 
-            Redirect::to(&format!("/games/{game_slug}")).into_response()
+            if game_res.is_err() {
+                todo!()
+            }
+
+            let new_slug = game_res.unwrap().slug;
+
+            if game_slug != new_slug {
+                Redirect::to(&format!("/games/{}", new_slug)).into_response()
+            } else {
+                game(game_slug, &state.pool).await.into_response()
+            }
         }
-        "add" => {
-            sqlx::query!(
+        Submit::Add => {
+            let res = sqlx::query!(
                 "INSERT INTO actor_kind (game_id, name, description) VALUES ($1, $2, $3);",
                 form.game_id,
                 form.name,
                 form.description
             )
             .execute(&state.pool)
-            .await
-            .unwrap();
+            .await;
 
             game(game_slug, &state.pool).await.into_response()
         }
-        "remove" => {
+        Submit::Remove => {
             if form.slugs_all.is_some_and(|a| a) {
-                sqlx::query!("DELETE FROM actor_kind;")
-                    .execute(&state.pool)
-                    .await
-                    .unwrap();
+                _ = sqlx::query!("DELETE FROM actor_kind;").execute(&state.pool).await;
             } else {
-                sqlx::query!(
+                let res = sqlx::query!(
                     "DELETE FROM actor_kind WHERE game_id = $1 AND slug = ANY($2);",
                     form.game_id,
                     &form.slugs
                 )
                 .execute(&state.pool)
-                .await
-                .unwrap();
+                .await;
             }
 
             game(game_slug, &state.pool).await.into_response()
         }
-        _ => game(game_slug, &state.pool).await.into_response(),
     }
 }
