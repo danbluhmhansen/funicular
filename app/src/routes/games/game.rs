@@ -58,6 +58,7 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
             h1 class="text-xl font-bold" { (game.name) }
             a href={"#" (Submit::Edit)} class=(BUTTON_WARNING) { span class="w-4 h-4 i-tabler-pencil"; }
         }
+        @if let Some(description) = &game.description { p { (description) } }
         ul class="flex flex-col gap-4" {
             li class="flex flex-col gap-2" {
                 h2 class="text-center" { "Actors" }
@@ -150,9 +151,10 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
                         class="bg-transparent rounded invalid:border-red";
                     textarea
                         name="description"
-                        value=(game.name)
                         placeholder="Description"
-                        class="rounded invalid:border-red dark:bg-slate-900" {}
+                        class="rounded invalid:border-red dark:bg-slate-900" {
+                            @if let Some(description) = &game.description { (description) }
+                        }
                     div class="flex justify-between" {
                         button type="submit" name="submit" value=(Submit::Edit) class=(BUTTON_SUCCESS) {
                             span class="w-4 h-4 i-tabler-check";
@@ -230,7 +232,7 @@ pub async fn game_post(
             let new_slug = game_res.unwrap().slug;
 
             if game_slug != new_slug {
-                Redirect::to(&format!("/games/{}", new_slug)).into_response()
+                Redirect::to(&format!("/games/{new_slug}")).into_response()
             } else {
                 game(game_slug, &state.pool).await.into_response()
             }

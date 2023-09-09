@@ -2,15 +2,17 @@ use std::sync::Arc;
 
 use axum::{
     extract::{Path, State},
-    response::{IntoResponse, Response},
+    response::{IntoResponse, Redirect, Response},
 };
-use axum_typed_multipart::TryFromField;
+use axum_typed_multipart::{TryFromField, TryFromMultipart, TypedMultipart};
 use maud::html;
 use serde::Deserialize;
+use sqlx::{Pool, Postgres};
 use strum::Display;
 
 use crate::{
-    components::Page, routes::not_found, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_WARNING, CAPTION, THEAD, TR,
+    components::Page, routes::not_found, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, BUTTON_WARNING,
+    CAPTION, DIALOG, THEAD, TR,
 };
 
 #[derive(Deserialize)]
@@ -31,19 +33,12 @@ pub enum Submit {
     TraitRemove,
 }
 
-pub async fn actor(
-    Path(ActorPath {
-        game_slug,
-        actor_kind_slug,
-        actor_slug,
-    }): Path<ActorPath>,
-    State(state): State<Arc<AppState>>,
-) -> Response {
+async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, pool: &Pool<Postgres>) -> Response {
     let game = sqlx::query!(
         "SELECT id, name, slug, description FROM game WHERE slug = $1;",
         game_slug
     )
-    .fetch_one(&state.pool)
+    .fetch_one(pool)
     .await;
 
     if game.is_err() {
@@ -57,7 +52,7 @@ pub async fn actor(
         actor_kind_slug,
         game.id
     )
-    .fetch_one(&state.pool)
+    .fetch_one(pool)
     .await;
 
     if actor_kind.is_err() {
@@ -68,14 +63,14 @@ pub async fn actor(
 
     let actor = sqlx::query!(
         r#"
-            SELECT id, name
+            SELECT id, name, description
             FROM actor
             WHERE slug = $1 AND kind_id = $2;
         "#,
         actor_slug,
         actor_kind.id
     )
-    .fetch_one(&state.pool)
+    .fetch_one(pool)
     .await;
 
     if actor.is_err() {
@@ -95,7 +90,7 @@ pub async fn actor(
         "#,
         actor.id
     )
-    .fetch_all(&state.pool)
+    .fetch_all(pool)
     .await;
 
     let actor_gears = sqlx::query!(
@@ -108,7 +103,7 @@ pub async fn actor(
         "#,
         actor.id
     )
-    .fetch_all(&state.pool)
+    .fetch_all(pool)
     .await;
 
     let actor_traits = sqlx::query!(
@@ -121,7 +116,7 @@ pub async fn actor(
         "#,
         actor.id
     )
-    .fetch_all(&state.pool)
+    .fetch_all(pool)
     .await;
 
     Page::new(html! {
@@ -142,6 +137,7 @@ pub async fn actor(
             h1 class="text-xl font-bold" { (actor.name) }
             a href={"#" (Submit::Edit)} class=(BUTTON_WARNING) { span class="w-4 h-4 i-tabler-pencil"; }
         }
+        @if let Some(description) = &actor.description { p { (description) } }
         @match skills {
             Ok(skills) => {
                 div class="overflow-x-auto relative shadow-md rounded" {
@@ -271,6 +267,100 @@ pub async fn actor(
             }
         }
     })
+    .pre(html! {
+        dialog id=(Submit::Edit) class=(DIALOG) {
+            div class="flex z-10 flex-col gap-4 p-4 max-w-sm rounded border dark:text-white dark:bg-slate-900" {
+                h2 class="text-xl" { "Edit " (actor_kind.name) }
+                form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
+                    input type="hidden" name="actor_id" value=(actor.id);
+                    input
+                        type="text"
+                        name="name"
+                        value=(actor.name)
+                        placeholder="Name"
+                        required
+                        autofocus
+                        class="bg-transparent rounded invalid:border-red";
+                    textarea
+                        name="description"
+                        value=[&actor.description]
+                        placeholder="Description"
+                        class="rounded invalid:border-red dark:bg-slate-900" {
+                            @if let Some(description) = &actor.description { (description) }
+                        }
+                    div class="flex justify-between" {
+                        button type="submit" name="submit" value=(Submit::Edit) class=(BUTTON_SUCCESS) {
+                            span class="w-4 h-4 i-tabler-check";
+                        }
+                        a href="#!" class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-x"; }
+                    }
+                }
+            }
+            a href="#!" class="fixed inset-0" {}
+        }
+    })
     .build()
     .into_response()
+}
+
+pub async fn actor_get(
+    Path(ActorPath {
+        game_slug,
+        actor_kind_slug,
+        actor_slug,
+    }): Path<ActorPath>,
+    State(state): State<Arc<AppState>>,
+) -> Response {
+    actor(game_slug, actor_kind_slug, actor_slug, &state.pool).await
+}
+
+#[derive(TryFromMultipart)]
+pub struct Payload {
+    pub submit: Submit,
+    pub actor_id: Option<uuid::Uuid>,
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub slugs_all: Option<bool>,
+    pub slugs: Vec<String>,
+}
+
+pub async fn actor_post(
+    Path(ActorPath {
+        game_slug,
+        actor_kind_slug,
+        actor_slug,
+    }): Path<ActorPath>,
+    State(state): State<Arc<AppState>>,
+    TypedMultipart(form): TypedMultipart<Payload>,
+) -> Response {
+    match form.submit {
+        Submit::Edit => {
+            let actor_res = sqlx::query!(
+                "UPDATE actor SET name = $1, description = $2 WHERE id = $3 RETURNING slug;",
+                form.name,
+                form.description,
+                form.actor_id
+            )
+            .fetch_one(&state.pool)
+            .await;
+
+            if actor_res.is_err() {
+                todo!()
+            }
+
+            let new_slug = actor_res.unwrap().slug;
+
+            if actor_slug != new_slug {
+                Redirect::to(&format!("/games/{game_slug}/actors/{actor_kind_slug}/{new_slug}")).into_response()
+            } else {
+                actor(game_slug, actor_kind_slug, actor_slug, &state.pool)
+                    .await
+                    .into_response()
+            }
+        }
+        Submit::GearAdd => actor(game_slug, actor_kind_slug, actor_slug, &state.pool).await,
+        Submit::GearRemove => actor(game_slug, actor_kind_slug, actor_slug, &state.pool).await,
+        Submit::TraitAdd => actor(game_slug, actor_kind_slug, actor_slug, &state.pool).await,
+        Submit::TraitRemove => actor(game_slug, actor_kind_slug, actor_slug, &state.pool).await,
+    }
 }
