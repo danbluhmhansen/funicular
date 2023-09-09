@@ -4,9 +4,10 @@ use axum::{
     extract::{Path, State},
     response::{IntoResponse, Response},
 };
-use axum_typed_multipart::TryFromField;
+use axum_typed_multipart::{TryFromField, TryFromMultipart, TypedMultipart};
 use maud::html;
 use serde::Deserialize;
+use sqlx::{Pool, Postgres};
 use strum::Display;
 
 use crate::{
@@ -24,23 +25,18 @@ pub struct ActorsPath {
 
 #[derive(Display, TryFromField)]
 #[strum(serialize_all = "snake_case")]
+#[try_from_field(rename_all = "snake_case")]
 pub enum Submit {
     Add,
     Remove,
 }
 
-pub async fn actors(
-    Path(ActorsPath {
-        game_slug,
-        actor_kind_slug,
-    }): Path<ActorsPath>,
-    State(state): State<Arc<AppState>>,
-) -> Response {
+async fn actors(game_slug: String, actor_kind_slug: String, pool: &Pool<Postgres>) -> Response {
     let game = sqlx::query!(
         "SELECT id, name, slug, description FROM game WHERE slug = $1;",
         game_slug
     )
-    .fetch_one(&state.pool)
+    .fetch_one(pool)
     .await;
 
     if game.is_err() {
@@ -50,7 +46,7 @@ pub async fn actors(
     let game = game.unwrap();
 
     let actor_kind = sqlx::query!("SELECT id, name FROM actor_kind WHERE slug = $1", actor_kind_slug)
-        .fetch_one(&state.pool)
+        .fetch_one(pool)
         .await;
 
     if actor_kind.is_err() {
@@ -68,7 +64,7 @@ pub async fn actors(
         "#,
         actor_kind_slug
     )
-    .fetch_all(&state.pool)
+    .fetch_all(pool)
     .await;
 
     Page::new(html! {
@@ -151,4 +147,65 @@ pub async fn actors(
         }
     })
     .build().into_response()
+}
+
+pub async fn actors_get(
+    Path(ActorsPath {
+        game_slug,
+        actor_kind_slug,
+    }): Path<ActorsPath>,
+    State(state): State<Arc<AppState>>,
+) -> Response {
+    actors(game_slug, actor_kind_slug, &state.pool).await
+}
+
+#[derive(TryFromMultipart)]
+pub struct Payload {
+    pub submit: Submit,
+    pub kind_id: Option<uuid::Uuid>,
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub slugs_all: Option<bool>,
+    pub slugs: Vec<String>,
+}
+
+pub async fn actors_post(
+    Path(ActorsPath {
+        game_slug,
+        actor_kind_slug,
+    }): Path<ActorsPath>,
+    State(state): State<Arc<AppState>>,
+    TypedMultipart(form): TypedMultipart<Payload>,
+) -> Response {
+    match form.submit {
+        Submit::Add => {
+            let res = sqlx::query!(
+                "INSERT INTO actor (kind_id, name, description) VALUES ($1, $2, $3);",
+                form.kind_id,
+                form.name,
+                form.description
+            )
+            .execute(&state.pool)
+            .await;
+
+            actors(game_slug, actor_kind_slug, &state.pool).await
+        }
+        Submit::Remove => {
+            if form.slugs_all.is_some_and(|a| a) {
+                _ = sqlx::query!("DELETE FROM actor WHERE kind_id = $1;", form.kind_id)
+                    .execute(&state.pool)
+                    .await;
+            } else {
+                let res = sqlx::query!(
+                    "DELETE FROM actor WHERE kind_id = $1 AND slug = ANY($2);",
+                    form.kind_id,
+                    &form.slugs
+                )
+                .execute(&state.pool)
+                .await;
+            }
+
+            actors(game_slug, actor_kind_slug, &state.pool).await
+        }
+    }
 }

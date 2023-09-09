@@ -21,6 +21,8 @@ pub struct ActorPath {
 }
 
 #[derive(Display, TryFromField)]
+#[strum(serialize_all = "snake_case")]
+#[try_from_field(rename_all = "snake_case")]
 pub enum Submit {
     Edit,
     GearAdd,

@@ -20,6 +20,7 @@ pub mod traits;
 
 #[derive(Display, TryFromField)]
 #[strum(serialize_all = "snake_case")]
+#[try_from_field(rename_all = "snake_case")]
 pub enum Submit {
     Add,
     Edit,
@@ -248,7 +249,9 @@ pub async fn game_post(
         }
         Submit::Remove => {
             if form.slugs_all.is_some_and(|a| a) {
-                _ = sqlx::query!("DELETE FROM actor_kind;").execute(&state.pool).await;
+                _ = sqlx::query!("DELETE FROM actor_kind WHERE game_id = $1;", form.game_id)
+                    .execute(&state.pool)
+                    .await;
             } else {
                 let res = sqlx::query!(
                     "DELETE FROM actor_kind WHERE game_id = $1 AND slug = ANY($2);",
