@@ -39,6 +39,5 @@ pub async fn traits(Path(game_slug): Path<String>, State(state): State<Arc<AppSt
             }
         }
     })
-    .render()
     .into_response()
 }

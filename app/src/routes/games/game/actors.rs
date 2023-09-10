@@ -11,9 +11,13 @@ use sqlx::{Pool, Postgres};
 use strum::Display;
 
 use crate::{
-    components::{Dialog, Page},
+    components::{
+        dialog::Dialog,
+        table::{Table, TableData, TableHead},
+        Page,
+    },
     routes::not_found,
-    AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, CAPTION, THEAD, TR,
+    AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS,
 };
 
 pub mod actor;
@@ -66,57 +70,41 @@ async fn actors(game_slug: String, actor_kind_slug: String, pool: &Pool<Postgres
         actor_kind_slug
     )
     .fetch_all(pool)
-    .await;
+    .await
+    .map_or(vec![], |actors| {
+        actors
+            .iter()
+            .map(|actor| {
+                vec![
+                    // TODO: avoid clone
+                    TableData::Checkbox("slugs", Some(actor.slug.to_owned())),
+                    TableData::Data(html! {
+                        a
+                            href={"/games/" (game_slug) "/actors/" (actor_kind_slug) "/" (actor.slug)}
+                            class="hover:text-violet-500" {
+                            (actor.name)
+                        }
+                    }),
+                ]
+            })
+            .collect::<Vec<Vec<TableData>>>()
+    });
 
     Page::new(html! {
         a href={"/games/" (game_slug)} class="text-xl font-bold hover:text-violet-500" { (game.name) }
         form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center items-center" {
             input type="hidden" name="kind_id" value=(actor_kind.id);
-            div class="overflow-x-auto relative rounded shadow-md" {
-                table class="w-full" {
-                    caption class=(CAPTION) {
-                        a href={"#" (Submit::Add)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
-                        button type="submit" name="submit" value=(Submit::Remove) class=(BUTTON_ERROR) {
-                            span class="w-4 h-4 i-tabler-trash" {}
-                        }
+            (Table::new()
+                .caption(html! {
+                    a href={"#" (Submit::Add)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
+                    button type="submit" name="submit" value=(Submit::Remove) class=(BUTTON_ERROR) {
+                        span class="w-4 h-4 i-tabler-trash" {}
                     }
-                    thead class=(THEAD) {
-                        tr {
-                            th class="p-3 text-center" {
-                                input type="checkbox" name="slugs_all" value="true" class="bg-transparent";
-                            }
-                            th class="py-3 px-6 text-left" { "Name" }
-                        }
-                    }
-                    tbody {
-                        @match actors {
-                            Ok(actors) => {
-                                @for actor in actors {
-                                    tr class=(TR) {
-                                        td class="p-3 text-center" {
-                                            input
-                                                type="checkbox"
-                                                name="slugs"
-                                                value=(actor.slug)
-                                                class="bg-transparent";
-                                        }
-                                        td class="py-3 px-6" {
-                                            a
-                                                href={"/games/" (game_slug) "/actors/" (actor_kind_slug) "/" (actor.slug)}
-                                                class="hover:text-violet-500" {
-                                                (actor.name)
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            Err(_) => {
-                                p { "No games..." }
-                            }
-                        }
-                    }
-                }
-            }
+                })
+                .head(TableHead::Checkbox("slugs_all"))
+                .head(TableHead::Header(html! { "Name" }))
+                .body_or(actors, html! { p { "No actor kinds..." } })
+            )
         }
     })
     .dialog(
@@ -142,9 +130,9 @@ async fn actors(game_slug: String, actor_kind_slug: String, pool: &Pool<Postgres
             }
         })
         .id(Submit::Add)
-        .title(&format!("Add {}", actor_kind.name))
+        .title(&format!("Add {}", actor_kind.name)),
     )
-    .render().into_response()
+    .into_response()
 }
 
 pub async fn actors_get(

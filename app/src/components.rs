@@ -1,8 +1,10 @@
-use std::fmt::Display;
+use std::ops::Deref;
 
-use maud::{html, Markup, DOCTYPE};
+use axum::response::{IntoResponse, Response};
+use maud::{html, Markup, Render, DOCTYPE};
 
-use crate::DIALOG;
+pub mod dialog;
+pub mod table;
 
 pub struct Link<'a> {
     pub href: &'a str,
@@ -17,7 +19,7 @@ impl<'a> Link<'a> {
 
 pub struct Page<'a> {
     children: Markup,
-    dialogs: Vec<Dialog<'a>>,
+    dialogs: Vec<dialog::Dialog<'a>>,
 }
 
 impl<'a> Page<'a> {
@@ -28,12 +30,14 @@ impl<'a> Page<'a> {
         }
     }
 
-    pub fn dialog(mut self, dialog: Dialog<'a>) -> Self {
+    pub fn dialog(mut self, dialog: dialog::Dialog<'a>) -> Self {
         self.dialogs.push(dialog);
         self
     }
+}
 
-    pub fn render(self) -> Markup {
+impl Render for Page<'_> {
+    fn render(&self) -> Markup {
         let links = vec![Link::new("/", html! { "Home" }), Link::new("/games", html! { "Games" })];
         html! {
             (DOCTYPE)
@@ -50,9 +54,7 @@ impl<'a> Page<'a> {
                     link rel="stylesheet" type="text/css" href="/site.css";
                 }
                 body class="overflow-auto h-full dark:text-white dark:bg-slate-900" {
-                    @for dialog in self.dialogs {
-                        (dialog.render())
-                    }
+                    @for dialog in self.dialogs.deref() { (dialog) }
                     header class="py-4" {
                         nav {
                             ul class="flex flex-col gap-4 justify-center items-center sm:flex-row" {
@@ -70,43 +72,14 @@ impl<'a> Page<'a> {
     }
 }
 
-pub struct Dialog<'a> {
-    children: Markup,
-    id: Option<String>,
-    title: Option<&'a str>,
+impl From<Page<'_>> for Markup {
+    fn from(val: Page<'_>) -> Self {
+        val.render()
+    }
 }
 
-impl<'a> Dialog<'a> {
-    pub fn new(children: Markup) -> Self {
-        Self {
-            children,
-            id: None,
-            title: None,
-        }
-    }
-
-    pub fn id<D: Display>(mut self, id: D) -> Self {
-        self.id = Some(id.to_string());
-        self
-    }
-
-    pub fn title(mut self, title: &'a str) -> Self {
-        self.title = Some(title);
-        self
-    }
-
-    pub fn render(self) -> Markup {
-        html! {
-            dialog id=[self.id] class=(DIALOG) {
-                div class="flex z-10 flex-col gap-4 p-4 max-w-sm bg-white rounded border dark:text-white dark:bg-slate-900" {
-                    div {
-                        a href="#!" class="float-right w-4 h-4 i-tabler-x" {}
-                        @if let Some(title) = self.title { h2 class="text-xl" { (title) } }
-                    }
-                    (self.children)
-                }
-                a href="#!" class="fixed inset-0" {}
-            }
-        }
+impl IntoResponse for Page<'_> {
+    fn into_response(self) -> Response {
+        self.render().into_response()
     }
 }

@@ -11,9 +11,13 @@ use sqlx::{Pool, Postgres};
 use strum::Display;
 
 use crate::{
-    components::{Dialog, Page},
+    components::{
+        dialog::Dialog,
+        table::{Table, TableData, TableHead},
+        Page,
+    },
     routes::not_found,
-    AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, BUTTON_WARNING, CAPTION, THEAD, TR,
+    AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, BUTTON_WARNING,
 };
 
 #[derive(Deserialize)]
@@ -80,7 +84,7 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
 
     let actor = actor.unwrap();
 
-    let skills = sqlx::query!(
+    let (ref mut skill_heads, skill_values) = sqlx::query!(
         r#"
             SELECT skill.name, actor_num_skill.value
             FROM actor_num_skill
@@ -92,7 +96,22 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
         actor.id
     )
     .fetch_all(pool)
-    .await;
+    .await
+    .map_or((vec![], vec![]), |skills| {
+        (
+            skills
+                .iter()
+                .map(|skill| TableHead::Header(html! { (skill.name) }))
+                .collect::<Vec<TableHead>>(),
+            skills
+                .iter()
+                .map(|skill| {
+                    // TODO: avoid clone
+                    TableData::Data(html! { @match skill.value.to_owned() { Some(value) => (value), None => "0", } })
+                })
+                .collect::<Vec<TableData>>(),
+        )
+    });
 
     let actor_gears = sqlx::query!(
         r#"
@@ -105,7 +124,20 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
         actor.id
     )
     .fetch_all(pool)
-    .await;
+    .await
+    .map_or(vec![], |actor_gears| {
+        actor_gears
+            .iter()
+            .map(|actor_gear| {
+                vec![
+                    // TODO: avoid clone
+                    TableData::Checkbox("slugs", Some(actor_gear.slug.to_owned())),
+                    TableData::Data(html! { (actor_gear.name) }),
+                    TableData::Data(html! { @match actor_gear.amount { Some(amount) => (amount), None => "0", } }),
+                ]
+            })
+            .collect::<Vec<Vec<TableData>>>()
+    });
 
     let actor_traits = sqlx::query!(
         r#"
@@ -118,7 +150,20 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
         actor.id
     )
     .fetch_all(pool)
-    .await;
+    .await
+    .map_or(vec![], |actor_traits| {
+        actor_traits
+            .iter()
+            .map(|actor_trait| {
+                vec![
+                    // TODO: avoid clone
+                    TableData::Checkbox("slugs", Some(actor_trait.slug.to_owned())),
+                    TableData::Data(html! { (actor_trait.name) }),
+                    TableData::Data(html! { @match actor_trait.amount { Some(amount) => (amount), None => "0", } }),
+                ]
+            })
+            .collect::<Vec<Vec<TableData>>>()
+    });
 
     let gears = sqlx::query!(
         r#"
@@ -131,7 +176,13 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
         game_slug
     )
     .fetch_all(pool)
-    .await;
+    .await
+    .map_or(vec![], |gears| {
+        gears
+            .iter()
+            .map(|gear| vec![TableData::Data(html! { (gear.name) })])
+            .collect::<Vec<Vec<TableData>>>()
+    });
 
     let traits = sqlx::query!(
         r#"
@@ -143,7 +194,13 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
         game_slug
     )
     .fetch_all(pool)
-    .await;
+    .await
+    .map_or(vec![], |traits| {
+        traits
+            .iter()
+            .map(|t| vec![TableData::Data(html! { (t.name) })])
+            .collect::<Vec<Vec<TableData>>>()
+    });
 
     Page::new(html! {
         ol class="flex flex-row" {
@@ -164,120 +221,36 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
             a href={"#" (Submit::Edit)} class=(BUTTON_WARNING) { span class="w-4 h-4 i-tabler-pencil" {} }
         }
         @if let Some(description) = &actor.description { p { (description) } }
-        @match skills {
-            Ok(skills) => {
-                div class="overflow-x-auto relative rounded shadow-md" {
-                    table class="w-full" {
-                        thead class=(THEAD) {
-                            tr { @for skill in &skills { th class="py-3 px-6 text-left" { (skill.name) } } }
-                        }
-                        tbody {
-                            tr class=(TR) {
-                                @for skill in skills {
-                                    td class="py-3 px-6 text-center" {
-                                        @match skill.value {
-                                            Some(value) => (value),
-                                            None => "0",
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            Err(_) => { "No skills..." }
-        }
+        (Table::new()
+            .heads(skill_heads)
+            .body_or(vec![skill_values], html! { p { "No skills..." } })
+        )
         h2 class="text-xl font-bold" { "Gear" }
-        div class="overflow-x-auto relative rounded shadow-md" {
-            table class="w-full" {
-                caption class=(CAPTION) {
-                    a href={"#" (Submit::GearAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
-                    button type="submit" name="submit" value=(Submit::GearRemove) class=(BUTTON_ERROR) {
-                        span class="w-4 h-4 i-tabler-trash" {}
-                    }
+        (Table::new()
+            .caption(html! {
+                a href={"#" (Submit::GearAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
+                button type="submit" name="submit" value=(Submit::GearRemove) class=(BUTTON_ERROR) {
+                    span class="w-4 h-4 i-tabler-trash" {}
                 }
-                thead class=(THEAD) {
-                    tr {
-                        th class="p-3 text-center" {
-                            input type="checkbox" name="slugs_all" value="true" class="bg-transparent";
-                        }
-                        th class="py-3 px-6 text-left" { "Name" }
-                        th class="py-3 px-6 text-left" { div class="w-4 h-4 i-tabler-hash"; }
-                    }
-                }
-                tbody {
-                    @match actor_gears {
-                        Ok(actor_gears) => {
-                            @for gear in actor_gears {
-                                tr class=(TR) {
-                                    td class="p-3 text-center" {
-                                        input
-                                            type="checkbox"
-                                            name="slugs"
-                                            value=(gear.slug)
-                                            class="bg-transparent";
-                                    }
-                                    td class="py-3 px-6" { (gear.name) }
-                                    td class="py-3 px-6" {
-                                        @match gear.amount {
-                                            Some(amount) => (amount),
-                                            None => "0",
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        Err(_) => { "No gear..." }
-                    }
-                }
-            }
-        }
+            })
+            .head(TableHead::Checkbox("slugs_all"))
+            .head(TableHead::Header(html! { "Name" }))
+            .head(TableHead::Header(html! { div class="w-4 h-4 i-tabler-hash"; }))
+            .body_or(actor_gears, html! { p { "No gear..." } })
+        )
         h2 class="text-xl font-bold" { "Traits" }
-        div class="overflow-x-auto relative rounded shadow-md" {
-            table class="w-full" {
-                caption class=(CAPTION) {
-                    a href={"#" (Submit::TraitAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
-                    button type="submit" name="submit" value=(Submit::TraitRemove) class=(BUTTON_ERROR) {
-                        span class="w-4 h-4 i-tabler-trash" {}
-                    }
+        (Table::new()
+            .caption(html! {
+                a href={"#" (Submit::TraitAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
+                button type="submit" name="submit" value=(Submit::TraitRemove) class=(BUTTON_ERROR) {
+                    span class="w-4 h-4 i-tabler-trash" {}
                 }
-                thead class=(THEAD) {
-                    tr {
-                        th class="p-3 text-center" {
-                            input type="checkbox" name="slugs_all" value="true" class="bg-transparent";
-                        }
-                        th class="py-3 px-6 text-left" { "Name" }
-                        th class="py-3 px-6 text-left" { div class="w-4 h-4 i-tabler-hash"; }
-                    }
-                }
-                tbody {
-                    @match actor_traits {
-                        Ok(actor_traits) => {
-                            @for t in actor_traits {
-                                tr class=(TR) {
-                                    td class="p-3 text-center" {
-                                        input
-                                            type="checkbox"
-                                            name="slugs"
-                                            value=(t.slug)
-                                            class="bg-transparent";
-                                    }
-                                    td class="py-3 px-6" { (t.name) }
-                                    td class="py-3 px-6" {
-                                        @match t.amount {
-                                            Some(amount) => (amount),
-                                            None => "0",
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        Err(_) => { "No traits..." }
-                    }
-                }
-            }
-        }
+            })
+            .head(TableHead::Checkbox("slugs_all"))
+            .head(TableHead::Header(html! { "Name" }))
+            .head(TableHead::Header(html! { div class="w-4 h-4 i-tabler-hash"; }))
+            .body_or(actor_traits, html! { p { "No traits..." } })
+        )
     })
     .dialog(
         Dialog::new(html! {
@@ -306,48 +279,16 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
             }
         })
         .id(Submit::Edit)
-        .title(&format!("Edit {}", actor_kind.name))
+        .title(&format!("Edit {}", actor_kind.name)),
     )
     .dialog(
         Dialog::new(html! {
             form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
                 input type="hidden" name="actor_id" value=(actor.id);
-                div class="overflow-x-auto relative rounded shadow-md" {
-                    table class="w-full" {
-                        caption class=(CAPTION) {
-                            a href={"#" (Submit::TraitAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
-                            button type="submit" name="submit" value=(Submit::TraitRemove) class=(BUTTON_ERROR) {
-                                span class="w-4 h-4 i-tabler-trash" {}
-                            }
-                        }
-                        thead class=(THEAD) {
-                            tr {
-                                th class="p-3 text-center" {
-                                    input type="checkbox" name="slugs_all" value="true" class="bg-transparent";
-                                }
-                                th class="py-3 px-6 text-left" { "Name" }
-                            }
-                        }
-                        tbody {
-                            @match gears {
-                                Ok(gears) => {
-                                    @for gear in gears {
-                                        tr class=(TR) {
-                                            td class="p-3 text-center" {
-                                                input
-                                                    type="checkbox"
-                                                    name="slugs"
-                                                    class="bg-transparent";
-                                            }
-                                            td class="py-3 px-6" { (gear.name) }
-                                        }
-                                    }
-                                }
-                                Err(_) => { p { "No gear available..." } }
-                            }
-                        }
-                    }
-                }
+                (Table::new()
+                    .head(TableHead::Header(html! { "Name" }))
+                    .body_or(gears, html! { p { "No gear available..." } })
+                )
                 div class="flex justify-between" {
                     button type="submit" name="submit" value=(Submit::GearAdd) class=(BUTTON_SUCCESS) {
                         span class="w-4 h-4 i-tabler-check" {}
@@ -356,48 +297,16 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
             }
         })
         .id(Submit::GearAdd)
-        .title("Add Gear")
+        .title("Add Gear"),
     )
     .dialog(
         Dialog::new(html! {
             form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
                 input type="hidden" name="actor_id" value=(actor.id);
-                div class="overflow-x-auto relative rounded shadow-md" {
-                    table class="w-full" {
-                        caption class=(CAPTION) {
-                            a href={"#" (Submit::TraitAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
-                            button type="submit" name="submit" value=(Submit::TraitRemove) class=(BUTTON_ERROR) {
-                                span class="w-4 h-4 i-tabler-trash" {}
-                            }
-                        }
-                        thead class=(THEAD) {
-                            tr {
-                                th class="p-3 text-center" {
-                                    input type="checkbox" name="slugs_all" value="true" class="bg-transparent";
-                                }
-                                th class="py-3 px-6 text-left" { "Name" }
-                            }
-                        }
-                        tbody {
-                            @match traits {
-                                Ok(traits) => {
-                                    @for t in traits {
-                                        tr class=(TR) {
-                                            td class="p-3 text-center" {
-                                                input
-                                                    type="checkbox"
-                                                    name="slugs"
-                                                    class="bg-transparent";
-                                            }
-                                            td class="py-3 px-6" { (t.name) }
-                                        }
-                                    }
-                                }
-                                Err(_) => { p { "No trait available..." } }
-                            }
-                        }
-                    }
-                }
+                (Table::new()
+                    .head(TableHead::Header(html! { "Name" }))
+                    .body_or(traits, html! { p { "No traits available..." } })
+                )
                 div class="flex justify-between" {
                     button type="submit" name="submit" value=(Submit::TraitAdd) class=(BUTTON_SUCCESS) {
                         span class="w-4 h-4 i-tabler-check" {}
@@ -406,9 +315,8 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
             }
         })
         .id(Submit::TraitAdd)
-        .title("Add Traits")
+        .title("Add Traits"),
     )
-    .render()
     .into_response()
 }
 

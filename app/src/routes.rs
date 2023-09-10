@@ -1,5 +1,5 @@
 use axum::response::IntoResponse;
-use maud::html;
+use maud::{html, Render};
 
 use crate::components::Page;
 
@@ -13,7 +13,6 @@ pub async fn index() -> impl IntoResponse {
             Sunt non fuga officiis fugit aliquam numquam hic. Voluptatem ratione magni dolor ut."
         }
     })
-    .render()
 }
 
 pub async fn not_found() -> impl IntoResponse {

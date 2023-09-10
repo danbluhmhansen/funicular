@@ -7,8 +7,8 @@ use sqlx::{Pool, Postgres};
 use strum::Display;
 
 use crate::{
-    components::{Dialog, Page},
-    AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, CAPTION, THEAD, TR,
+    components::{dialog::Dialog, table::Table, table::TableData, table::TableHead, Page},
+    AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS,
 };
 
 pub mod game;
@@ -22,54 +22,38 @@ pub enum Submit {
 }
 
 async fn games(pool: &Pool<Postgres>) -> Markup {
-    let games = sqlx::query!("SELECT slug, name FROM game;").fetch_all(pool).await;
+    let games = sqlx::query!("SELECT slug, name FROM game;")
+        .fetch_all(pool)
+        .await
+        .map_or(vec![], |games| {
+            games
+                .iter()
+                .map(|game| {
+                    vec![
+                        // TODO: avoid clone
+                        TableData::Checkbox("slugs", Some(game.slug.to_owned())),
+                        TableData::Data(
+                            html! { a href={"/games/" (game.slug)} class="hover:text-violet-500" { (game.name) } },
+                        ),
+                    ]
+                })
+                .collect::<Vec<Vec<TableData>>>()
+        });
 
     Page::new(html! {
         h1 class="text-xl font-bold" { "Games" }
         form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center items-center" {
-            div class="overflow-x-auto relative rounded shadow-md" {
-                table class="w-full" {
-                    caption class=(CAPTION) {
-                        a href={"#" (Submit::Add)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
-                        button type="submit" name="submit" value=(Submit::Remove) class=(BUTTON_ERROR) {
-                            span class="w-4 h-4 i-tabler-trash" {}
-                        }
+            (Table::new()
+                .caption(html! {
+                    a href={"#" (Submit::Add)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
+                    button type="submit" name="submit" value=(Submit::Remove) class=(BUTTON_ERROR) {
+                        span class="w-4 h-4 i-tabler-trash" {}
                     }
-                    thead class=(THEAD) {
-                        tr {
-                            th class="p-3 text-center" {
-                                input type="checkbox" name="slugs_all" value="true" class="bg-transparent";
-                            }
-                            th class="py-3 px-6 text-left" { "Name" }
-                        }
-                    }
-                    tbody {
-                        @match games {
-                            Ok(games) => {
-                                @for game in games {
-                                    tr class=(TR) {
-                                        td class="p-3 text-center" {
-                                            input
-                                                type="checkbox"
-                                                name="slugs"
-                                                value=(game.slug)
-                                                class="bg-transparent";
-                                        }
-                                        td class="py-3 px-6" {
-                                            a href={"/games/" (game.slug)} class="hover:text-violet-500" {
-                                                (game.name)
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            Err(_) => {
-                                p { "No games..." }
-                            }
-                        }
-                    }
-                }
-            }
+                })
+                .head(TableHead::Checkbox("slugs_all"))
+                .head(TableHead::Header(html! { "Name" }))
+                .body_or(games, html! { p { "No games..." } })
+            )
         }
     })
     .dialog(
@@ -96,7 +80,7 @@ async fn games(pool: &Pool<Postgres>) -> Markup {
         .id(Submit::Add)
         .title("Add Game"),
     )
-    .render()
+    .into()
 }
 
 #[derive(TryFromMultipart)]
