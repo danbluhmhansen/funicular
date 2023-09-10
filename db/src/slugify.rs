@@ -2,12 +2,12 @@ use pgrx::prelude::*;
 
 #[pg_extern(immutable)]
 fn slugify(input: String) -> Result<String, regex::Error> {
-    regex::Regex::new("[^a-z0-9 ]").and_then(|r| {
-        Ok(r.replace_all(&input.to_lowercase(), "")
+    regex::Regex::new("[^a-z0-9 ]").map(|r| {
+        r.replace_all(&input.to_lowercase(), "")
             .to_string()
             .split_whitespace()
             .collect::<Vec<&str>>()
-            .join("-"))
+            .join("-")
     })
 }
 

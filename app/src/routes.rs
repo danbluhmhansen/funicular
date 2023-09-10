@@ -1,19 +1,9 @@
-use axum::{http::header, response::IntoResponse};
+use axum::response::IntoResponse;
 use maud::html;
 
-use crate::{components::Page, STYLE};
+use crate::components::Page;
 
 pub mod games;
-
-pub async fn style() -> impl IntoResponse {
-    (
-        [
-            (header::CACHE_CONTROL, "max-age=2592000"),
-            (header::CONTENT_TYPE, "text/css"),
-        ],
-        STYLE,
-    )
-}
 
 pub async fn index() -> impl IntoResponse {
     Page::new(html! {

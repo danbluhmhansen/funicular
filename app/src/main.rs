@@ -3,11 +3,10 @@ use std::{error::Error, sync::Arc, time::Duration};
 use axum::{routing::get, Router};
 use const_format::formatcp;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
+use tower_http::services::ServeDir;
 
 mod components;
 mod routes;
-
-const STYLE: &str = include_str!("site.css");
 
 const BUTTON: &str = "inline-flex items-center py-2 px-4 text-sm font-medium text-center bg-transparent rounded border hover:text-white focus:ring-4 focus:outline-none";
 const BUTTON_PRIMARY: &str = formatcp!("{BUTTON} {}", " text-violet-600 border-violet-600 dark:text-violet-300 dark:border-violet-300 hover:bg-violet-500 focus:ring-violet-400 dark:hover:bg-violet-400 dark:focus:ring-violet-500");
@@ -46,7 +45,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     axum::Server::bind(&"0.0.0.0:1111".parse()?)
         .serve(
             Router::new()
-                .route("/site.css", get(routes::style))
                 .route("/", get(routes::index))
                 .route("/games", get(routes::games::games_get).post(routes::games::games_post))
                 .route(
@@ -64,7 +62,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 )
                 .route("/games/:game_slug/skills", get(routes::games::game::skills::skills))
                 .route("/games/:game_slug/traits", get(routes::games::game::traits::traits))
-                .fallback(get(routes::not_found))
+                .fallback_service(ServeDir::new("assets").fallback(get(routes::not_found)))
                 .with_state(shared_state)
                 .into_make_service(),
         )

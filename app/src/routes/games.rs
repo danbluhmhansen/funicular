@@ -8,7 +8,7 @@ use strum::Display;
 
 use crate::{
     components::{Dialog, Page},
-    AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, CAPTION, DIALOG, THEAD, TR,
+    AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, CAPTION, THEAD, TR,
 };
 
 pub mod game;

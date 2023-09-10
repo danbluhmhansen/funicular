@@ -13,7 +13,7 @@ use strum::Display;
 use crate::{
     components::{Dialog, Page},
     routes::not_found,
-    AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, CAPTION, DIALOG, THEAD, TR,
+    AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, CAPTION, THEAD, TR,
 };
 
 pub mod actor;
