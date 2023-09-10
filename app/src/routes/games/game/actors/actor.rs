@@ -119,13 +119,38 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
     .fetch_all(pool)
     .await;
 
+    let gears = sqlx::query!(
+        r#"
+            SELECT gear.name
+            FROM gear
+            JOIN gear_kind ON gear_kind.id = gear.kind_id
+            JOIN game ON game.id = gear_kind.game_id
+            WHERE game.slug = $1;
+        "#,
+        game_slug
+    )
+    .fetch_all(pool)
+    .await;
+
+    let traits = sqlx::query!(
+        r#"
+            SELECT trait.name
+            FROM trait
+            JOIN game on game.id = trait.game_id
+            WHERE game.slug = $1;
+        "#,
+        game_slug
+    )
+    .fetch_all(pool)
+    .await;
+
     Page::new(html! {
         ol class="flex flex-row" {
             li {
                 a href={"/games/" (game_slug)} class="hover:text-violet-500" { (game.name) }
             }
             li class="flex flex-row justify-center items-center" {
-              div class="i-tabler-chevron-right" {}
+              div class="i-tabler-chevron-right";
             }
             li {
                 a href={"/games/" (game_slug) "/actors/" (actor_kind_slug)} class="hover:text-violet-500" {
@@ -135,7 +160,7 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
         }
         div class="flex flex-row gap-2 justify-center items-center" {
             h1 class="text-xl font-bold" { (actor.name) }
-            a href={"#" (Submit::Edit)} class=(BUTTON_WARNING) { span class="w-4 h-4 i-tabler-pencil"; }
+            a href={"#" (Submit::Edit)} class=(BUTTON_WARNING) { span class="w-4 h-4 i-tabler-pencil" {} }
         }
         @if let Some(description) = &actor.description { p { (description) } }
         @match skills {
@@ -163,28 +188,21 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
             Err(_) => { "No skills..." }
         }
         h2 class="text-xl font-bold" { "Gear" }
-        div class="overflow-x-auto relative shadow-md rounded w-96" {
+        div class="overflow-x-auto relative shadow-md rounded" {
             table class="w-full" {
                 caption class=(CAPTION) {
-                    a href={"#" (Submit::GearAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus"; }
+                    a href={"#" (Submit::GearAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
                     button type="submit" name="submit" value=(Submit::GearRemove) class=(BUTTON_ERROR) {
-                        span class="w-4 h-4 i-tabler-trash";
+                        span class="w-4 h-4 i-tabler-trash" {}
                     }
                 }
-                thead class="
-                        text-xs
-                        text-gray-700
-                        uppercase
-                        dark:text-gray-400
-                        bg-slate-50
-                        dark:bg-slate-700
-                    " {
+                thead class=(THEAD) {
                     tr {
                         th class="p-3 text-center" {
                             input type="checkbox" name="slugs_all" value="true" class="bg-transparent";
                         }
                         th class="py-3 px-6 text-left" { "Name" }
-                        th class="py-3 px-6 text-left" { "Amount" }
+                        th class="py-3 px-6 text-left" { div class="w-4 h-4 i-tabler-hash"; }
                     }
                 }
                 tbody {
@@ -214,29 +232,22 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
                 }
             }
         }
-        h2 class="text-xl font-bold" { "traits" }
-        div class="overflow-x-auto relative shadow-md rounded w-96" {
+        h2 class="text-xl font-bold" { "Traits" }
+        div class="overflow-x-auto relative shadow-md rounded" {
             table class="w-full" {
                 caption class=(CAPTION) {
-                    a href={"#" (Submit::TraitAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus"; }
+                    a href={"#" (Submit::TraitAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
                     button type="submit" name="submit" value=(Submit::TraitRemove) class=(BUTTON_ERROR) {
-                        span class="w-4 h-4 i-tabler-trash";
+                        span class="w-4 h-4 i-tabler-trash" {}
                     }
                 }
-                thead class="
-                        text-xs
-                        text-gray-700
-                        uppercase
-                        dark:text-gray-400
-                        bg-slate-50
-                        dark:bg-slate-700
-                    " {
+                thead class=(THEAD) {
                     tr {
                         th class="p-3 text-center" {
                             input type="checkbox" name="slugs_all" value="true" class="bg-transparent";
                         }
                         th class="py-3 px-6 text-left" { "Name" }
-                        th class="py-3 px-6 text-left" { "Amount" }
+                        th class="py-3 px-6 text-left" { div class="w-4 h-4 i-tabler-hash"; }
                     }
                 }
                 tbody {
@@ -270,7 +281,10 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
     .pre(html! {
         dialog id=(Submit::Edit) class=(DIALOG) {
             div class="flex z-10 flex-col gap-4 p-4 max-w-sm rounded border dark:text-white dark:bg-slate-900" {
-                h2 class="text-xl" { "Edit " (actor_kind.name) }
+                div {
+                    a href="#!" class="float-right w-4 h-4 i-tabler-x" {}
+                    h2 class="text-xl" { "Edit " (actor_kind.name) }
+                }
                 form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
                     input type="hidden" name="actor_id" value=(actor.id);
                     input
@@ -286,13 +300,118 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
                         value=[&actor.description]
                         placeholder="Description"
                         class="rounded invalid:border-red dark:bg-slate-900" {
-                            @if let Some(description) = &actor.description { (description) }
-                        }
+                        @if let Some(description) = &actor.description { (description) }
+                    }
                     div class="flex justify-between" {
                         button type="submit" name="submit" value=(Submit::Edit) class=(BUTTON_SUCCESS) {
-                            span class="w-4 h-4 i-tabler-check";
+                            span class="w-4 h-4 i-tabler-check" {}
                         }
-                        a href="#!" class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-x"; }
+                    }
+                }
+            }
+            a href="#!" class="fixed inset-0" {}
+        }
+        dialog id=(Submit::GearAdd) class=(DIALOG) {
+            div class="flex z-10 flex-col gap-4 p-4 max-w-sm rounded border dark:text-white dark:bg-slate-900" {
+                div {
+                    a href="#!" class="float-right w-4 h-4 i-tabler-x" {}
+                    h2 class="text-xl" { "Add Gear" }
+                }
+                form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
+                    input type="hidden" name="actor_id" value=(actor.id);
+                    div class="overflow-x-auto relative shadow-md rounded" {
+                        table class="w-full" {
+                            caption class=(CAPTION) {
+                                a href={"#" (Submit::TraitAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
+                                button type="submit" name="submit" value=(Submit::TraitRemove) class=(BUTTON_ERROR) {
+                                    span class="w-4 h-4 i-tabler-trash" {}
+                                }
+                            }
+                            thead class=(THEAD) {
+                                tr {
+                                    th class="p-3 text-center" {
+                                        input type="checkbox" name="slugs_all" value="true" class="bg-transparent";
+                                    }
+                                    th class="py-3 px-6 text-left" { "Name" }
+                                }
+                            }
+                            tbody {
+                                @match gears {
+                                    Ok(gears) => {
+                                        @for gear in gears {
+                                            tr class=(TR) {
+                                                td class="p-3 text-center" {
+                                                    input
+                                                        type="checkbox"
+                                                        name="slugs"
+                                                        class="bg-transparent";
+                                                }
+                                                td class="py-3 px-6" { (gear.name) }
+                                            }
+                                        }
+                                    }
+                                    Err(_) => { p { "No gear available..." } }
+                                }
+                            }
+                        }
+                    }
+                    div class="flex justify-between" {
+                        button type="submit" name="submit" value=(Submit::GearAdd) class=(BUTTON_SUCCESS) {
+                            span class="w-4 h-4 i-tabler-check" {}
+                        }
+                    }
+                }
+            }
+            a href="#!" class="fixed inset-0" {}
+        }
+        dialog id=(Submit::TraitAdd) class=(DIALOG) {
+            div class="flex z-10 flex-col gap-4 p-4 max-w-sm rounded border dark:text-white dark:bg-slate-900" {
+                div {
+                    a href="#!" class="float-right w-4 h-4 i-tabler-x" {}
+                    h2 class="text-xl" { "Add Traits" }
+                }
+                form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
+                    input type="hidden" name="actor_id" value=(actor.id);
+                    div class="overflow-x-auto relative shadow-md rounded" {
+                        table class="w-full" {
+                            caption class=(CAPTION) {
+                                a href={"#" (Submit::TraitAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
+                                button type="submit" name="submit" value=(Submit::TraitRemove) class=(BUTTON_ERROR) {
+                                    span class="w-4 h-4 i-tabler-trash" {}
+                                }
+                            }
+                            thead class=(THEAD) {
+                                tr {
+                                    th class="p-3 text-center" {
+                                        input type="checkbox" name="slugs_all" value="true" class="bg-transparent";
+                                    }
+                                    th class="py-3 px-6 text-left" { "Name" }
+                                }
+                            }
+                            tbody {
+                                @match traits {
+                                    Ok(traits) => {
+                                        @for t in traits {
+                                            tr class=(TR) {
+                                                td class="p-3 text-center" {
+                                                    input
+                                                        type="checkbox"
+                                                        name="slugs"
+                                                        class="bg-transparent";
+                                                }
+                                                td class="py-3 px-6" { (t.name) }
+                                            }
+                                        }
+                                    }
+                                    Err(_) => { p { "No trait available..." } }
+                                }
+                            }
+                        }
+                    }
+                    div class="flex justify-between" {
+                        button type="submit" name="submit" value=(Submit::TraitAdd) class=(BUTTON_SUCCESS) {
+                            span class="w-4 h-4 i-tabler-check" {}
+                        }
                     }
                 }
             }

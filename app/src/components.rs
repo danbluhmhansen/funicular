@@ -30,7 +30,7 @@ impl Page {
         let links = vec![Link::new("/", html! { "Home" }), Link::new("/games", html! { "Games" })];
         html! {
             (DOCTYPE)
-            html lang="en" {
+            html lang="en" class="h-full overflow-auto" {
                 head {
                     meta charset="utf-8";
                     meta name="viewport" content="width=device-width,initial-scale=1";
@@ -42,16 +42,19 @@ impl Page {
                     link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind-compat.min.css";
                     link rel="stylesheet" type="text/css" href="/site.css";
                 }
-                body class="min-h-screen dark:text-white dark:bg-slate-900" {
+                body class="h-full dark:text-white dark:bg-slate-900 overflow-auto" {
                     @if let Some(pre) = self.pre { (pre) }
-                    nav class="py-4" {
-                        ul class="flex flex-col gap-4 justify-center items-center sm:flex-row" {
-                            @for link in &links {
-                                li { a href=(link.href) class="hover:text-violet-500" { (link.children) } }
+                    header class="py-4" {
+                        nav {
+                            ul class="flex flex-col gap-4 justify-center items-center sm:flex-row" {
+                                @for link in &links {
+                                    li { a href=(link.href) class="hover:text-violet-500" { (link.children) } }
+                                }
                             }
                         }
                     }
                     main class="container flex flex-col gap-4 justify-center items-center mx-auto" { (self.children) }
+                    footer class="py-4";
                 }
             }
         }

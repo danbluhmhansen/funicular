@@ -11,7 +11,7 @@ use strum::Display;
 
 use crate::{
     components::Page, routes::not_found, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, BUTTON_WARNING,
-    CAPTION, DIALOG,
+    CAPTION, DIALOG, THEAD,
 };
 
 pub mod actors;
@@ -56,7 +56,7 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
     Page::new(html! {
         div class="flex flex-row gap-2 justify-center items-center" {
             h1 class="text-xl font-bold" { (game.name) }
-            a href={"#" (Submit::Edit)} class=(BUTTON_WARNING) { span class="w-4 h-4 i-tabler-pencil"; }
+            a href={"#" (Submit::Edit)} class=(BUTTON_WARNING) { span class="w-4 h-4 i-tabler-pencil" {} }
         }
         @if let Some(description) = &game.description { p { (description) } }
         ul class="flex flex-col gap-4" {
@@ -67,22 +67,17 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
                     enctype="multipart/form-data"
                     class="flex flex-col gap-4 justify-center items-center" {
                     input type="hidden" name="game_id" value=(game.id);
-                    div class="overflow-x-auto relative shadow-md rounded w-96" {
+                    div class="overflow-x-auto relative shadow-md rounded" {
                         table class="w-full" {
                             caption class=(CAPTION) {
-                                a href={"#" (Submit::Add)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus"; }
+                                a href={"#" (Submit::Add)} class=(BUTTON_PRIMARY) {
+                                    span class="w-4 h-4 i-tabler-plus" {}
+                                }
                                 button type="submit" name="submit" value=(Submit::Remove) class=(BUTTON_ERROR) {
-                                    span class="w-4 h-4 i-tabler-trash";
+                                    span class="w-4 h-4 i-tabler-trash" {}
                                 }
                             }
-                            thead class="
-                                    text-xs
-                                    text-gray-700
-                                    uppercase
-                                    dark:text-gray-400
-                                    bg-slate-50
-                                    dark:bg-slate-700
-                                " {
+                            thead class=(THEAD) {
                                 tr {
                                     th class="p-3 text-center" {
                                         input type="checkbox" name="slugs_all" value="true" class="bg-transparent";
@@ -138,7 +133,10 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
     .pre(html! {
         dialog id=(Submit::Edit) class=(DIALOG) {
             div class="flex z-10 flex-col gap-4 p-4 max-w-sm rounded border dark:text-white dark:bg-slate-900" {
-                h2 class="text-xl" { "Edit Game" }
+                div {
+                    a href="#!" class="float-right w-4 h-4 i-tabler-x" {}
+                    h2 class="text-xl" { "Edit Game" }
+                }
                 form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
                     input type="hidden" name="game_id" value=(game.id);
                     input
@@ -157,9 +155,8 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
                         }
                     div class="flex justify-between" {
                         button type="submit" name="submit" value=(Submit::Edit) class=(BUTTON_SUCCESS) {
-                            span class="w-4 h-4 i-tabler-check";
+                            span class="w-4 h-4 i-tabler-check" {}
                         }
-                        a href="#!" class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-x"; }
                     }
                 }
             }
@@ -167,7 +164,10 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
         }
         dialog id=(Submit::Add) class=(DIALOG) {
             div class="flex z-10 flex-col gap-4 p-4 max-w-sm rounded border dark:text-white dark:bg-slate-900" {
-                h2 class="text-xl" { "Add Actor Kind" }
+                div {
+                    a href="#!" class="float-right w-4 h-4 i-tabler-x" {}
+                    h2 class="text-xl" { "Add Actor Kind" }
+                }
                 form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
                     input type="hidden" name="game_id" value=(game.id);
                     input
@@ -183,16 +183,16 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
                         class="rounded invalid:border-red dark:bg-slate-900" {}
                     div class="flex justify-between" {
                         button type="submit" name="submit" value=(Submit::Add) class=(BUTTON_SUCCESS) {
-                            span class="w-4 h-4 i-tabler-check";
+                            span class="w-4 h-4 i-tabler-check" {}
                         }
-                        a href="#!" class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-x"; }
                     }
                 }
             }
             a href="#!" class="fixed inset-0" {}
         }
     })
-    .build().into_response()
+    .build()
+    .into_response()
 }
 
 pub async fn game_get(Path(game_slug): Path<String>, State(state): State<Arc<AppState>>) -> impl IntoResponse {
