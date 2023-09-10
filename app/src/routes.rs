@@ -1,5 +1,5 @@
 use axum::response::IntoResponse;
-use maud::{html, Render};
+use maud::html;
 
 use crate::components::Page;
 
@@ -16,5 +16,5 @@ pub async fn index() -> impl IntoResponse {
 }
 
 pub async fn not_found() -> impl IntoResponse {
-    Page::new(html! { h1 class="text-xl font-bold" { "Not found" } }).render()
+    Page::new(html! { h1 class="text-xl font-bold" { "Not found" } })
 }

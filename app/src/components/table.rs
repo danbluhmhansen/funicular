@@ -64,28 +64,28 @@ impl<'a> Table<'a> {
 impl Render for Table<'_> {
     fn render(&self) -> Markup {
         html! {
-            div class="overflow-x-auto relative rounded shadow-md" {
-                table class="w-full" {
-                    // TODO: avoid clone
-                    @if let Some(caption) = self.caption.to_owned() {
-                        caption class=(CAPTION) { (caption) }
-                    }
-                    @if !self.head.is_empty() {
-                        thead class=(THEAD) {
-                            tr {
-                                @for head in self.head.deref() {
-                                    @match head {
-                                        TableHead::Checkbox(name) =>
-                                            th class="p-3 text-center" {
-                                                input type="checkbox" name=(name) value="true" class="bg-transparent";
-                                            },
-                                        TableHead::Header(children) => th class="py-3 px-6 text-left" { (children) },
+            @if !self.body.is_empty() {
+                div class="overflow-x-auto relative rounded shadow-md" {
+                    table class="w-full" {
+                        // TODO: avoid clone
+                        @if let Some(caption) = self.caption.to_owned() {
+                            caption class=(CAPTION) { (caption) }
+                        }
+                        @if !self.head.is_empty() {
+                            thead class=(THEAD) {
+                                tr {
+                                    @for head in self.head.deref() {
+                                        @match head {
+                                            TableHead::Checkbox(name) =>
+                                                th class="p-3 text-center" {
+                                                    input type="checkbox" name=(name) value="true" class="bg-transparent";
+                                                },
+                                            TableHead::Header(children) => th class="py-3 px-6 text-left" { (children) },
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                    @if !self.body.is_empty() {
                         tbody {
                             @for row in self.body.deref() {
                                 tr class=(TR) {
@@ -105,11 +105,11 @@ impl Render for Table<'_> {
                                 }
                             }
                         }
-                    // TODO: avoid clone
-                    } @else if let Some(empty) = self.empty.to_owned() {
-                        (empty)
                     }
                 }
+            // TODO: avoid clone
+            } @else if let Some(empty) = self.empty.to_owned() {
+                (empty)
             }
         }
     }
