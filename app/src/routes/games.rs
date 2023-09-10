@@ -27,7 +27,7 @@ async fn games(pool: &Pool<Postgres>) -> Markup {
     Page::new(html! {
         h1 class="text-xl font-bold" { "Games" }
         form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center items-center" {
-            div class="overflow-x-auto relative shadow-md rounded" {
+            div class="overflow-x-auto relative rounded shadow-md" {
                 table class="w-full" {
                     caption class=(CAPTION) {
                         a href={"#" (Submit::Add)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
@@ -85,7 +85,7 @@ async fn games(pool: &Pool<Postgres>) -> Markup {
                 textarea
                     name="description"
                     placeholder="Description"
-                    class="rounded invalid:border-red dark:bg-slate-900" {}
+                    class="bg-transparent rounded invalid:border-red" {}
                 div class="flex justify-between" {
                     button type="submit" name="submit" value=(Submit::Add) class=(BUTTON_SUCCESS) {
                         span class="w-4 h-4 i-tabler-check" {}

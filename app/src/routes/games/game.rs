@@ -68,7 +68,7 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
                     enctype="multipart/form-data"
                     class="flex flex-col gap-4 justify-center items-center" {
                     input type="hidden" name="game_id" value=(game.id);
-                    div class="overflow-x-auto relative shadow-md rounded" {
+                    div class="overflow-x-auto relative rounded shadow-md" {
                         table class="w-full" {
                             caption class=(CAPTION) {
                                 a href={"#" (Submit::Add)} class=(BUTTON_PRIMARY) {
@@ -90,13 +90,7 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
                                 @match actor_kinds {
                                     Ok(actor_kinds) => {
                                         @for kind in actor_kinds {
-                                            tr class="
-                                                bg-white
-                                                border-b
-                                                last:border-0
-                                                dark:bg-slate-800
-                                                dark:border-slate-700
-                                            " {
+                                            tr class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700" {
                                                 td class="p-3 text-center" {
                                                     input
                                                         type="checkbox"
@@ -146,7 +140,7 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
                 textarea
                     name="description"
                     placeholder="Description"
-                    class="rounded invalid:border-red dark:bg-slate-900" {
+                    class="bg-transparent rounded invalid:border-red" {
                         @if let Some(description) = &game.description { (description) }
                     }
                 div class="flex justify-between" {
@@ -173,7 +167,7 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
                 textarea
                     name="description"
                     placeholder="Description"
-                    class="rounded invalid:border-red dark:bg-slate-900" {}
+                    class="bg-transparent rounded invalid:border-red" {}
                 div class="flex justify-between" {
                     button type="submit" name="submit" value=(Submit::Add) class=(BUTTON_SUCCESS) {
                         span class="w-4 h-4 i-tabler-check" {}

@@ -30,7 +30,7 @@ pub async fn skills(Path(game_slug): Path<String>, State(state): State<Arc<AppSt
     .await;
 
     Page::new(html! {
-        a href={"/games/" (game_slug)} class="text-xl hover:text-violet font-bold" { (game.name) }
+        a href={"/games/" (game_slug)} class="text-xl font-bold hover:text-violet" { (game.name) }
         h2 class="text-lg" { "Skills" }
         ul {
             @match skills {

@@ -166,7 +166,7 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
         @if let Some(description) = &actor.description { p { (description) } }
         @match skills {
             Ok(skills) => {
-                div class="overflow-x-auto relative shadow-md rounded" {
+                div class="overflow-x-auto relative rounded shadow-md" {
                     table class="w-full" {
                         thead class=(THEAD) {
                             tr { @for skill in &skills { th class="py-3 px-6 text-left" { (skill.name) } } }
@@ -189,7 +189,7 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
             Err(_) => { "No skills..." }
         }
         h2 class="text-xl font-bold" { "Gear" }
-        div class="overflow-x-auto relative shadow-md rounded" {
+        div class="overflow-x-auto relative rounded shadow-md" {
             table class="w-full" {
                 caption class=(CAPTION) {
                     a href={"#" (Submit::GearAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
@@ -234,7 +234,7 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
             }
         }
         h2 class="text-xl font-bold" { "Traits" }
-        div class="overflow-x-auto relative shadow-md rounded" {
+        div class="overflow-x-auto relative rounded shadow-md" {
             table class="w-full" {
                 caption class=(CAPTION) {
                     a href={"#" (Submit::TraitAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
@@ -295,7 +295,7 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
                     name="description"
                     value=[&actor.description]
                     placeholder="Description"
-                    class="rounded invalid:border-red dark:bg-slate-900" {
+                    class="bg-transparent rounded invalid:border-red" {
                     @if let Some(description) = &actor.description { (description) }
                 }
                 div class="flex justify-between" {
@@ -312,7 +312,7 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
         Dialog::new(html! {
             form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
                 input type="hidden" name="actor_id" value=(actor.id);
-                div class="overflow-x-auto relative shadow-md rounded" {
+                div class="overflow-x-auto relative rounded shadow-md" {
                     table class="w-full" {
                         caption class=(CAPTION) {
                             a href={"#" (Submit::TraitAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
@@ -362,7 +362,7 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
         Dialog::new(html! {
             form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
                 input type="hidden" name="actor_id" value=(actor.id);
-                div class="overflow-x-auto relative shadow-md rounded" {
+                div class="overflow-x-auto relative rounded shadow-md" {
                     table class="w-full" {
                         caption class=(CAPTION) {
                             a href={"#" (Submit::TraitAdd)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }

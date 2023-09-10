@@ -69,10 +69,10 @@ async fn actors(game_slug: String, actor_kind_slug: String, pool: &Pool<Postgres
     .await;
 
     Page::new(html! {
-        a href={"/games/" (game_slug)} class="text-xl hover:text-violet-500 font-bold" { (game.name) }
+        a href={"/games/" (game_slug)} class="text-xl font-bold hover:text-violet-500" { (game.name) }
         form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center items-center" {
             input type="hidden" name="kind_id" value=(actor_kind.id);
-            div class="overflow-x-auto relative shadow-md rounded" {
+            div class="overflow-x-auto relative rounded shadow-md" {
                 table class="w-full" {
                     caption class=(CAPTION) {
                         a href={"#" (Submit::Add)} class=(BUTTON_PRIMARY) { span class="w-4 h-4 i-tabler-plus" {} }
@@ -133,7 +133,7 @@ async fn actors(game_slug: String, actor_kind_slug: String, pool: &Pool<Postgres
                 textarea
                     name="description"
                     placeholder="Description"
-                    class="rounded invalid:border-red dark:bg-slate-900" {}
+                    class="bg-transparent rounded invalid:border-red" {}
                 div class="flex justify-between" {
                     button type="submit" name="submit" value=(Submit::Add) class=(BUTTON_SUCCESS) {
                         span class="w-4 h-4 i-tabler-check" {}

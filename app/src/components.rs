@@ -37,7 +37,7 @@ impl<'a> Page<'a> {
         let links = vec![Link::new("/", html! { "Home" }), Link::new("/games", html! { "Games" })];
         html! {
             (DOCTYPE)
-            html lang="en" class="h-full overflow-auto" {
+            html lang="en" class="overflow-auto h-full" {
                 head {
                     meta charset="utf-8";
                     meta name="viewport" content="width=device-width,initial-scale=1";
@@ -49,7 +49,7 @@ impl<'a> Page<'a> {
                     link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind-compat.min.css";
                     link rel="stylesheet" type="text/css" href="/site.css";
                 }
-                body class="h-full dark:text-white dark:bg-slate-900 overflow-auto" {
+                body class="overflow-auto h-full dark:text-white dark:bg-slate-900" {
                     @for dialog in self.dialogs {
                         (dialog.render())
                     }
@@ -98,7 +98,7 @@ impl<'a> Dialog<'a> {
     pub fn render(self) -> Markup {
         html! {
             dialog id=[self.id] class=(DIALOG) {
-                div class="flex z-10 flex-col gap-4 p-4 max-w-sm rounded border dark:text-white dark:bg-slate-900" {
+                div class="flex z-10 flex-col gap-4 p-4 max-w-sm bg-white rounded border dark:text-white dark:bg-slate-900" {
                     div {
                         a href="#!" class="float-right w-4 h-4 i-tabler-x" {}
                         @if let Some(title) = self.title { h2 class="text-xl" { (title) } }
