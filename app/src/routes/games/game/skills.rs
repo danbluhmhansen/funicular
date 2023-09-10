@@ -39,6 +39,6 @@ pub async fn skills(Path(game_slug): Path<String>, State(state): State<Arc<AppSt
             }
         }
     })
-    .build()
+    .render()
     .into_response()
 }

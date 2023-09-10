@@ -11,8 +11,9 @@ use sqlx::{Pool, Postgres};
 use strum::Display;
 
 use crate::{
-    components::Page, routes::not_found, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, CAPTION, DIALOG,
-    THEAD, TR,
+    components::{Dialog, Page},
+    routes::not_found,
+    AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, CAPTION, DIALOG, THEAD, TR,
 };
 
 pub mod actor;
@@ -118,37 +119,32 @@ async fn actors(game_slug: String, actor_kind_slug: String, pool: &Pool<Postgres
             }
         }
     })
-    .pre(html! {
-        dialog id=(Submit::Add) class=(DIALOG) {
-            div class="flex z-10 flex-col gap-4 p-4 max-w-sm rounded border dark:text-white dark:bg-slate-900" {
-                div {
-                    a href="#!" class="float-right w-4 h-4 i-tabler-x" {}
-                    h2 class="text-xl" { "Add " (actor_kind.name) }
-                }
-                form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
-                    input type="hidden" name="kind_id" value=(actor_kind.id);
-                    input
-                        type="text"
-                        name="name"
-                        placeholder="Name"
-                        required
-                        autofocus
-                        class="bg-transparent rounded invalid:border-red";
-                    textarea
-                        name="description"
-                        placeholder="Description"
-                        class="rounded invalid:border-red dark:bg-slate-900" {}
-                    div class="flex justify-between" {
-                        button type="submit" name="submit" value=(Submit::Add) class=(BUTTON_SUCCESS) {
-                            span class="w-4 h-4 i-tabler-check" {}
-                        }
+    .dialog(
+        Dialog::new(html! {
+            form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center" {
+                input type="hidden" name="kind_id" value=(actor_kind.id);
+                input
+                    type="text"
+                    name="name"
+                    placeholder="Name"
+                    required
+                    autofocus
+                    class="bg-transparent rounded invalid:border-red";
+                textarea
+                    name="description"
+                    placeholder="Description"
+                    class="rounded invalid:border-red dark:bg-slate-900" {}
+                div class="flex justify-between" {
+                    button type="submit" name="submit" value=(Submit::Add) class=(BUTTON_SUCCESS) {
+                        span class="w-4 h-4 i-tabler-check" {}
                     }
                 }
             }
-            a href="#!" class="fixed inset-0" {}
-        }
-    })
-    .build().into_response()
+        })
+        .id(Submit::Add)
+        .title(&format!("Add {}", actor_kind.name))
+    )
+    .render().into_response()
 }
 
 pub async fn actors_get(

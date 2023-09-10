@@ -23,9 +23,9 @@ pub async fn index() -> impl IntoResponse {
             Sunt non fuga officiis fugit aliquam numquam hic. Voluptatem ratione magni dolor ut."
         }
     })
-    .build()
+    .render()
 }
 
 pub async fn not_found() -> impl IntoResponse {
-    Page::new(html! { h1 class="text-xl font-bold" { "Not found" } }).build()
+    Page::new(html! { h1 class="text-xl font-bold" { "Not found" } }).render()
 }

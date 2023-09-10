@@ -1,4 +1,8 @@
+use std::fmt::Display;
+
 use maud::{html, Markup, DOCTYPE};
+
+use crate::DIALOG;
 
 pub struct Link<'a> {
     pub href: &'a str,
@@ -11,22 +15,25 @@ impl<'a> Link<'a> {
     }
 }
 
-pub struct Page {
+pub struct Page<'a> {
     children: Markup,
-    pre: Option<Markup>,
+    dialogs: Vec<Dialog<'a>>,
 }
 
-impl Page {
+impl<'a> Page<'a> {
     pub fn new(children: Markup) -> Self {
-        Self { children, pre: None }
+        Self {
+            children,
+            dialogs: vec![],
+        }
     }
 
-    pub fn pre(mut self, pre: Markup) -> Self {
-        self.pre = Some(pre);
+    pub fn dialog(mut self, dialog: Dialog<'a>) -> Self {
+        self.dialogs.push(dialog);
         self
     }
 
-    pub fn build(self) -> Markup {
+    pub fn render(self) -> Markup {
         let links = vec![Link::new("/", html! { "Home" }), Link::new("/games", html! { "Games" })];
         html! {
             (DOCTYPE)
@@ -43,7 +50,9 @@ impl Page {
                     link rel="stylesheet" type="text/css" href="/site.css";
                 }
                 body class="h-full dark:text-white dark:bg-slate-900 overflow-auto" {
-                    @if let Some(pre) = self.pre { (pre) }
+                    @for dialog in self.dialogs {
+                        (dialog.render())
+                    }
                     header class="py-4" {
                         nav {
                             ul class="flex flex-col gap-4 justify-center items-center sm:flex-row" {
@@ -56,6 +65,47 @@ impl Page {
                     main class="container flex flex-col gap-4 justify-center items-center mx-auto" { (self.children) }
                     footer class="py-4";
                 }
+            }
+        }
+    }
+}
+
+pub struct Dialog<'a> {
+    children: Markup,
+    id: Option<String>,
+    title: Option<&'a str>,
+}
+
+impl<'a> Dialog<'a> {
+    pub fn new(children: Markup) -> Self {
+        Self {
+            children,
+            id: None,
+            title: None,
+        }
+    }
+
+    pub fn id<D: Display>(mut self, id: D) -> Self {
+        self.id = Some(id.to_string());
+        self
+    }
+
+    pub fn title(mut self, title: &'a str) -> Self {
+        self.title = Some(title);
+        self
+    }
+
+    pub fn render(self) -> Markup {
+        html! {
+            dialog id=[self.id] class=(DIALOG) {
+                div class="flex z-10 flex-col gap-4 p-4 max-w-sm rounded border dark:text-white dark:bg-slate-900" {
+                    div {
+                        a href="#!" class="float-right w-4 h-4 i-tabler-x" {}
+                        @if let Some(title) = self.title { h2 class="text-xl" { (title) } }
+                    }
+                    (self.children)
+                }
+                a href="#!" class="fixed inset-0" {}
             }
         }
     }
