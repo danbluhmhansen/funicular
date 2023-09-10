@@ -22,7 +22,3 @@ GROUP BY "gear_kind"."game_id", "actor_gear"."actor_id", "gear"."id", COALESCE("
 ORDER BY 1, 2, 3, 4;
 --
 COMMENT ON VIEW "public"."gear_num_skill" IS $$View of an actor's gear's current skill values.$$;
---
-GRANT SELECT ON "public"."gear_num_skill" TO "anon";
--- Notify Postgrest
-NOTIFY pgrst, 'reload schema';

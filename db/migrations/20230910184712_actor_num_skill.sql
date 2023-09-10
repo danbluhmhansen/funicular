@@ -16,23 +16,3 @@ GROUP BY "actor_kind"."game_id", "actor"."id", COALESCE("sub_skill"."sub_id", "a
 ORDER BY 1, 2, 3;
 --
 COMMENT ON VIEW "public"."actor_num_skill" IS $$View of actor's current skill values.$$;
---
-GRANT SELECT ON "public"."actor_num_skill" TO "anon";
---
-CREATE FUNCTION "public"."actor_num_skill"("public"."actor") RETURNS SETOF "public"."actor_num_skill" AS $$
-    SELECT * FROM "public"."actor_num_skill" WHERE "actor_id" = $1."id"
-$$ STABLE LANGUAGE SQL;
---
-CREATE FUNCTION "public"."game"("public"."actor_num_skill") RETURNS SETOF "public"."game" ROWS 1 AS $$
-    SELECT * FROM "public"."game" WHERE "id" = $1."game_id"
-$$ STABLE LANGUAGE SQL;
---
-CREATE FUNCTION "public"."actor"("public"."actor_num_skill") RETURNS SETOF "public"."actor" ROWS 1 AS $$
-    SELECT * FROM "public"."actor" WHERE "id" = $1."actor_id"
-$$ STABLE LANGUAGE SQL;
---
-CREATE FUNCTION "public"."skill"("public"."actor_num_skill") RETURNS SETOF "public"."skill" ROWS 1 AS $$
-    SELECT * FROM "public"."skill" WHERE "id" = $1."skill_id"
-$$ STABLE LANGUAGE SQL;
--- Notify Postgrest
-NOTIFY pgrst, 'reload schema';

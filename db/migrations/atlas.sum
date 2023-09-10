@@ -1,6 +1,4 @@
-h1:zalsOZf9ah+x2pL9nEn1WYNsP7eEknlXgp676BjpkWQ=
-20230719210347_init.sql h1:pwBU5YXD3DCLo1ekfK053aimSf/1fLRhVPufDT0zoTM=
-20230719210436_init_auth.sql h1:Hca/tmNwvafy0woyF/DIotdRqIaaD/mztMSN9V9QfSM=
-20230719211029_actor_num_skill.sql h1:TITnzaOdKgv7ThPeNAZnNgAOuUEO/URWnT90Yag7m04=
-20230719211301_gear_num_skill.sql h1:kkib+pSoGfAW59xoB1MEL6HAdzv/6EIb7btNzHf0QxA=
-20230819220115_slug.sql h1:p5wnzbXWB8f5gGht6KWtz94P1MiCIEck/pRCM3b2NR4=
+h1:USsfDKkD1VQNN8H55i5Ap3yAAfi+nnELISrtplhHEZw=
+20230910180918_init.sql h1:FY7SWufLEJoWnEbXbbfyDvevXCzPWLcEgv+1jTqGcj4=
+20230910184712_actor_num_skill.sql h1:rrEzs6LFNisB1dHPf7CJ/5G42EPF0kArE9PYGMvoZ/E=
+20230910184717_gear_num_skill.sql h1:ZLLGTNG4QwJrGyFBUgyDN3h4xU0JttXuzBPofuuC2sc=
