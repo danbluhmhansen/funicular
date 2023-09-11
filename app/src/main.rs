@@ -14,12 +14,6 @@ const BUTTON_SUCCESS: &str = formatcp!("{BUTTON} {}", " text-green-600 border-gr
 const BUTTON_WARNING: &str = formatcp!("{BUTTON} {}", " text-amber-600 border-amber-600 dark:text-amber-300 dark:border-amber-300 hover:bg-amber-500 focus:ring-amber-400 dark:hover:bg-amber-400 dark:focus:ring-amber-500");
 const BUTTON_ERROR: &str = formatcp!("{BUTTON} {}", " text-red-600 border-red-600 dark:text-red-300 dark:border-red-300 hover:bg-red-500 focus:ring-red-400 dark:hover:bg-red-400 dark:focus:ring-red-500");
 
-const DIALOG: &str = "hidden z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm";
-
-const CAPTION: &str = "p-3 space-x-2 bg-white dark:bg-slate-800";
-const THEAD: &str = "text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700";
-const TR: &str = "bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700";
-
 pub struct AppState {
     pool: Pool<Postgres>,
 }

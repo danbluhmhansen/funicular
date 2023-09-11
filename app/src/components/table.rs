@@ -2,8 +2,6 @@ use std::ops::Deref;
 
 use maud::{html, Markup, Render};
 
-use crate::{CAPTION, THEAD, TR};
-
 pub enum TableHead<'a> {
     Checkbox(&'a str),
     Header(Markup),
@@ -69,10 +67,10 @@ impl Render for Table<'_> {
                     table class="w-full" {
                         // TODO: avoid clone
                         @if let Some(caption) = self.caption.to_owned() {
-                            caption class=(CAPTION) { (caption) }
+                            caption class="p-3 space-x-2 bg-white dark:bg-slate-800" { (caption) }
                         }
                         @if !self.head.is_empty() {
-                            thead class=(THEAD) {
+                            thead class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700" {
                                 tr {
                                     @for head in self.head.deref() {
                                         @match head {
@@ -88,7 +86,7 @@ impl Render for Table<'_> {
                         }
                         tbody {
                             @for row in self.body.deref() {
-                                tr class=(TR) {
+                                tr class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700" {
                                     @for data in row {
                                         @match data {
                                             TableData::Checkbox(name, value) =>

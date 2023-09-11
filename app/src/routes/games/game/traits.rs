@@ -34,7 +34,7 @@ pub async fn traits(Path(game_slug): Path<String>, State(state): State<Arc<AppSt
         h2 class="text-lg" { "Traits" }
         ul {
             @match traits {
-                Ok(traits) => { @for t in traits { li { (t.name) } } }
+                Ok(traits) => { @for r#trait in traits { li { (r#trait.name) } } }
                 Err(_) => { p { "No traits..." } }
             }
         }

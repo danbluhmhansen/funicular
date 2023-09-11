@@ -2,8 +2,6 @@ use std::fmt::Display;
 
 use maud::{html, Markup, Render};
 
-use crate::DIALOG;
-
 pub struct Dialog<'a> {
     children: Markup,
     id: Option<String>,
@@ -33,7 +31,9 @@ impl<'a> Dialog<'a> {
 impl Render for Dialog<'_> {
     fn render(&self) -> Markup {
         html! {
-            dialog id=[self.id.as_deref()] class=(DIALOG) {
+            dialog
+                id=[self.id.as_deref()]
+                class="hidden z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm" {
                 div class="flex z-10 flex-col gap-4 p-4 max-w-sm bg-white rounded border dark:text-white dark:bg-slate-900" {
                     div {
                         a href="#!" class="float-right w-4 h-4 i-tabler-x" {}

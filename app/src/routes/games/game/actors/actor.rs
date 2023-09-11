@@ -198,7 +198,7 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
     .map_or(vec![], |traits| {
         traits
             .iter()
-            .map(|t| vec![TableData::Data(html! { (t.name) })])
+            .map(|r#trait| vec![TableData::Data(html! { (r#trait.name) })])
             .collect::<Vec<Vec<TableData>>>()
     });
 
