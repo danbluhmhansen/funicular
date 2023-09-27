@@ -31,7 +31,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             .max_connections(5)
             .acquire_timeout(Duration::from_secs(3))
             .connect(
-                &std::env::var("DATABASE_URL").unwrap_or_else(|_| "postgres://localhost:28815/funicular".to_string()),
+                &std::env::var("DATABASE_URL").unwrap_or_else(|_| "postgres://localhost:28816/funicular".to_string()),
             )
             .await?,
     ));
