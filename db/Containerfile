@@ -6,9 +6,9 @@ RUN apt install -y clang
 WORKDIR /funicular
 COPY . .
 RUN cargo install --locked cargo-pgrx@0.10.0
-RUN cargo pgrx init --pg15 download
-RUN cargo pgrx package --manifest-path db/Cargo.toml --pg-config /root/.pgrx/15.4/pgrx-install/bin/pg_config --out-dir .
+RUN cargo pgrx init --pg16 download
+RUN cargo pgrx package --manifest-path db/Cargo.toml --pg-config /root/.pgrx/16.0/pgrx-install/bin/pg_config --out-dir .
 
-FROM postgres:15
-COPY --from=build /funicular/root/.pgrx/15.4/pgrx-install/share/postgresql/extension/* /usr/share/postgresql/15/extension/
-COPY --from=build /funicular/root/.pgrx/15.4/pgrx-install/lib/postgresql/funicular_db.so /usr/lib/postgresql/15/lib/
+FROM postgres:16
+COPY --from=build /funicular/root/.pgrx/16.0/pgrx-install/share/postgresql/extension/* /usr/share/postgresql/16/extension/
+COPY --from=build /funicular/root/.pgrx/16.0/pgrx-install/lib/postgresql/funicular_db.so /usr/lib/postgresql/16/lib/
