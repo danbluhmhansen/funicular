@@ -356,7 +356,7 @@ mod tests {
 
     #[pg_test]
     fn test_fun_seed() -> Result<(), spi::Error> {
-        Spi::run(include_str!("../migrations/20230910180918_init.sql"))?;
+        Spi::run("SELECT migrations_up();")?;
         Spi::run("SELECT fun_seed();")?;
         Ok(())
     }
