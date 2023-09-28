@@ -4,6 +4,7 @@ use axum::{routing::get, Router};
 use const_format::formatcp;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use tower_http::services::ServeDir;
+use tower_livereload::LiveReloadLayer;
 
 mod components;
 mod routes;
@@ -58,6 +59,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .route("/games/:game_slug/traits", get(routes::games::game::traits::traits))
                 .fallback_service(ServeDir::new("assets").fallback(get(routes::not_found)))
                 .with_state(shared_state)
+                .layer(LiveReloadLayer::new())
                 .into_make_service(),
         )
         .await?;
