@@ -34,7 +34,14 @@ pub enum Submit {
 
 async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
     let game = sqlx::query!(
-        "SELECT id, name, slug, description FROM game WHERE slug = $1;",
+        "
+        SELECT game.id, game.name, game.slug, game.description,
+            JSONB_AGG(JSON_BUILD_OBJECT('name', actor_kind.name, 'slug', actor_kind.slug)) AS actor_kinds
+        FROM game
+        JOIN actor_kind ON actor_kind.game_id = game.id
+        WHERE game.slug = $1
+        GROUP BY game.id;
+        ",
         game_slug
     )
     .fetch_one(pool)
@@ -46,32 +53,24 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
 
     let game = game.unwrap();
 
-    let actor_kinds = sqlx::query!(
-        r#"
-            SELECT actor_kind.name, actor_kind.slug
-            FROM actor_kind
-            JOIN game ON game.id = actor_kind.game_id
-            WHERE game.slug = $1
-        "#,
-        game_slug
-    )
-    .fetch_all(pool)
-    .await
-    .map_or(vec![], |actor_kinds| {
-        actor_kinds
-            .iter()
-            .map(|actor_kind| {
-                vec![
-                    // TODO: avoid clone
-                    TableData::Checkbox("slugs", Some(actor_kind.slug.to_owned())),
-                    TableData::Data(html! {
-                        a href={"/games/" (game.slug) "/actors/" (actor_kind.slug)} class="hover:text-violet-500" {
-                            (actor_kind.name)
-                        }
-                    }),
-                ]
-            })
-            .collect::<Vec<Vec<TableData>>>()
+    let actor_kinds = game.actor_kinds.map_or(vec![], |actor_kinds| {
+        actor_kinds.as_array().map_or(vec![], |actor_kinds| {
+            actor_kinds
+                .iter()
+                .map(|actor_kind| {
+                    vec![
+                        TableData::Checkbox("slugs", actor_kind["slug"].as_str().map(|s| s.to_string())),
+                        TableData::Data(html! {
+                            a
+                                href={"/games/" (game.slug) "/actors/" (actor_kind["slug"].as_str().unwrap_or(""))}
+                                class="hover:text-violet-500" {
+                                (actor_kind["name"].as_str().unwrap_or(""))
+                            }
+                        }),
+                    ]
+                })
+                .collect::<Vec<Vec<TableData>>>()
+        })
     });
 
     Page::new(html! {
