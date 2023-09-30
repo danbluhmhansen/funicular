@@ -357,7 +357,6 @@ mod tests {
     #[pg_test]
     fn test_fun_seed() -> Result<(), spi::Error> {
         Spi::run("SELECT migrations_up();")?;
-        Spi::run("SELECT fun_seed();")?;
-        Ok(())
+        Spi::run("SELECT fun_seed();")
     }
 }
