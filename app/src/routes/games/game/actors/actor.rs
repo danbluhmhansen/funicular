@@ -1,9 +1,10 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     response::{IntoResponse, Redirect, Response},
 };
+use axum_extra::routing::TypedPath;
 use axum_typed_multipart::{TryFromField, TryFromMultipart, TypedMultipart};
 use maud::html;
 use serde::Deserialize;
@@ -16,16 +17,9 @@ use crate::{
         table::{Table, TableData, TableHead},
         Page,
     },
-    routes::not_found,
+    routes::{self, not_found},
     AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, BUTTON_WARNING,
 };
-
-#[derive(Deserialize)]
-pub struct ActorPath {
-    pub game_slug: String,
-    pub actor_kind_slug: String,
-    pub actor_slug: String,
-}
 
 #[derive(Display, TryFromField)]
 #[strum(serialize_all = "snake_case")]
@@ -104,11 +98,8 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
                 .map(|skill| TableHead::Header(html! { (skill.name) }))
                 .collect::<Vec<TableHead>>(),
             skills
-                .iter()
-                .map(|skill| {
-                    // TODO: avoid clone
-                    TableData::Data(html! { @match skill.value.to_owned() { Some(value) => (value), None => "0", } })
-                })
+                .into_iter()
+                .map(|skill| TableData::Data(html! { @match skill.value { Some(value) => (value), None => "0", } }))
                 .collect::<Vec<TableData>>(),
         )
     });
@@ -127,11 +118,10 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
     .await
     .map_or(vec![], |actor_gears| {
         actor_gears
-            .iter()
+            .into_iter()
             .map(|actor_gear| {
                 vec![
-                    // TODO: avoid clone
-                    TableData::Checkbox("slugs", Some(actor_gear.slug.to_owned())),
+                    TableData::Checkbox("slugs", Some(actor_gear.slug)),
                     TableData::Data(html! { (actor_gear.name) }),
                     TableData::Data(html! { @match actor_gear.amount { Some(amount) => (amount), None => "0", } }),
                 ]
@@ -153,11 +143,10 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
     .await
     .map_or(vec![], |actor_traits| {
         actor_traits
-            .iter()
+            .into_iter()
             .map(|actor_trait| {
                 vec![
-                    // TODO: avoid clone
-                    TableData::Checkbox("slugs", Some(actor_trait.slug.to_owned())),
+                    TableData::Checkbox("slugs", Some(actor_trait.slug)),
                     TableData::Data(html! { (actor_trait.name) }),
                     TableData::Data(html! { @match actor_trait.amount { Some(amount) => (amount), None => "0", } }),
                 ]
@@ -205,13 +194,14 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
     Page::new(html! {
         ol class="flex flex-row" {
             li {
-                a href={"/games/" (game_slug)} class="hover:text-violet-500" { (game.name) }
+                // TODO: avoid clone
+                a href=(routes::games::game::Path::new(game_slug.clone())) class="hover:text-violet-500" { (game.name) }
             }
             li class="flex flex-row justify-center items-center" {
               div class="i-tabler-chevron-right";
             }
             li {
-                a href={"/games/" (game_slug) "/actors/" (actor_kind_slug)} class="hover:text-violet-500" {
+                a href=(routes::games::game::actors::Path::new(game_slug, actor_kind_slug)) class="hover:text-violet-500" {
                     (actor_kind.name)
                 }
             }
@@ -320,12 +310,30 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
     .into_response()
 }
 
-pub async fn actor_get(
-    Path(ActorPath {
+#[derive(Deserialize, TypedPath)]
+#[typed_path("/games/:game_slug/actors/:actor_kind_slug/:actor_slug")]
+pub struct Path {
+    game_slug: String,
+    actor_kind_slug: String,
+    actor_slug: String,
+}
+
+impl Path {
+    pub fn new(game_slug: String, actor_kind_slug: String, actor_slug: String) -> Self {
+        Self {
+            game_slug,
+            actor_kind_slug,
+            actor_slug,
+        }
+    }
+}
+
+pub async fn get(
+    Path {
         game_slug,
         actor_kind_slug,
         actor_slug,
-    }): Path<ActorPath>,
+    }: Path,
     State(state): State<Arc<AppState>>,
 ) -> Response {
     actor(game_slug, actor_kind_slug, actor_slug, &state.pool).await
@@ -341,12 +349,12 @@ pub struct Payload {
     pub slugs: Vec<String>,
 }
 
-pub async fn actor_post(
-    Path(ActorPath {
+pub async fn post(
+    Path {
         game_slug,
         actor_kind_slug,
         actor_slug,
-    }): Path<ActorPath>,
+    }: Path,
     State(state): State<Arc<AppState>>,
     TypedMultipart(form): TypedMultipart<Payload>,
 ) -> Response {

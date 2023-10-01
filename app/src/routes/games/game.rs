@@ -1,11 +1,13 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     response::{IntoResponse, Redirect, Response},
 };
+use axum_extra::routing::TypedPath;
 use axum_typed_multipart::{TryFromField, TryFromMultipart, TypedMultipart};
 use maud::html;
+use serde::Deserialize;
 use sqlx::{Pool, Postgres};
 use strum::Display;
 
@@ -15,7 +17,7 @@ use crate::{
         table::{Table, TableData, TableHead},
         Page,
     },
-    routes::not_found,
+    routes::{self, not_found},
     AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, BUTTON_WARNING,
 };
 
@@ -56,13 +58,17 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
     let actor_kinds = game.actor_kinds.map_or(vec![], |actor_kinds| {
         actor_kinds.as_array().map_or(vec![], |actor_kinds| {
             actor_kinds
-                .iter()
+                .into_iter()
                 .map(|actor_kind| {
                     vec![
                         TableData::Checkbox("slugs", actor_kind["slug"].as_str().map(|s| s.to_string())),
                         TableData::Data(html! {
                             a
-                                href={"/games/" (game.slug) "/actors/" (actor_kind["slug"].as_str().unwrap_or(""))}
+                                href=(routes::games::game::actors::Path::new(
+                                    // TODO: avoid clone
+                                    game.slug.clone(),
+                                    actor_kind["slug"].as_str().unwrap_or("").to_string()
+                                ))
                                 class="hover:text-violet-500" {
                                 (actor_kind["name"].as_str().unwrap_or(""))
                             }
@@ -101,10 +107,17 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
                 }
             }
             li class="flex flex-col gap-2" {
-                a href={"/games/" (game.slug) "/skills"} class="text-center hover:text-violet" { "Skills" }
+                a
+                    // TODO: avoid clone
+                    href=(routes::games::game::skills::Path::new(game.slug.clone()))
+                    class="text-center hover:text-violet"
+                { "Skills" }
             }
             li class="flex flex-col gap-2" {
-                a href={"/games/" (game.slug) "/traits"} class="text-center hover:text-violet" { "Traits" }
+                a
+                    href=(routes::games::game::traits::Path::new(game.slug))
+                    class="text-center hover:text-violet"
+                { "Traits" }
             }
         }
     })
@@ -164,7 +177,19 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
     .into_response()
 }
 
-pub async fn game_get(Path(game_slug): Path<String>, State(state): State<Arc<AppState>>) -> impl IntoResponse {
+#[derive(Deserialize, TypedPath)]
+#[typed_path("/games/:game_slug")]
+pub struct Path {
+    pub game_slug: String,
+}
+
+impl Path {
+    pub fn new(game_slug: String) -> Self {
+        Self { game_slug }
+    }
+}
+
+pub async fn get(Path { game_slug }: Path, State(state): State<Arc<AppState>>) -> impl IntoResponse {
     game(game_slug, &state.pool).await
 }
 
@@ -178,8 +203,8 @@ pub struct Payload {
     pub slugs: Vec<String>,
 }
 
-pub async fn game_post(
-    Path(game_slug): Path<String>,
+pub async fn post(
+    Path { game_slug }: Path,
     State(state): State<Arc<AppState>>,
     TypedMultipart(form): TypedMultipart<Payload>,
 ) -> Response {

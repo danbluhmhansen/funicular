@@ -1,9 +1,10 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     response::{IntoResponse, Response},
 };
+use axum_extra::routing::TypedPath;
 use axum_typed_multipart::{TryFromField, TryFromMultipart, TypedMultipart};
 use maud::html;
 use serde::Deserialize;
@@ -16,17 +17,11 @@ use crate::{
         table::{Table, TableData, TableHead},
         Page,
     },
-    routes::not_found,
+    routes::{self, not_found},
     AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS,
 };
 
 pub mod actor;
-
-#[derive(Deserialize)]
-pub struct ActorsPath {
-    pub game_slug: String,
-    pub actor_kind_slug: String,
-}
 
 #[derive(Display, TryFromField)]
 #[strum(serialize_all = "snake_case")]
@@ -73,14 +68,18 @@ async fn actors(game_slug: String, actor_kind_slug: String, pool: &Pool<Postgres
     .await
     .map_or(vec![], |actors| {
         actors
-            .iter()
+            .into_iter()
             .map(|actor| {
                 vec![
                     // TODO: avoid clone
                     TableData::Checkbox("slugs", Some(actor.slug.to_owned())),
                     TableData::Data(html! {
                         a
-                            href={"/games/" (game_slug) "/actors/" (actor_kind_slug) "/" (actor.slug)}
+                            href=(routes::games::game::actors::actor::Path::new(
+                                game_slug.clone(),
+                                actor_kind_slug.clone(),
+                                actor.slug
+                            ))
                             class="hover:text-violet-500" {
                             (actor.name)
                         }
@@ -91,7 +90,7 @@ async fn actors(game_slug: String, actor_kind_slug: String, pool: &Pool<Postgres
     });
 
     Page::new(html! {
-        a href={"/games/" (game_slug)} class="text-xl font-bold hover:text-violet-500" { (game.name) }
+        a href=(routes::games::game::Path::new(game_slug)) class="text-xl font-bold hover:text-violet-500" { (game.name) }
         form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center items-center" {
             input type="hidden" name="kind_id" value=(actor_kind.id);
             (Table::new()
@@ -135,11 +134,27 @@ async fn actors(game_slug: String, actor_kind_slug: String, pool: &Pool<Postgres
     .into_response()
 }
 
-pub async fn actors_get(
-    Path(ActorsPath {
+#[derive(Deserialize, TypedPath)]
+#[typed_path("/games/:game_slug/actors/:actor_kind_slug")]
+pub struct Path {
+    game_slug: String,
+    actor_kind_slug: String,
+}
+
+impl Path {
+    pub fn new(game_slug: String, actor_kind_slug: String) -> Self {
+        Self {
+            game_slug,
+            actor_kind_slug,
+        }
+    }
+}
+
+pub async fn get(
+    Path {
         game_slug,
         actor_kind_slug,
-    }): Path<ActorsPath>,
+    }: Path,
     State(state): State<Arc<AppState>>,
 ) -> Response {
     actors(game_slug, actor_kind_slug, &state.pool).await
@@ -155,11 +170,11 @@ pub struct Payload {
     pub slugs: Vec<String>,
 }
 
-pub async fn actors_post(
-    Path(ActorsPath {
+pub async fn post(
+    Path {
         game_slug,
         actor_kind_slug,
-    }): Path<ActorsPath>,
+    }: Path,
     State(state): State<Arc<AppState>>,
     TypedMultipart(form): TypedMultipart<Payload>,
 ) -> Response {

@@ -1,11 +1,16 @@
 use axum::response::IntoResponse;
+use axum_extra::routing::TypedPath;
 use maud::html;
 
 use crate::components::Page;
 
 pub mod games;
 
-pub async fn index() -> impl IntoResponse {
+#[derive(TypedPath)]
+#[typed_path("/")]
+pub struct IndexPath;
+
+pub async fn index(_: IndexPath) -> impl IntoResponse {
     Page::new(html! {
         h1 class="text-lg" { "Hello, World!" }
         p class="p-2 text-red-500" {

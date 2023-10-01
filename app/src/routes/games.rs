@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use axum::{extract::State, response::IntoResponse};
+use axum_extra::routing::TypedPath;
 use axum_typed_multipart::{TryFromField, TryFromMultipart, TypedMultipart};
 use maud::{html, Markup};
 use sqlx::{Pool, Postgres};
@@ -8,7 +9,7 @@ use strum::Display;
 
 use crate::{
     components::{dialog::Dialog, table::Table, table::TableData, table::TableHead, Page},
-    AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS,
+    routes, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS,
 };
 
 pub mod game;
@@ -27,14 +28,16 @@ async fn games(pool: &Pool<Postgres>) -> Markup {
         .await
         .map_or(vec![], |games| {
             games
-                .iter()
+                .into_iter()
                 .map(|game| {
                     vec![
                         // TODO: avoid clone
                         TableData::Checkbox("slugs", Some(game.slug.to_owned())),
-                        TableData::Data(
-                            html! { a href={"/games/" (game.slug)} class="hover:text-violet-500" { (game.name) } },
-                        ),
+                        TableData::Data(html! {
+                            a href=(routes::games::game::Path::new(game.slug)) class="hover:text-violet-500" {
+                                (game.name)
+                            }
+                        }),
                     ]
                 })
                 .collect::<Vec<Vec<TableData>>>()
@@ -83,6 +86,14 @@ async fn games(pool: &Pool<Postgres>) -> Markup {
     .into()
 }
 
+#[derive(TypedPath)]
+#[typed_path("/games")]
+pub struct Path;
+
+pub async fn get(_: Path, State(state): State<Arc<AppState>>) -> impl IntoResponse {
+    games(&state.pool).await
+}
+
 #[derive(TryFromMultipart)]
 pub struct Payload {
     pub submit: Submit,
@@ -92,7 +103,8 @@ pub struct Payload {
     pub slugs: Vec<String>,
 }
 
-pub async fn games_post(
+pub async fn post(
+    _: Path,
     State(state): State<Arc<AppState>>,
     TypedMultipart(form): TypedMultipart<Payload>,
 ) -> impl IntoResponse {
@@ -117,9 +129,5 @@ pub async fn games_post(
         }
     };
 
-    games(&state.pool).await
-}
-
-pub async fn games_get(State(state): State<Arc<AppState>>) -> impl IntoResponse {
     games(&state.pool).await
 }

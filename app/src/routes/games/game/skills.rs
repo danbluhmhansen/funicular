@@ -1,14 +1,32 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{Path, State},
+    extract::State,
     response::{IntoResponse, Response},
 };
+use axum_extra::routing::TypedPath;
 use maud::html;
+use serde::Deserialize;
 
-use crate::{components::Page, routes::not_found, AppState};
+use crate::{
+    components::Page,
+    routes::{self, not_found},
+    AppState,
+};
 
-pub async fn skills(Path(game_slug): Path<String>, State(state): State<Arc<AppState>>) -> Response {
+#[derive(Deserialize, TypedPath)]
+#[typed_path("/games/:game_slug/skills")]
+pub struct Path {
+    game_slug: String,
+}
+
+impl Path {
+    pub fn new(game_slug: String) -> Self {
+        Self { game_slug }
+    }
+}
+
+pub async fn get(Path { game_slug }: Path, State(state): State<Arc<AppState>>) -> Response {
     let game = sqlx::query!(
         "SELECT id, name, slug, description FROM game WHERE slug = $1;",
         game_slug
@@ -30,7 +48,7 @@ pub async fn skills(Path(game_slug): Path<String>, State(state): State<Arc<AppSt
     .await;
 
     Page::new(html! {
-        a href={"/games/" (game_slug)} class="text-xl font-bold hover:text-violet" { (game.name) }
+        a href=(routes::games::game::Path::new(game_slug)) class="text-xl font-bold hover:text-violet" { (game.name) }
         h2 class="text-lg" { "Skills" }
         ul {
             @match skills {

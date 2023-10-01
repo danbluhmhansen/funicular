@@ -1,6 +1,7 @@
 use std::{error::Error, sync::Arc, time::Duration};
 
 use axum::{routing::get, Router};
+use axum_extra::routing::RouterExt;
 use const_format::formatcp;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use tower_http::services::ServeDir;
@@ -40,23 +41,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
     axum::Server::bind(&"0.0.0.0:1111".parse()?)
         .serve(
             Router::new()
-                .route("/", get(routes::index))
-                .route("/games", get(routes::games::games_get).post(routes::games::games_post))
-                .route(
-                    "/games/:game_slug",
-                    get(routes::games::game::game_get).post(routes::games::game::game_post),
-                )
-                .route(
-                    "/games/:game_slug/actors/:actor_kind_slug",
-                    get(routes::games::game::actors::actors_get).post(routes::games::game::actors::actors_post),
-                )
-                .route(
-                    "/games/:game_slug/actors/:actor_kind_slug/:actor_slug",
-                    get(routes::games::game::actors::actor::actor_get)
-                        .post(routes::games::game::actors::actor::actor_post),
-                )
-                .route("/games/:game_slug/skills", get(routes::games::game::skills::skills))
-                .route("/games/:game_slug/traits", get(routes::games::game::traits::traits))
+                .typed_get(routes::index)
+                .typed_get(routes::games::get)
+                .typed_post(routes::games::post)
+                .typed_get(routes::games::game::get)
+                .typed_post(routes::games::game::post)
+                .typed_get(routes::games::game::actors::get)
+                .typed_post(routes::games::game::actors::post)
+                .typed_get(routes::games::game::actors::actor::get)
+                .typed_post(routes::games::game::actors::actor::post)
+                .typed_get(routes::games::game::skills::get)
+                .typed_get(routes::games::game::traits::get)
                 .fallback_service(ServeDir::new("assets").fallback(get(routes::not_found)))
                 .with_state(shared_state)
                 .layer(LiveReloadLayer::new())
