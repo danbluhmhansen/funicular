@@ -17,7 +17,7 @@ use crate::{
         table::{Table, TableData, TableHead},
         Page,
     },
-    routes::{self, not_found},
+    routes::{games::game, not_found},
     AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS,
 };
 
@@ -75,7 +75,7 @@ async fn actors(game_slug: String, actor_kind_slug: String, pool: &Pool<Postgres
                     TableData::Checkbox("slugs", Some(actor.slug.to_owned())),
                     TableData::Data(html! {
                         a
-                            href=(routes::games::game::actors::actor::Path::new(
+                            href=(actor::Path::new(
                                 game_slug.clone(),
                                 actor_kind_slug.clone(),
                                 actor.slug
@@ -90,7 +90,7 @@ async fn actors(game_slug: String, actor_kind_slug: String, pool: &Pool<Postgres
     });
 
     Page::new(html! {
-        a href=(routes::games::game::Path::new(game_slug)) class="text-xl font-bold hover:text-violet-500" { (game.name) }
+        a href=(game::Path::new(game_slug)) class="text-xl font-bold hover:text-violet-500" { (game.name) }
         form method="post" enctype="multipart/form-data" class="flex flex-col gap-4 justify-center items-center" {
             input type="hidden" name="kind_id" value=(actor_kind.id);
             (Table::new()

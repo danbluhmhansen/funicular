@@ -17,7 +17,7 @@ use crate::{
         table::{Table, TableData, TableHead},
         Page,
     },
-    routes::{self, not_found},
+    routes::not_found,
     AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, BUTTON_WARNING,
 };
 
@@ -64,7 +64,7 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
                         TableData::Checkbox("slugs", actor_kind["slug"].as_str().map(|s| s.to_string())),
                         TableData::Data(html! {
                             a
-                                href=(routes::games::game::actors::Path::new(
+                                href=(actors::Path::new(
                                     // TODO: avoid clone
                                     game.slug.clone(),
                                     actor_kind["slug"].as_str().unwrap_or("").to_string()
@@ -107,17 +107,11 @@ async fn game(game_slug: String, pool: &Pool<Postgres>) -> Response {
                 }
             }
             li class="flex flex-col gap-2" {
-                a
-                    // TODO: avoid clone
-                    href=(routes::games::game::skills::Path::new(game.slug.clone()))
-                    class="text-center hover:text-violet"
-                { "Skills" }
+                // TODO: avoid clone
+                a href=(skills::Path::new(game.slug.clone())) class="text-center hover:text-violet" { "Skills" }
             }
             li class="flex flex-col gap-2" {
-                a
-                    href=(routes::games::game::traits::Path::new(game.slug))
-                    class="text-center hover:text-violet"
-                { "Traits" }
+                a href=(traits::Path::new(game.slug)) class="text-center hover:text-violet" { "Traits" }
             }
         }
     })

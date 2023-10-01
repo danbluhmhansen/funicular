@@ -10,7 +10,7 @@ use serde::Deserialize;
 
 use crate::{
     components::Page,
-    routes::{self, not_found},
+    routes::{games::game, not_found},
     AppState,
 };
 
@@ -48,7 +48,7 @@ pub async fn get(Path { game_slug }: Path, State(state): State<Arc<AppState>>) -
     .await;
 
     Page::new(html! {
-        a href=(routes::games::game::Path::new(game_slug)) class="text-xl font-bold hover:text-violet" { (game.name) }
+        a href=(game::Path::new(game_slug)) class="text-xl font-bold hover:text-violet" { (game.name) }
         h2 class="text-lg" { "Skills" }
         ul {
             @match skills {

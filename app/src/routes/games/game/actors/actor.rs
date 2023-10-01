@@ -17,7 +17,10 @@ use crate::{
         table::{Table, TableData, TableHead},
         Page,
     },
-    routes::{self, not_found},
+    routes::{
+        games::game::{self, actors},
+        not_found,
+    },
     AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS, BUTTON_WARNING,
 };
 
@@ -195,13 +198,13 @@ async fn actor(game_slug: String, actor_kind_slug: String, actor_slug: String, p
         ol class="flex flex-row" {
             li {
                 // TODO: avoid clone
-                a href=(routes::games::game::Path::new(game_slug.clone())) class="hover:text-violet-500" { (game.name) }
+                a href=(game::Path::new(game_slug.clone())) class="hover:text-violet-500" { (game.name) }
             }
             li class="flex flex-row justify-center items-center" {
               div class="i-tabler-chevron-right";
             }
             li {
-                a href=(routes::games::game::actors::Path::new(game_slug, actor_kind_slug)) class="hover:text-violet-500" {
+                a href=(actors::Path::new(game_slug, actor_kind_slug)) class="hover:text-violet-500" {
                     (actor_kind.name)
                 }
             }

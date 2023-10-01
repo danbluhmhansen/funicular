@@ -9,7 +9,7 @@ use strum::Display;
 
 use crate::{
     components::{dialog::Dialog, table::Table, table::TableData, table::TableHead, Page},
-    routes, AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS,
+    AppState, BUTTON_ERROR, BUTTON_PRIMARY, BUTTON_SUCCESS,
 };
 
 pub mod game;
@@ -34,9 +34,7 @@ async fn games(pool: &Pool<Postgres>) -> Markup {
                         // TODO: avoid clone
                         TableData::Checkbox("slugs", Some(game.slug.to_owned())),
                         TableData::Data(html! {
-                            a href=(routes::games::game::Path::new(game.slug)) class="hover:text-violet-500" {
-                                (game.name)
-                            }
+                            a href=(game::Path::new(game.slug)) class="hover:text-violet-500" { (game.name) }
                         }),
                     ]
                 })
