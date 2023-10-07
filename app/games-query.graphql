@@ -1,0 +1,9 @@
+query GamesQuery {
+  gameCollection {
+    edges {
+      node {
+        name
+      }
+    }
+  }
+}

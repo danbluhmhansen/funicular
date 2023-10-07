@@ -2,6 +2,7 @@
 
 use pgrx::prelude::*;
 
+mod base58;
 mod into_pgrx_arg;
 mod migrations;
 mod seed;

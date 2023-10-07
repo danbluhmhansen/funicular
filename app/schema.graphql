@@ -1,0 +1,2353 @@
+"""A high precision floating point value represented as a string"""
+scalar BigFloat
+
+"""
+Boolean expression comparing fields on type "BigFloat"
+"""
+input BigFloatFilter {
+  eq: BigFloat
+  gt: BigFloat
+  gte: BigFloat
+  in: [BigFloat!]
+  is: FilterIs
+  lt: BigFloat
+  lte: BigFloat
+  neq: BigFloat
+}
+
+"""An arbitrary size integer represented as a string"""
+scalar BigInt
+
+"""
+Boolean expression comparing fields on type "BigInt"
+"""
+input BigIntFilter {
+  eq: BigInt
+  gt: BigInt
+  gte: BigInt
+  in: [BigInt!]
+  is: FilterIs
+  lt: BigInt
+  lte: BigInt
+  neq: BigInt
+}
+
+"""
+Boolean expression comparing fields on type "Boolean"
+"""
+input BooleanFilter {
+  eq: Boolean
+  is: FilterIs
+}
+
+"""
+An opaque string using for tracking a position in results during pagination
+"""
+scalar Cursor
+
+"""A date wihout time information"""
+scalar Date
+
+"""
+Boolean expression comparing fields on type "Date"
+"""
+input DateFilter {
+  eq: Date
+  gt: Date
+  gte: Date
+  in: [Date!]
+  is: FilterIs
+  lt: Date
+  lte: Date
+  neq: Date
+}
+
+"""A date and time"""
+scalar Datetime
+
+"""
+Boolean expression comparing fields on type "Datetime"
+"""
+input DatetimeFilter {
+  eq: Datetime
+  gt: Datetime
+  gte: Datetime
+  in: [Datetime!]
+  is: FilterIs
+  lt: Datetime
+  lte: Datetime
+  neq: Datetime
+}
+
+enum FilterIs {
+  NULL
+  NOT_NULL
+}
+
+"""
+Boolean expression comparing fields on type "Float"
+"""
+input FloatFilter {
+  eq: Float
+  gt: Float
+  gte: Float
+  in: [Float!]
+  is: FilterIs
+  lt: Float
+  lte: Float
+  neq: Float
+}
+
+"""
+Boolean expression comparing fields on type "ID"
+"""
+input IDFilter {
+  eq: ID
+}
+
+"""
+Boolean expression comparing fields on type "Int"
+"""
+input IntFilter {
+  eq: Int
+  gt: Int
+  gte: Int
+  in: [Int!]
+  is: FilterIs
+  lt: Int
+  lte: Int
+  neq: Int
+}
+
+"""A Javascript Object Notation value serialized as a string"""
+scalar JSON
+
+"""The root type for creating and mutating data"""
+type Mutation {
+  """Deletes zero or more records from the `actor` collection"""
+  deleteFromactorCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: actorFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): actorDeleteResponse!
+
+  """Deletes zero or more records from the `actor_gear` collection"""
+  deleteFromactor_gearCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: actor_gearFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): actor_gearDeleteResponse!
+
+  """Deletes zero or more records from the `actor_kind` collection"""
+  deleteFromactor_kindCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: actor_kindFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): actor_kindDeleteResponse!
+
+  """Deletes zero or more records from the `actor_skill` collection"""
+  deleteFromactor_skillCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: actor_skillFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): actor_skillDeleteResponse!
+
+  """Deletes zero or more records from the `actor_trait` collection"""
+  deleteFromactor_traitCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: actor_traitFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): actor_traitDeleteResponse!
+
+  """Deletes zero or more records from the `game` collection"""
+  deleteFromgameCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: gameFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): gameDeleteResponse!
+
+  """Deletes zero or more records from the `gear` collection"""
+  deleteFromgearCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: gearFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): gearDeleteResponse!
+
+  """Deletes zero or more records from the `gear_kind` collection"""
+  deleteFromgear_kindCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: gear_kindFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): gear_kindDeleteResponse!
+
+  """Deletes zero or more records from the `gear_skill` collection"""
+  deleteFromgear_skillCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: gear_skillFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): gear_skillDeleteResponse!
+
+  """Deletes zero or more records from the `gear_trait` collection"""
+  deleteFromgear_traitCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: gear_traitFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): gear_traitDeleteResponse!
+
+  """Deletes zero or more records from the `rule_num` collection"""
+  deleteFromrule_numCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: rule_numFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): rule_numDeleteResponse!
+
+  """Deletes zero or more records from the `skill` collection"""
+  deleteFromskillCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: skillFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): skillDeleteResponse!
+
+  """Deletes zero or more records from the `trait` collection"""
+  deleteFromtraitCollection(
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: traitFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): traitDeleteResponse!
+  fun_seed: Opaque
+  gen_rand_uuid7: UUID
+  gen_uuid7(ts: Datetime): UUID
+
+  """Adds one or more `actor` records to the collection"""
+  insertIntoactorCollection(objects: [actorInsertInput!]!): actorInsertResponse
+
+  """Adds one or more `actor_gear` records to the collection"""
+  insertIntoactor_gearCollection(objects: [actor_gearInsertInput!]!): actor_gearInsertResponse
+
+  """Adds one or more `actor_kind` records to the collection"""
+  insertIntoactor_kindCollection(objects: [actor_kindInsertInput!]!): actor_kindInsertResponse
+
+  """Adds one or more `actor_skill` records to the collection"""
+  insertIntoactor_skillCollection(objects: [actor_skillInsertInput!]!): actor_skillInsertResponse
+
+  """Adds one or more `actor_trait` records to the collection"""
+  insertIntoactor_traitCollection(objects: [actor_traitInsertInput!]!): actor_traitInsertResponse
+
+  """Adds one or more `game` records to the collection"""
+  insertIntogameCollection(objects: [gameInsertInput!]!): gameInsertResponse
+
+  """Adds one or more `gear` records to the collection"""
+  insertIntogearCollection(objects: [gearInsertInput!]!): gearInsertResponse
+
+  """Adds one or more `gear_kind` records to the collection"""
+  insertIntogear_kindCollection(objects: [gear_kindInsertInput!]!): gear_kindInsertResponse
+
+  """Adds one or more `gear_skill` records to the collection"""
+  insertIntogear_skillCollection(objects: [gear_skillInsertInput!]!): gear_skillInsertResponse
+
+  """Adds one or more `gear_trait` records to the collection"""
+  insertIntogear_traitCollection(objects: [gear_traitInsertInput!]!): gear_traitInsertResponse
+
+  """Adds one or more `rule_num` records to the collection"""
+  insertIntorule_numCollection(objects: [rule_numInsertInput!]!): rule_numInsertResponse
+
+  """Adds one or more `skill` records to the collection"""
+  insertIntoskillCollection(objects: [skillInsertInput!]!): skillInsertResponse
+
+  """Adds one or more `trait` records to the collection"""
+  insertIntotraitCollection(objects: [traitInsertInput!]!): traitInsertResponse
+  migrations_up: Opaque
+
+  """Updates zero or more records in the `actor` collection"""
+  updateactorCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: actorUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: actorFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): actorUpdateResponse!
+
+  """Updates zero or more records in the `actor_gear` collection"""
+  updateactor_gearCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: actor_gearUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: actor_gearFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): actor_gearUpdateResponse!
+
+  """Updates zero or more records in the `actor_kind` collection"""
+  updateactor_kindCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: actor_kindUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: actor_kindFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): actor_kindUpdateResponse!
+
+  """Updates zero or more records in the `actor_skill` collection"""
+  updateactor_skillCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: actor_skillUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: actor_skillFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): actor_skillUpdateResponse!
+
+  """Updates zero or more records in the `actor_trait` collection"""
+  updateactor_traitCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: actor_traitUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: actor_traitFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): actor_traitUpdateResponse!
+
+  """Updates zero or more records in the `game` collection"""
+  updategameCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: gameUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: gameFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): gameUpdateResponse!
+
+  """Updates zero or more records in the `gear` collection"""
+  updategearCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: gearUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: gearFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): gearUpdateResponse!
+
+  """Updates zero or more records in the `gear_kind` collection"""
+  updategear_kindCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: gear_kindUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: gear_kindFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): gear_kindUpdateResponse!
+
+  """Updates zero or more records in the `gear_skill` collection"""
+  updategear_skillCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: gear_skillUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: gear_skillFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): gear_skillUpdateResponse!
+
+  """Updates zero or more records in the `gear_trait` collection"""
+  updategear_traitCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: gear_traitUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: gear_traitFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): gear_traitUpdateResponse!
+
+  """Updates zero or more records in the `rule_num` collection"""
+  updaterule_numCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: rule_numUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: rule_numFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): rule_numUpdateResponse!
+
+  """Updates zero or more records in the `skill` collection"""
+  updateskillCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: skillUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: skillFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): skillUpdateResponse!
+
+  """Updates zero or more records in the `trait` collection"""
+  updatetraitCollection(
+    """
+    Fields that are set will be updated for all records matching the `filter`
+    """
+    set: traitUpdateInput!
+
+    """Restricts the mutation's impact to records matching the criteria"""
+    filter: traitFilter
+
+    """
+    The maximum number of records in the collection permitted to be affected
+    """
+    atMost: Int! = 1
+  ): traitUpdateResponse!
+}
+
+interface Node {
+  """Retrieves a record by `ID`"""
+  nodeId: ID!
+}
+
+"""Any type not handled by the type system"""
+scalar Opaque
+
+"""
+Boolean expression comparing fields on type "Opaque"
+"""
+input OpaqueFilter {
+  eq: Opaque
+  is: FilterIs
+}
+
+"""Defines a per-field sorting order"""
+enum OrderByDirection {
+  """Ascending order, nulls first"""
+  AscNullsFirst
+
+  """Ascending order, nulls last"""
+  AscNullsLast
+
+  """Descending order, nulls first"""
+  DescNullsFirst
+
+  """Descending order, nulls last"""
+  DescNullsLast
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
+"""The root type for querying data"""
+type Query {
+  """A pagable collection of type `actor`"""
+  actorCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: actorFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [actorOrderBy!]
+  ): actorConnection
+
+  """A pagable collection of type `actor_gear`"""
+  actor_gearCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: actor_gearFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [actor_gearOrderBy!]
+  ): actor_gearConnection
+
+  """A pagable collection of type `actor_kind`"""
+  actor_kindCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: actor_kindFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [actor_kindOrderBy!]
+  ): actor_kindConnection
+
+  """A pagable collection of type `actor_skill`"""
+  actor_skillCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: actor_skillFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [actor_skillOrderBy!]
+  ): actor_skillConnection
+
+  """A pagable collection of type `actor_trait`"""
+  actor_traitCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: actor_traitFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [actor_traitOrderBy!]
+  ): actor_traitConnection
+
+  """A pagable collection of type `game`"""
+  gameCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: gameFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [gameOrderBy!]
+  ): gameConnection
+
+  """A pagable collection of type `gear`"""
+  gearCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: gearFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [gearOrderBy!]
+  ): gearConnection
+
+  """A pagable collection of type `gear_kind`"""
+  gear_kindCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: gear_kindFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [gear_kindOrderBy!]
+  ): gear_kindConnection
+
+  """A pagable collection of type `gear_skill`"""
+  gear_skillCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: gear_skillFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [gear_skillOrderBy!]
+  ): gear_skillConnection
+
+  """A pagable collection of type `gear_trait`"""
+  gear_traitCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: gear_traitFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [gear_traitOrderBy!]
+  ): gear_traitConnection
+
+  """Retrieve a record by its `ID`"""
+  node(
+    """The record's `ID`"""
+    nodeId: ID!
+  ): Node
+
+  """A pagable collection of type `rule_num`"""
+  rule_numCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: rule_numFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [rule_numOrderBy!]
+  ): rule_numConnection
+
+  """A pagable collection of type `skill`"""
+  skillCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: skillFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [skillOrderBy!]
+  ): skillConnection
+  slugify(input: String): String
+
+  """A pagable collection of type `trait`"""
+  traitCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: traitFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [traitOrderBy!]
+  ): traitConnection
+  uuid7_time(uuid: UUID): Datetime
+}
+
+"""
+Boolean expression comparing fields on type "String"
+"""
+input StringFilter {
+  eq: String
+  gt: String
+  gte: String
+  ilike: String
+  in: [String!]
+  iregex: String
+  is: FilterIs
+  like: String
+  lt: String
+  lte: String
+  neq: String
+  regex: String
+  startsWith: String
+}
+
+"""A time without date information"""
+scalar Time
+
+"""
+Boolean expression comparing fields on type "Time"
+"""
+input TimeFilter {
+  eq: Time
+  gt: Time
+  gte: Time
+  in: [Time!]
+  is: FilterIs
+  lt: Time
+  lte: Time
+  neq: Time
+}
+
+"""A universally unique identifier"""
+scalar UUID
+
+"""
+Boolean expression comparing fields on type "UUID"
+"""
+input UUIDFilter {
+  eq: UUID
+  in: [UUID!]
+  is: FilterIs
+  neq: UUID
+}
+
+type actor implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: UUID!
+  kind_id: UUID!
+  name: String!
+  slug: String!
+  created: Datetime
+  description: String
+  actor_kind: actor_kind!
+  actor_gearCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: actor_gearFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [actor_gearOrderBy!]
+  ): actor_gearConnection
+  actor_traitCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: actor_traitFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [actor_traitOrderBy!]
+  ): actor_traitConnection
+}
+
+type actorConnection {
+  edges: [actorEdge!]!
+  pageInfo: PageInfo!
+}
+
+type actorDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [actor!]!
+}
+
+type actorEdge {
+  cursor: String!
+  node: actor!
+}
+
+input actorFilter {
+  id: UUIDFilter
+  kind_id: UUIDFilter
+  name: StringFilter
+  slug: StringFilter
+  created: DatetimeFilter
+  description: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [actorFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [actorFilter!]
+
+  """Negates a filter"""
+  not: actorFilter
+}
+
+input actorInsertInput {
+  id: UUID
+  kind_id: UUID
+  name: String
+  description: String
+}
+
+type actorInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [actor!]!
+}
+
+input actorOrderBy {
+  id: OrderByDirection
+  kind_id: OrderByDirection
+  name: OrderByDirection
+  slug: OrderByDirection
+  created: OrderByDirection
+  description: OrderByDirection
+}
+
+input actorUpdateInput {
+  id: UUID
+  kind_id: UUID
+  name: String
+  description: String
+}
+
+type actorUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [actor!]!
+}
+
+type actor_gear implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  actor_id: UUID!
+  gear_id: UUID!
+  amount: Int
+  actor: actor!
+  gear: gear!
+}
+
+type actor_gearConnection {
+  edges: [actor_gearEdge!]!
+  pageInfo: PageInfo!
+}
+
+type actor_gearDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [actor_gear!]!
+}
+
+type actor_gearEdge {
+  cursor: String!
+  node: actor_gear!
+}
+
+input actor_gearFilter {
+  actor_id: UUIDFilter
+  gear_id: UUIDFilter
+  amount: IntFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [actor_gearFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [actor_gearFilter!]
+
+  """Negates a filter"""
+  not: actor_gearFilter
+}
+
+input actor_gearInsertInput {
+  actor_id: UUID
+  gear_id: UUID
+  amount: Int
+}
+
+type actor_gearInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [actor_gear!]!
+}
+
+input actor_gearOrderBy {
+  actor_id: OrderByDirection
+  gear_id: OrderByDirection
+  amount: OrderByDirection
+}
+
+input actor_gearUpdateInput {
+  actor_id: UUID
+  gear_id: UUID
+  amount: Int
+}
+
+type actor_gearUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [actor_gear!]!
+}
+
+type actor_kind implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: UUID!
+  game_id: UUID!
+  name: String!
+  slug: String!
+  created: Datetime
+  description: String
+  game: game!
+  actorCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: actorFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [actorOrderBy!]
+  ): actorConnection
+  actor_skillCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: actor_skillFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [actor_skillOrderBy!]
+  ): actor_skillConnection
+}
+
+type actor_kindConnection {
+  edges: [actor_kindEdge!]!
+  pageInfo: PageInfo!
+}
+
+type actor_kindDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [actor_kind!]!
+}
+
+type actor_kindEdge {
+  cursor: String!
+  node: actor_kind!
+}
+
+input actor_kindFilter {
+  id: UUIDFilter
+  game_id: UUIDFilter
+  name: StringFilter
+  slug: StringFilter
+  created: DatetimeFilter
+  description: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [actor_kindFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [actor_kindFilter!]
+
+  """Negates a filter"""
+  not: actor_kindFilter
+}
+
+input actor_kindInsertInput {
+  id: UUID
+  game_id: UUID
+  name: String
+  description: String
+}
+
+type actor_kindInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [actor_kind!]!
+}
+
+input actor_kindOrderBy {
+  id: OrderByDirection
+  game_id: OrderByDirection
+  name: OrderByDirection
+  slug: OrderByDirection
+  created: OrderByDirection
+  description: OrderByDirection
+}
+
+input actor_kindUpdateInput {
+  id: UUID
+  game_id: UUID
+  name: String
+  description: String
+}
+
+type actor_kindUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [actor_kind!]!
+}
+
+type actor_skill implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  kind_id: UUID!
+  skill_id: UUID!
+  actor_kind: actor_kind!
+  skill: skill!
+}
+
+type actor_skillConnection {
+  edges: [actor_skillEdge!]!
+  pageInfo: PageInfo!
+}
+
+type actor_skillDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [actor_skill!]!
+}
+
+type actor_skillEdge {
+  cursor: String!
+  node: actor_skill!
+}
+
+input actor_skillFilter {
+  kind_id: UUIDFilter
+  skill_id: UUIDFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [actor_skillFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [actor_skillFilter!]
+
+  """Negates a filter"""
+  not: actor_skillFilter
+}
+
+input actor_skillInsertInput {
+  kind_id: UUID
+  skill_id: UUID
+}
+
+type actor_skillInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [actor_skill!]!
+}
+
+input actor_skillOrderBy {
+  kind_id: OrderByDirection
+  skill_id: OrderByDirection
+}
+
+input actor_skillUpdateInput {
+  kind_id: UUID
+  skill_id: UUID
+}
+
+type actor_skillUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [actor_skill!]!
+}
+
+type actor_trait implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  actor_id: UUID!
+  trait_id: UUID!
+  amount: Int
+  actor: actor!
+  trait: trait!
+}
+
+type actor_traitConnection {
+  edges: [actor_traitEdge!]!
+  pageInfo: PageInfo!
+}
+
+type actor_traitDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [actor_trait!]!
+}
+
+type actor_traitEdge {
+  cursor: String!
+  node: actor_trait!
+}
+
+input actor_traitFilter {
+  actor_id: UUIDFilter
+  trait_id: UUIDFilter
+  amount: IntFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [actor_traitFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [actor_traitFilter!]
+
+  """Negates a filter"""
+  not: actor_traitFilter
+}
+
+input actor_traitInsertInput {
+  actor_id: UUID
+  trait_id: UUID
+  amount: Int
+}
+
+type actor_traitInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [actor_trait!]!
+}
+
+input actor_traitOrderBy {
+  actor_id: OrderByDirection
+  trait_id: OrderByDirection
+  amount: OrderByDirection
+}
+
+input actor_traitUpdateInput {
+  actor_id: UUID
+  trait_id: UUID
+  amount: Int
+}
+
+type actor_traitUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [actor_trait!]!
+}
+
+type game implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: UUID!
+  name: String!
+  slug: String!
+  created: Datetime
+  description: String
+  actor_kindCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: actor_kindFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [actor_kindOrderBy!]
+  ): actor_kindConnection
+  gear_kindCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: gear_kindFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [gear_kindOrderBy!]
+  ): gear_kindConnection
+  skillCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: skillFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [skillOrderBy!]
+  ): skillConnection
+  traitCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: traitFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [traitOrderBy!]
+  ): traitConnection
+}
+
+type gameConnection {
+  edges: [gameEdge!]!
+  pageInfo: PageInfo!
+}
+
+type gameDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [game!]!
+}
+
+type gameEdge {
+  cursor: String!
+  node: game!
+}
+
+input gameFilter {
+  id: UUIDFilter
+  name: StringFilter
+  slug: StringFilter
+  created: DatetimeFilter
+  description: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [gameFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [gameFilter!]
+
+  """Negates a filter"""
+  not: gameFilter
+}
+
+input gameInsertInput {
+  id: UUID
+  name: String
+  description: String
+}
+
+type gameInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [game!]!
+}
+
+input gameOrderBy {
+  id: OrderByDirection
+  name: OrderByDirection
+  slug: OrderByDirection
+  created: OrderByDirection
+  description: OrderByDirection
+}
+
+input gameUpdateInput {
+  id: UUID
+  name: String
+  description: String
+}
+
+type gameUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [game!]!
+}
+
+type gear implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: UUID!
+  kind_id: UUID!
+  name: String!
+  slug: String!
+  created: Datetime
+  description: String
+  gear_kind: gear_kind!
+  actor_gearCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: actor_gearFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [actor_gearOrderBy!]
+  ): actor_gearConnection
+  gear_traitCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: gear_traitFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [gear_traitOrderBy!]
+  ): gear_traitConnection
+}
+
+type gearConnection {
+  edges: [gearEdge!]!
+  pageInfo: PageInfo!
+}
+
+type gearDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [gear!]!
+}
+
+type gearEdge {
+  cursor: String!
+  node: gear!
+}
+
+input gearFilter {
+  id: UUIDFilter
+  kind_id: UUIDFilter
+  name: StringFilter
+  slug: StringFilter
+  created: DatetimeFilter
+  description: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [gearFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [gearFilter!]
+
+  """Negates a filter"""
+  not: gearFilter
+}
+
+input gearInsertInput {
+  id: UUID
+  kind_id: UUID
+  name: String
+  description: String
+}
+
+type gearInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [gear!]!
+}
+
+input gearOrderBy {
+  id: OrderByDirection
+  kind_id: OrderByDirection
+  name: OrderByDirection
+  slug: OrderByDirection
+  created: OrderByDirection
+  description: OrderByDirection
+}
+
+input gearUpdateInput {
+  id: UUID
+  kind_id: UUID
+  name: String
+  description: String
+}
+
+type gearUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [gear!]!
+}
+
+type gear_kind implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: UUID!
+  game_id: UUID!
+  name: String!
+  slug: String!
+  created: Datetime
+  description: String
+  game: game!
+  gearCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: gearFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [gearOrderBy!]
+  ): gearConnection
+  gear_skillCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: gear_skillFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [gear_skillOrderBy!]
+  ): gear_skillConnection
+}
+
+type gear_kindConnection {
+  edges: [gear_kindEdge!]!
+  pageInfo: PageInfo!
+}
+
+type gear_kindDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [gear_kind!]!
+}
+
+type gear_kindEdge {
+  cursor: String!
+  node: gear_kind!
+}
+
+input gear_kindFilter {
+  id: UUIDFilter
+  game_id: UUIDFilter
+  name: StringFilter
+  slug: StringFilter
+  created: DatetimeFilter
+  description: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [gear_kindFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [gear_kindFilter!]
+
+  """Negates a filter"""
+  not: gear_kindFilter
+}
+
+input gear_kindInsertInput {
+  id: UUID
+  game_id: UUID
+  name: String
+  description: String
+}
+
+type gear_kindInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [gear_kind!]!
+}
+
+input gear_kindOrderBy {
+  id: OrderByDirection
+  game_id: OrderByDirection
+  name: OrderByDirection
+  slug: OrderByDirection
+  created: OrderByDirection
+  description: OrderByDirection
+}
+
+input gear_kindUpdateInput {
+  id: UUID
+  game_id: UUID
+  name: String
+  description: String
+}
+
+type gear_kindUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [gear_kind!]!
+}
+
+type gear_skill implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  kind_id: UUID!
+  skill_id: UUID!
+  gear_kind: gear_kind!
+  skill: skill!
+}
+
+type gear_skillConnection {
+  edges: [gear_skillEdge!]!
+  pageInfo: PageInfo!
+}
+
+type gear_skillDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [gear_skill!]!
+}
+
+type gear_skillEdge {
+  cursor: String!
+  node: gear_skill!
+}
+
+input gear_skillFilter {
+  kind_id: UUIDFilter
+  skill_id: UUIDFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [gear_skillFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [gear_skillFilter!]
+
+  """Negates a filter"""
+  not: gear_skillFilter
+}
+
+input gear_skillInsertInput {
+  kind_id: UUID
+  skill_id: UUID
+}
+
+type gear_skillInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [gear_skill!]!
+}
+
+input gear_skillOrderBy {
+  kind_id: OrderByDirection
+  skill_id: OrderByDirection
+}
+
+input gear_skillUpdateInput {
+  kind_id: UUID
+  skill_id: UUID
+}
+
+type gear_skillUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [gear_skill!]!
+}
+
+type gear_trait implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  gear_id: UUID!
+  trait_id: UUID!
+  amount: Int
+  gear: gear!
+  trait: trait!
+}
+
+type gear_traitConnection {
+  edges: [gear_traitEdge!]!
+  pageInfo: PageInfo!
+}
+
+type gear_traitDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [gear_trait!]!
+}
+
+type gear_traitEdge {
+  cursor: String!
+  node: gear_trait!
+}
+
+input gear_traitFilter {
+  gear_id: UUIDFilter
+  trait_id: UUIDFilter
+  amount: IntFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [gear_traitFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [gear_traitFilter!]
+
+  """Negates a filter"""
+  not: gear_traitFilter
+}
+
+input gear_traitInsertInput {
+  gear_id: UUID
+  trait_id: UUID
+  amount: Int
+}
+
+type gear_traitInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [gear_trait!]!
+}
+
+input gear_traitOrderBy {
+  gear_id: OrderByDirection
+  trait_id: OrderByDirection
+  amount: OrderByDirection
+}
+
+input gear_traitUpdateInput {
+  gear_id: UUID
+  trait_id: UUID
+  amount: Int
+}
+
+type gear_traitUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [gear_trait!]!
+}
+
+type rule_num implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  skill_id: UUID!
+  trait_id: UUID!
+  value: BigFloat!
+  skill: skill!
+  trait: trait!
+}
+
+type rule_numConnection {
+  edges: [rule_numEdge!]!
+  pageInfo: PageInfo!
+}
+
+type rule_numDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [rule_num!]!
+}
+
+type rule_numEdge {
+  cursor: String!
+  node: rule_num!
+}
+
+input rule_numFilter {
+  skill_id: UUIDFilter
+  trait_id: UUIDFilter
+  value: BigFloatFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [rule_numFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [rule_numFilter!]
+
+  """Negates a filter"""
+  not: rule_numFilter
+}
+
+input rule_numInsertInput {
+  skill_id: UUID
+  trait_id: UUID
+  value: BigFloat
+}
+
+type rule_numInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [rule_num!]!
+}
+
+input rule_numOrderBy {
+  skill_id: OrderByDirection
+  trait_id: OrderByDirection
+  value: OrderByDirection
+}
+
+input rule_numUpdateInput {
+  skill_id: UUID
+  trait_id: UUID
+  value: BigFloat
+}
+
+type rule_numUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [rule_num!]!
+}
+
+type skill implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: UUID!
+  game_id: UUID!
+  name: String!
+  slug: String!
+  created: Datetime
+  description: String
+  game: game!
+  actor_skillCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: actor_skillFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [actor_skillOrderBy!]
+  ): actor_skillConnection
+  gear_skillCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: gear_skillFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [gear_skillOrderBy!]
+  ): gear_skillConnection
+  rule_numCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: rule_numFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [rule_numOrderBy!]
+  ): rule_numConnection
+}
+
+type skillConnection {
+  edges: [skillEdge!]!
+  pageInfo: PageInfo!
+}
+
+type skillDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [skill!]!
+}
+
+type skillEdge {
+  cursor: String!
+  node: skill!
+}
+
+input skillFilter {
+  id: UUIDFilter
+  game_id: UUIDFilter
+  name: StringFilter
+  slug: StringFilter
+  created: DatetimeFilter
+  description: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [skillFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [skillFilter!]
+
+  """Negates a filter"""
+  not: skillFilter
+}
+
+input skillInsertInput {
+  id: UUID
+  game_id: UUID
+  name: String
+  description: String
+}
+
+type skillInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [skill!]!
+}
+
+input skillOrderBy {
+  id: OrderByDirection
+  game_id: OrderByDirection
+  name: OrderByDirection
+  slug: OrderByDirection
+  created: OrderByDirection
+  description: OrderByDirection
+}
+
+input skillUpdateInput {
+  id: UUID
+  game_id: UUID
+  name: String
+  description: String
+}
+
+type skillUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [skill!]!
+}
+
+type trait implements Node {
+  """Globally Unique Record Identifier"""
+  nodeId: ID!
+  id: UUID!
+  game_id: UUID!
+  name: String!
+  slug: String!
+  created: Datetime
+  description: String
+  game: game!
+  actor_traitCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: actor_traitFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [actor_traitOrderBy!]
+  ): actor_traitConnection
+  gear_traitCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: gear_traitFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [gear_traitOrderBy!]
+  ): gear_traitConnection
+  rule_numCollection(
+    """Query the first `n` records in the collection"""
+    first: Int
+
+    """Query the last `n` records in the collection"""
+    last: Int
+
+    """Query values in the collection before the provided cursor"""
+    before: Cursor
+
+    """Query values in the collection after the provided cursor"""
+    after: Cursor
+
+    """Filters to apply to the results set when querying from the collection"""
+    filter: rule_numFilter
+
+    """Sort order to apply to the collection"""
+    orderBy: [rule_numOrderBy!]
+  ): rule_numConnection
+}
+
+type traitConnection {
+  edges: [traitEdge!]!
+  pageInfo: PageInfo!
+}
+
+type traitDeleteResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [trait!]!
+}
+
+type traitEdge {
+  cursor: String!
+  node: trait!
+}
+
+input traitFilter {
+  id: UUIDFilter
+  game_id: UUIDFilter
+  name: StringFilter
+  slug: StringFilter
+  created: DatetimeFilter
+  description: StringFilter
+  nodeId: IDFilter
+
+  """
+  Returns true only if all its inner filters are true, otherwise returns false
+  """
+  and: [traitFilter!]
+
+  """
+  Returns true if at least one of its inner filters is true, otherwise returns false
+  """
+  or: [traitFilter!]
+
+  """Negates a filter"""
+  not: traitFilter
+}
+
+input traitInsertInput {
+  id: UUID
+  game_id: UUID
+  name: String
+  description: String
+}
+
+type traitInsertResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [trait!]!
+}
+
+input traitOrderBy {
+  id: OrderByDirection
+  game_id: OrderByDirection
+  name: OrderByDirection
+  slug: OrderByDirection
+  created: OrderByDirection
+  description: OrderByDirection
+}
+
+input traitUpdateInput {
+  id: UUID
+  game_id: UUID
+  name: String
+  description: String
+}
+
+type traitUpdateResponse {
+  """Count of the records impacted by the mutation"""
+  affectedCount: Int!
+
+  """Array of records impacted by the mutation"""
+  records: [trait!]!
+}
