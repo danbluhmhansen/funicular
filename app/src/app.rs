@@ -67,13 +67,13 @@ fn Index() -> impl IntoView {
 #[derive(GraphQLQuery)]
 #[graphql(
     schema_path = "schema.graphql",
-    query_path = "games-query.graphql",
-    response_derives = "Debug,Serialize"
+    query_path = "documents/games-query.graphql",
+    response_derives = "Serialize"
 )]
 pub struct GamesQuery;
 
 #[server]
-pub async fn foo() -> Result<Vec<games_query::GamesQueryGameCollectionEdges>, ServerFnError> {
+pub async fn games_get() -> Result<Vec<games_query::GamesQueryGameCollectionEdges>, ServerFnError> {
     let mut headers = reqwest::header::HeaderMap::new();
     headers.insert("Content-Profile", reqwest::header::HeaderValue::from_static("graphql"));
 
@@ -84,14 +84,15 @@ pub async fn foo() -> Result<Vec<games_query::GamesQueryGameCollectionEdges>, Se
     )
     .await?;
 
-    println!("{res:#?}");
-
-    Ok(res.data.unwrap().game_collection.unwrap().edges)
+    Ok(res.data.map_or(vec![], |data| {
+        data.game_collection
+            .map_or(vec![], |game_collection| game_collection.edges)
+    }))
 }
 
 #[component]
 fn Games() -> impl IntoView {
-    let games = create_resource(|| (), |_| async { foo().await });
+    let games = create_resource(|| (), |_| async { games_get().await });
     let games_view = move || {
         games.and_then(|games| {
             games

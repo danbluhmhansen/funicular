@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "unocss --watch"
+    "dev": "bunx unocss --watch"
   },
   "dependencies": {},
   "devDependencies": {
