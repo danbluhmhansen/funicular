@@ -5,8 +5,8 @@ import Counter from "../islands/Counter.tsx";
 export default defineRoute(() => {
   const count = signal(3);
   return (
-    <div class="px-4 py-8 mx-auto">
-      <div class="max-w-screen-md mx-auto flex flex-col items-center justify-center">
+    <div class="py-8 px-4 mx-auto">
+      <div class="flex flex-col justify-center items-center mx-auto max-w-screen-md">
         <h1 class="text-4xl font-bold">Welcome to Fresh</h1>
         <p class="my-4">
           Try updating this message in the
