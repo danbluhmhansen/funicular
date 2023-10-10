@@ -6,10 +6,10 @@ export default defineLayout((_, { Component }) => {
       <nav class="py-4">
         <ul class="flex flex-col sm:flex-row items-center justify-center gap-4">
           <li>
-            <a href="/" class="hover:text-violet">Home</a>
+            <a href="/" class="hover:text-violet data-[current]:text-violet">Home</a>
           </li>
           <li>
-            <a href="/games" class="hover:text-violet">Games</a>
+            <a href="/games" class="hover:text-violet data-[current]:text-violet">Games</a>
           </li>
         </ul>
       </nav>
