@@ -1,5 +1,5 @@
 import { defineRoute, Handlers } from "$fresh/server.ts";
-import { Button } from "../components/Button.tsx";
+import { Button } from "../styles/button.ts";
 
 interface Game {
   name: string;
@@ -45,13 +45,18 @@ export default defineRoute(async () => {
           <div class="flex flex-row gap-2 justify-center p-3 bg-white dark:bg-slate-800">
             <a
               href="#add"
-              class="inline-block py-2 px-4 text-sm font-medium text-center text-violet-600 bg-transparent rounded border border-violet-600 dark:text-violet-300 dark:border-violet-300 hover:text-white hover:bg-violet-500 focus:ring-4 focus:ring-violet-400 focus:outline-none dark:hover:bg-violet-400 dark:focus:ring-violet-500"
+              class={Button()}
             >
               <div class="w-4 h-4 i-tabler-plus" />
             </a>
-            <Button type="submit" name="submit" value="remove">
+            <button
+              type="submit"
+              name="submit"
+              value="remove"
+              class={Button("red")}
+            >
               <div class="w-4 h-4 i-tabler-trash" />
-            </Button>
+            </button>
           </div>
           <table class="w-full">
             <thead class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700">
@@ -109,9 +114,9 @@ export default defineRoute(async () => {
               class="bg-transparent rounded invalid:border-red"
             />
             <div class="flex justify-between">
-              <Button type="submit" name="submit" value="add">
+              <button type="submit" name="submit" value="add" class={Button()}>
                 <div class="w-4 h-4 i-tabler-check" />
-              </Button>
+              </button>
             </div>
           </form>
         </div>
