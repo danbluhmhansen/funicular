@@ -70,7 +70,7 @@ export default defineRoute(async () => {
             <thead class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700">
               <tr>
                 <th class="p-3 text-center">
-                  <Checkbox checked={checked} />
+                  <Checkbox checked={checked} class="bg-transparent" />
                 </th>
                 <th class="p-3 text-center">Name</th>
               </tr>
@@ -83,7 +83,8 @@ export default defineRoute(async () => {
                       name="slug"
                       value={game.slug}
                       checked={checked}
-                      readonly
+                      noSet
+                      class="bg-transparent"
                     />
                   </td>
                   <td class="p-3 text-center">
