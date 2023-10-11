@@ -1,5 +1,7 @@
 import { defineRoute, Handlers } from "$fresh/server.ts";
+import { signal } from "@preact/signals";
 import { Button } from "../styles/button.ts";
+import Checkbox from "../islands/checkbox.tsx";
 
 interface Game {
   name: string;
@@ -9,8 +11,10 @@ interface Game {
 export const handler: Handlers = {
   async POST(req, { render }) {
     const form = await req.formData();
+
     const submit = form.get("submit")?.toString();
     form.delete("submit");
+
     switch (submit) {
       case "add": {
         await fetch("http://localhost:3000/game", {
@@ -30,6 +34,7 @@ export const handler: Handlers = {
         break;
       }
     }
+
     return await render();
   },
 };
@@ -37,6 +42,9 @@ export const handler: Handlers = {
 export default defineRoute(async () => {
   const response = await fetch("http://localhost:3000/game?select=name,slug");
   const games: Game[] = await response.json();
+
+  const checked = signal(false);
+
   return (
     <>
       <h1 class="text-xl font-bold">Games</h1>
@@ -62,8 +70,7 @@ export default defineRoute(async () => {
             <thead class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700">
               <tr>
                 <th class="p-3 text-center">
-                  {/* TODO: select all */}
-                  <input type="checkbox" class="bg-transparent" />
+                  <Checkbox checked={checked} />
                 </th>
                 <th class="p-3 text-center">Name</th>
               </tr>
@@ -72,11 +79,11 @@ export default defineRoute(async () => {
               {games.map((game) => (
                 <tr class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700">
                   <td class="p-3 text-center">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       name="slug"
                       value={game.slug}
-                      class="bg-transparent"
+                      checked={checked}
+                      readonly
                     />
                   </td>
                   <td class="p-3 text-center">

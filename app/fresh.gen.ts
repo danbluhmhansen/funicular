@@ -9,7 +9,8 @@ import * as $3 from "./routes/_layout.tsx";
 import * as $4 from "./routes/games.tsx";
 import * as $5 from "./routes/games/[gameSlug].tsx";
 import * as $6 from "./routes/index.tsx";
-import * as $$0 from "./islands/Counter.tsx";
+import * as $$0 from "./islands/checkbox.tsx";
+import * as $$1 from "./islands/counter.tsx";
 
 const manifest = {
   routes: {
@@ -22,7 +23,8 @@ const manifest = {
     "./routes/index.tsx": $6,
   },
   islands: {
-    "./islands/Counter.tsx": $$0,
+    "./islands/checkbox.tsx": $$0,
+    "./islands/counter.tsx": $$1,
   },
   baseUrl: import.meta.url,
 };

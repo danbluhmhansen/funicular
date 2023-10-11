@@ -1,6 +1,6 @@
 import { defineRoute } from "$fresh/server.ts";
 import { signal } from "@preact/signals";
-import Counter from "../islands/Counter.tsx";
+import Counter from "../islands/counter.tsx";
 
 export default defineRoute(() => {
   const count = signal(3);
