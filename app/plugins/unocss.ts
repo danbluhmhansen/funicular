@@ -1,7 +1,7 @@
 import {
   createGenerator,
   type UserConfig,
-} from "https://esm.sh/@unocss/core@0.55.0";
+} from "https://esm.sh/@unocss/core@0.56.5";
 import { Plugin } from "$fresh/server.ts";
 
 export default function unocss(config: UserConfig): Plugin {
