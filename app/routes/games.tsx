@@ -51,6 +51,7 @@ export default defineRoute(async () => {
   return (
     <>
       <h1 class="text-xl font-bold">Games</h1>
+
       <div class="overflow-x-auto relative rounded shadow-md">
         <form method="post">
           <div class="flex flex-row gap-2 justify-center p-3 bg-white dark:bg-slate-800">
@@ -101,6 +102,7 @@ export default defineRoute(async () => {
           </table>
         </form>
       </div>
+
       <dialog
         id="add"
         class="hidden inset-0 z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm"
