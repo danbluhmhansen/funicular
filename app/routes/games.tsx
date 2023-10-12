@@ -1,7 +1,8 @@
 import { defineRoute, Handlers } from "$fresh/server.ts";
 import { signal } from "@preact/signals";
-import { Button } from "../styles/button.ts";
-import Checkbox from "../islands/checkbox.tsx";
+import { SERVER_URL } from "~utils/env.ts";
+import { Button } from "~styles/button.ts";
+import Checkbox from "~islands/checkbox.tsx";
 
 interface Game {
   name: string;
@@ -17,7 +18,7 @@ export const handler: Handlers = {
 
     switch (submit) {
       case "add": {
-        await fetch("http://localhost:3000/game", {
+        await fetch(`${SERVER_URL}/game`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(Object.fromEntries(form)),
@@ -28,7 +29,7 @@ export const handler: Handlers = {
         const slugs = form.getAll("slug").map((entry) => entry.toString()).join(
           ",",
         );
-        await fetch(`http://localhost:3000/game?slug=in.(${slugs})`, {
+        await fetch(`${SERVER_URL}/game?slug=in.(${slugs})`, {
           method: "DELETE",
         });
         break;
@@ -40,7 +41,9 @@ export const handler: Handlers = {
 };
 
 export default defineRoute(async () => {
-  const response = await fetch("http://localhost:3000/game?select=name,slug");
+  const response = await fetch(
+    `${SERVER_URL}/game?select=name,slug`,
+  );
   const games: Game[] = await response.json();
 
   const checked = signal(false);

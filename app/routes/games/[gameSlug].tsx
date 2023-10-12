@@ -1,4 +1,5 @@
 import { defineRoute } from "$fresh/server.ts";
+import { SERVER_URL } from "~utils/env.ts";
 
 interface Game {
   name: string;
@@ -7,7 +8,7 @@ interface Game {
 
 export default defineRoute(async (_, { params: { gameSlug } }) => {
   const response = await fetch(
-    `http://localhost:3000/game?slug=eq.${gameSlug}&select=name,slug`,
+    `${SERVER_URL}/game?slug=eq.${gameSlug}&select=name,slug`,
     { headers: { Accept: "application/vnd.pgrst.object+json" } },
   );
   const game: Game = await response.json();

@@ -9,6 +9,11 @@
   },
   "lint": { "rules": { "tags": ["fresh", "recommended"] } },
   "imports": {
+    "~components/": "./components/",
+    "~islands/": "./islands/",
+    "~routes/": "./routes/",
+    "~styles/": "./styles/",
+    "~utils/": "./utils/",
     "$fresh/": "https://deno.land/x/fresh@1.5.1/",
     "preact": "https://esm.sh/preact@10.18.1",
     "preact/": "https://esm.sh/preact@10.18.1/",

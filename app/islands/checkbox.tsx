@@ -13,7 +13,8 @@ export default function Checkbox(props: CheckboxProps) {
       ref={ref}
       type="checkbox"
       onClick={() => {
-        if (typeof checked === "object" && !noSet) checked.value = ref.current.checked;
+        if (typeof checked === "object" && !noSet) {checked.value =
+            ref.current.checked;}
       }}
     />
   );
