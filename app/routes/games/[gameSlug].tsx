@@ -55,9 +55,12 @@ export const handler: Handlers = {
         const slugs = form.getAll("slug").map((entry) => entry.toString()).join(
           ",",
         );
-        await fetch(`${SERVER_URL}/actor_kind?slug=in.(${slugs})`, {
-          method: "DELETE",
-        });
+        await fetch(
+          `${SERVER_URL}/actor_kind?game.slug=eq.${gameSlug}&slug=in.(${slugs})&select=game!inner()`,
+          {
+            method: "DELETE",
+          },
+        );
         break;
       }
     }
@@ -68,7 +71,7 @@ export const handler: Handlers = {
 
 export default defineRoute(async (_, { params: { gameSlug } }) => {
   const resGame = await fetch(
-    `${SERVER_URL}/game?slug=eq.${gameSlug}&select=id,name,slug,description`,
+    `${SERVER_URL}/game?slug=eq.${gameSlug}&select=id,name,description`,
     { headers: { Accept: "application/vnd.pgrst.object+json" } },
   );
   const game: Game = await resGame.json();
