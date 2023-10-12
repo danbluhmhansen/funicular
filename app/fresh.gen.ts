@@ -9,7 +9,8 @@ import * as $3 from "./routes/_layout.tsx";
 import * as $4 from "./routes/games.tsx";
 import * as $5 from "./routes/games/[gameSlug].tsx";
 import * as $6 from "./routes/games/[gameSlug]/actors/[actorKindSlug].tsx";
-import * as $7 from "./routes/index.tsx";
+import * as $7 from "./routes/games/[gameSlug]/actors/[actorKindSlug]/[actorSlug].tsx";
+import * as $8 from "./routes/index.tsx";
 import * as $$0 from "./islands/checkbox.tsx";
 import * as $$1 from "./islands/counter.tsx";
 
@@ -22,7 +23,8 @@ const manifest = {
     "./routes/games.tsx": $4,
     "./routes/games/[gameSlug].tsx": $5,
     "./routes/games/[gameSlug]/actors/[actorKindSlug].tsx": $6,
-    "./routes/index.tsx": $7,
+    "./routes/games/[gameSlug]/actors/[actorKindSlug]/[actorSlug].tsx": $7,
+    "./routes/index.tsx": $8,
   },
   islands: {
     "./islands/checkbox.tsx": $$0,

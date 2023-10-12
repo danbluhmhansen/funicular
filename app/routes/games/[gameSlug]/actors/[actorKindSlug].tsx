@@ -4,16 +4,12 @@ import { Button } from "~styles/button.ts";
 import Checkbox from "~islands/checkbox.tsx";
 import { signal } from "@preact/signals";
 
-interface Game {
-  name: string;
-  slug: string;
-}
-
 interface ActorKind {
   id: string;
   name: string;
   slug: string;
   description?: string;
+  gameName: string;
 }
 
 interface Actor {
@@ -31,7 +27,7 @@ export const handler: Handlers = {
     switch (submit) {
       case "edit": {
         const res = await fetch(
-          `${SERVER_URL}/actor_kind?game.slug=eq.${gameSlug}&slug=eq.${actorKindSlug}`,
+          `${SERVER_URL}/actor_kind?game.slug=eq.${gameSlug}&slug=eq.${actorKindSlug}&select=slug,game!inner()`,
           {
             method: "PATCH",
             headers: {
@@ -79,11 +75,11 @@ export const handler: Handlers = {
 
 export default defineRoute(
   async (_, { params: { gameSlug, actorKindSlug } }) => {
-    const resActorKinds = await fetch(
-      `${SERVER_URL}/actor_kind?game.slug=eq.${gameSlug}&slug=eq.${actorKindSlug}&select=id,name,slug,game!inner()`,
+    const resActorKind = await fetch(
+      `${SERVER_URL}/actor_kind?game.slug=eq.${gameSlug}&slug=eq.${actorKindSlug}&select=id,name,slug,...game!inner(gameName:name)`,
       { headers: { Accept: "application/vnd.pgrst.object+json" } },
     );
-    const actorKind: ActorKind = await resActorKinds.json();
+    const actorKind: ActorKind = await resActorKind.json();
 
     const resActors = await fetch(
       `${SERVER_URL}/actor?actor_kind.game.slug=eq.${gameSlug}&actor_kind.slug=eq.${actorKindSlug}&select=name,slug,description,actor_kind!inner(game!inner())`,
@@ -94,6 +90,10 @@ export default defineRoute(
 
     return (
       <>
+        <a href={`/games/${gameSlug}`} class="hover:text-violet-500">
+          {actorKind.gameName}
+        </a>
+
         <div class="flex flex-row gap-2 justify-center items-center">
           <h1 class="text-xl font-bold">{actorKind.name}</h1>
           <a href="#edit" class={Button("yellow")}>
