@@ -8,6 +8,7 @@ interface Actor {
   description?: string;
   kindName: string;
   gameName: string;
+  skills: Record<string, number>;
 }
 
 export const handler: Handlers = {
@@ -51,7 +52,7 @@ export const handler: Handlers = {
 export default defineRoute(
   async (_, { params: { gameSlug, actorKindSlug, actorSlug } }) => {
     const resActor = await fetch(
-      `${SERVER_URL}/actor?actor_kind.game.slug=eq.${gameSlug}&actor_kind.slug=eq.${actorKindSlug}&slug=eq.${actorSlug}&select=name,slug,description,...actor_kind!inner(kindName:name,...game!inner(gameName:name))`,
+      `${SERVER_URL}/actor_skill_agg?actor_kind.game.slug=eq.${gameSlug}&actor_kind.slug=eq.${actorKindSlug}&slug=eq.${actorSlug}&select=name,slug,description,skills,...actor_kind!inner(kindName:name,...game!inner(gameName:name))`,
       { headers: { Accept: "application/vnd.pgrst.object+json" } },
     );
     const actor: Actor = await resActor.json();
@@ -82,6 +83,25 @@ export default defineRoute(
           <a href="#edit" class={Button("yellow")}>
             <div class="w-4 h-4 i-tabler-pencil" />
           </a>
+        </div>
+
+        <div class="overflow-x-auto relative rounded shadow-md">
+          <table class="w-full">
+            <thead class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700">
+              <tr>
+                {Object.keys(actor.skills).map((key) => (
+                  <th class="p-3 text-center">{key}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700">
+                {Object.values(actor.skills).map((val) => (
+                  <td class="p-3 text-center">{val}</td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <dialog

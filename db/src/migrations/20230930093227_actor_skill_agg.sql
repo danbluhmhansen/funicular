@@ -6,9 +6,7 @@ SELECT
     actor.slug,
     actor.created,
     actor.description,
-    JSONB_AGG(
-        JSON_BUILD_OBJECT(skills.name, skills.value)
-    ) AS skills
+    JSONB_OBJECT_AGG(skills.name, skills.value) AS skills
 FROM
     actor
     JOIN LATERAL (
