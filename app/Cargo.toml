@@ -1,0 +1,17 @@
+[package]
+name = "app"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = "0.6.20"
+axum-extra = { version = "0.8.0", features = ["typed-routing", "form"] }
+const_format = "0.2.32"
+markup = "0.13.1"
+serde = { version = "1.0.189", features = ["derive"] }
+sqlx = { version = "0.7.2", features = ["runtime-tokio", "tls-native-tls", "postgres", "uuid", "bigdecimal"] }
+tokio = { version = "1.33.0", features = ["macros", "rt-multi-thread"] }
+tower-http = { version = "0.4.4", features = ["fs"] }
+tower-livereload = "0.8.1"

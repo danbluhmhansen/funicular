@@ -3,18 +3,6 @@ name = "funicular_db"
 version = "0.1.0"
 edition = "2021"
 
-[workspace]
-resolver = "2"
-
-[profile.dev]
-panic = "unwind"
-
-[profile.release]
-panic = "unwind"
-opt-level = 3
-lto = "fat"
-codegen-units = 1
-
 [lib]
 crate-type = ["cdylib"]
 
@@ -31,11 +19,11 @@ pg_test = []
 [dependencies]
 bs58 = "0.5.0"
 chrono = { version = "0.4.31", features = ["serde"] }
-pgrx = { version = "0.10.2" }
+pgrx = { version = "0.11.0" }
 rand = { version = "0.8.5", default-features = false }
 regex = "1.9.5"
 uuid = { version = "1.4.1" }
 uuid7 = { version = "0.7.2", features = ["serde", "uuid"] }
 
 [dev-dependencies]
-pgrx-tests = { version = "0.10.2" }
+pgrx-tests = { version = "0.11.0" }
