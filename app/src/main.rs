@@ -39,9 +39,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let app = Router::new()
         .typed_get(routes::index)
-        .typed_get(routes::games::games_get)
-        .typed_post(routes::games::games_post)
-        .typed_get(routes::partials::games_table)
+        .typed_get(routes::games::get)
+        .typed_post(routes::games::post)
+        .typed_get(routes::games::game::get)
+        .typed_get(routes::partials::games_table::get)
+        .typed_get(routes::partials::game_name::get)
         .fallback(routes::not_found)
         .with_state(shared_state);
 

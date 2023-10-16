@@ -28,3 +28,9 @@ markup::define! {
         }
     }
 }
+
+markup::define! {
+    NotFound {
+        h1."text-xl"."font-bold" { "Not found" }
+    }
+}

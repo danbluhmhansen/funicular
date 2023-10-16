@@ -24,11 +24,11 @@ pub(crate) enum Submit {
 #[typed_path("/games")]
 pub(crate) struct Path;
 
-pub(crate) async fn games_get(_: Path) -> impl IntoResponse {
+pub(crate) async fn get(_: Path) -> impl IntoResponse {
     Html(
         Layout {
             main: markup::new! {
-                h1 { "Games" }
+                h1."text-xl"."font-bold" { "Games" }
                 ."overflow-x-auto".relative.rounded."shadow-md" {
                     form[method="post"] {
                         .flex."flex-row"."gap-2"."justify-center"."p-3"."bg-white"."dark:bg-slate-800" {
@@ -42,10 +42,10 @@ pub(crate) async fn games_get(_: Path) -> impl IntoResponse {
                             }
                         }
                         div[
-                            "hx-get"={crate::routes::partials::Path.to_string()},
+                            "hx-get"={crate::routes::partials::games_table::Path.to_string()},
                             "hx-trigger"="revealed","hx-swap"="outerHTML"
                         ] {
-                            "Loading..."
+                            ."w-6"."h-6"."i-svg-spinners-gooey-balls-2"{}
                         }
                     }
                 }
@@ -112,7 +112,7 @@ pub(crate) struct GamesForm {
     pub(crate) slugs: Vec<String>,
 }
 
-pub(crate) async fn games_post(
+pub(crate) async fn post(
     path: Path,
     State(state): State<Arc<AppState>>,
     Form(form): Form<GamesForm>,
@@ -134,5 +134,5 @@ pub(crate) async fn games_post(
         }
     }
 
-    games_get(path).await
+    get(path).await
 }
