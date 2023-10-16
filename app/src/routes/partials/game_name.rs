@@ -7,7 +7,7 @@ use axum::{
 use axum_extra::routing::TypedPath;
 use serde::Deserialize;
 
-use crate::{components::NotFound, AppState};
+use crate::{components::NotFound, AppState, BUTTON_WARNING};
 
 #[derive(Deserialize, TypedPath)]
 #[typed_path("/partials/game-name/:game_slug")]
@@ -28,7 +28,11 @@ pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppSta
     {
         Html(
             markup::new! {
-                h1."text-xl"."font-bold" { {&game.name} }
+                .flex."flex-row"."gap-2"."justify-center"."items-center" {
+                    h1."text-xl"."font-bold" { {&game.name} }
+                    // TODO: use enum from game route?
+                    a[href="#edit",class={BUTTON_WARNING}] { ."w-4"."h-4"."i-tabler-pencil"{} }
+                }
             }
             .to_string(),
         )
