@@ -176,3 +176,5 @@ dist
 
 # Funicular
 assets/site.css
+assets/index.js
+assets/tailwind-compat*

@@ -16,9 +16,14 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
+    "bun": "bun build index.ts --outdir assets",
     "bld": "unocss",
     "dev": "unocss --watch",
     "min": "unocss --minify",
     "rw": "rustywind --write ."
+  },
+  "dependencies": {
+    "@unocss/reset": "^0.56.5",
+    "htmx.org": "^1.9.6"
   }
 }
