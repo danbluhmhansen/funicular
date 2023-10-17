@@ -12,6 +12,7 @@ use crate::{components::Layout, BUTTON_ERROR, BUTTON_PRIMARY};
 #[strum(serialize_all = "snake_case")]
 pub(crate) enum Submit {
     Add,
+    Edit,
     Remove,
 }
 
