@@ -7,7 +7,7 @@ use axum::{
 use axum_extra::routing::TypedPath;
 use serde::Deserialize;
 
-use crate::{components::NotFound, AppState, BUTTON_WARNING};
+use crate::{components::NotFound, AppState};
 
 #[derive(Deserialize, TypedPath)]
 #[typed_path("/partials/game-name/:game_slug")]
@@ -32,7 +32,7 @@ pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppSta
                     h1[class="text-xl font-bold"] { {&game.name} }
                     a[
                         href={format!("#{}", crate::routes::games::game::Submit::Edit)},
-                        class={BUTTON_WARNING}
+                        class="btn-warning"
                     ] { div[class="w-4 h-4 i-tabler-pencil"]{} }
                 }
             }

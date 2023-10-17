@@ -8,7 +8,7 @@ use axum_extra::{extract::Form, routing::TypedPath};
 use serde::Deserialize;
 use strum::Display;
 
-use crate::{components::Layout, AppState, BUTTON_ERROR, BUTTON_PRIMARY};
+use crate::{components::Layout, AppState};
 
 pub(crate) mod game;
 
@@ -34,10 +34,10 @@ pub(crate) async fn get(_: Path) -> impl IntoResponse {
                         div[class="flex flex-row gap-2 justify-center p-3 bg-white dark:bg-slate-800"] {
                             a[
                                 href={format!("#{}", Submit::Add)},
-                                class={BUTTON_PRIMARY},
+                                class="btn-primary",
                                 "hx-boost"="false"
                             ] { div[class="w-4 h-4 i-tabler-plus"]{} }
-                            button[type="submit",name="submit",value={Submit::Remove.to_string()},class={BUTTON_ERROR}] {
+                            button[type="submit",name="submit",value={Submit::Remove.to_string()},class="btn-error"] {
                                 div[class="w-4 h-4 i-tabler-trash"]{}
                             }
                         }
@@ -72,7 +72,7 @@ pub(crate) async fn get(_: Path) -> impl IntoResponse {
                                 class="bg-transparent rounded invalid:border-red"
                             ]{}
                             div[class="flex justify-between"] {
-                                button[type="submit",name="submit",value={Submit::Add.to_string()},class={BUTTON_PRIMARY}] {
+                                button[type="submit",name="submit",value={Submit::Add.to_string()},class="btn-primary"] {
                                     div[class="w-4 h-4 i-tabler-check"]{}
                                 }
                             }
