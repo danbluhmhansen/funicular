@@ -28,10 +28,10 @@ pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppSta
     {
         Html(
             markup::new! {
-                .flex."flex-row"."gap-2"."justify-center"."items-center" {
-                    h1."text-xl"."font-bold" { {&game.name} }
+                div[class="flex flex-row gap-2 justify-center items-center"] {
+                    h1[class="text-xl font-bold"] { {&game.name} }
                     // TODO: use enum from game route?
-                    a[href="#edit",class={BUTTON_WARNING}] { ."w-4"."h-4"."i-tabler-pencil"{} }
+                    a[href="#edit",class={BUTTON_WARNING}] { div[class="w-4 h-4 i-tabler-pencil"]{} }
                 }
             }
             .to_string(),

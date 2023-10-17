@@ -18,7 +18,7 @@ pub(crate) async fn index(_: IndexPath) -> impl IntoResponse {
     Html(
         Layout {
             main: markup::new! {
-                h1."text-xl"."font-bold" { "Funicular" }
+                h1[class="text-xl font-bold"] { "Funicular" }
             },
         }
         .to_string(),

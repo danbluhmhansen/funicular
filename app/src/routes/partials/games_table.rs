@@ -19,23 +19,25 @@ pub(crate) async fn get(_: Path, State(state): State<Arc<AppState>>) -> impl Int
         .map_or(vec![], |games| games);
     Html(
         markup::new! {
-            table."w-full" {
-                thead."text-xs"."text-gray-700".uppercase."dark:text-gray-400"."bg-slate-50"."dark:bg-slate-700" {
+            table[class="w-full"] {
+                thead[class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700"] {
                     tr {
-                        th."p-3"."text-center" { input."bg-transparent"[type="checkbox"]; }
-                        th."p-3"."text-center" { "Name" }
+                        th[class="p-3 text-center"] { input."bg-transparent"[type="checkbox"]; }
+                        th[class="p-3 text-center"] { "Name" }
                     }
                 }
                 tbody {
                     @for game in games.iter() {
-                        tr."bg-white"."border-b"."last:border-0"."dark:bg-slate-800"."dark:border-slate-700" {
-                            td."p-3"."text-center" {
-                                input."bg-transparent"[type="checkbox",name="slugs",value={&game.slug}];
+                        tr[class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700"] {
+                            td[class="p-3 text-center"] {
+                                input[type="checkbox",name="slugs",value={&game.slug},class="bg-transparent"];
                             }
-                            td."p-3"."text-center" {
-                                a."hover:text-violet"
+                            td[class="p-3 text-center"] {
+                                a [
                                     // TODO: avoid clone?
-                                    [href={crate::routes::games::game::Path::new(Arc::new(game.slug.clone())).to_string()}] {
+                                    href={crate::routes::games::game::Path::new(Arc::new(game.slug.clone())).to_string()},
+                                    class="hover:text-violet"
+                                ] {
                                     @game.name
                                 }
                             }
