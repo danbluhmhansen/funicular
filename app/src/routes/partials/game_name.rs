@@ -1,13 +1,11 @@
 use std::sync::Arc;
 
-use axum::{
-    extract::State,
-    response::{Html, IntoResponse},
-};
+use axum::{extract::State, response::IntoResponse};
 use axum_extra::routing::TypedPath;
+use maud::html;
 use serde::Deserialize;
 
-use crate::{components::NotFound, AppState};
+use crate::{components::not_found, AppState};
 
 #[derive(Deserialize, TypedPath)]
 #[typed_path("/partials/game-name/:game_slug")]
@@ -26,19 +24,15 @@ pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppSta
         .fetch_one(&state.pool)
         .await
     {
-        Html(
-            markup::new! {
-                div[class="flex flex-row gap-2 justify-center items-center"] {
-                    h1[class="text-xl font-bold"] { {&game.name} }
-                    a[
-                        href={format!("#{}", crate::routes::games::game::Submit::Edit)},
-                        class="btn-warning"
-                    ] { div[class="w-4 h-4 i-tabler-pencil"]{} }
+        html! {
+            div class="flex flex-row gap-2 justify-center items-center" {
+                h1 class="text-xl font-bold" { (&game.name) }
+                a href={"#" (crate::routes::games::game::Submit::Edit)} class="btn-warning" {
+                    span class="w-4 h-4 i-tabler-pencil";
                 }
             }
-            .to_string(),
-        )
+        }
     } else {
-        Html(NotFound {}.to_string())
+        not_found()
     }
 }

@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 axum = "0.6.20"
 axum-extra = { version = "0.8.0", features = ["typed-routing", "form"] }
-markup = "0.13.1"
+maud = { version = "0.25.0", features = ["axum"] }
 serde = { version = "1.0.189", features = ["derive"] }
 sqlx = { version = "0.7.2", features = ["runtime-tokio", "tls-native-tls", "postgres", "uuid", "bigdecimal"] }
 strum = { version = "0.25.0", features = ["derive"] }
