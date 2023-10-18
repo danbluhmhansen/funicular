@@ -36,9 +36,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .typed_get(routes::games::get)
         .typed_post(routes::games::post)
         .typed_get(routes::games::game::get)
+        .typed_post(routes::games::game::post)
         .typed_get(routes::partials::games_table::get)
-        .typed_get(routes::partials::game_form::get)
-        .typed_get(routes::partials::game_name::get)
         .typed_get(routes::partials::actor_kinds_table::get)
         .fallback_service(ServeDir::new("assets").fallback(axum::routing::get(routes::not_found)))
         .with_state(shared_state);

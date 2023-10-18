@@ -73,7 +73,7 @@ pub(crate) async fn get(_: Path) -> impl IntoResponse {
 }
 
 #[derive(Deserialize)]
-pub(crate) struct GamesForm {
+pub(crate) struct Payload {
     pub(crate) submit: Submit,
     pub(crate) name: Option<String>,
     pub(crate) description: Option<String>,
@@ -84,7 +84,7 @@ pub(crate) struct GamesForm {
 pub(crate) async fn post(
     path: Path,
     State(state): State<Arc<AppState>>,
-    Form(form): Form<GamesForm>,
+    Form(form): Form<Payload>,
 ) -> impl IntoResponse {
     match form.submit {
         Submit::Add => {
