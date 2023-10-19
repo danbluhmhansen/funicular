@@ -15,6 +15,8 @@ use crate::{
     AppState,
 };
 
+pub(crate) mod actors;
+
 #[derive(Deserialize, Display)]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
