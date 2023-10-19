@@ -6,6 +6,7 @@
     "@iconify-json/svg-spinners": "^1.1.2",
     "@iconify-json/tabler": "^1.1.95",
     "@julr/unocss-preset-forms": "^0.0.5",
+    "@types/alpinejs": "^3.13.3",
     "@unocss/cli": "^0.56.5",
     "@unocss/preset-icons": "^0.56.5",
     "bun-types": "latest",
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "@unocss/reset": "^0.56.5",
+    "alpinejs": "^3.13.2",
     "htmx.org": "^1.9.6"
   }
 }

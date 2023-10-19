@@ -2,16 +2,15 @@ use std::sync::Arc;
 
 use axum::{
     extract::State,
-    response::{IntoResponse, Redirect, Response},
+    response::{Html, IntoResponse, Redirect, Response},
 };
 use axum_extra::{extract::Form, routing::TypedPath};
-use maud::html;
 use serde::Deserialize;
 use strum::Display;
 use uuid::Uuid;
 
 use crate::{
-    components::{layout, not_found},
+    components::{Layout, NotFound},
     AppState,
 };
 
@@ -43,96 +42,103 @@ pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppSta
         .fetch_one(&state.pool)
         .await
     {
-        layout(html! {
-            div class="flex flex-row gap-2 justify-center items-center" {
-                h1 class="text-xl font-bold" { (&game.name) }
-                a href={"#" (Submit::Edit)} class="btn-warning" {
-                    span class="w-4 h-4 i-tabler-pencil";
+        Html(Layout { content: markup::new! {
+            div[class="flex flex-row gap-2 justify-center items-center"] {
+                h1[class="text-xl font-bold"] { @game.name }
+                a[href=format!("#{}", Submit::Edit),class="btn-warning"] {
+                    span[class="w-4 h-4 i-tabler-pencil"];
                 }
             }
-            div class="overflow-x-auto relative rounded shadow-md" {
-                form method="post" {
-                    input type="hidden" name="game_id" value=(&game.id);
-                    div class="flex flex-row gap-2 justify-center p-3 bg-white dark:bg-slate-800" {
-                        a href={"#" (Submit::Add)} class="btn-primary" hx-boost="false" {
-                            span class="w-4 h-4 i-tabler-plus";
+            div[class="overflow-x-auto relative rounded shadow-md"] {
+                form[method="post"] {
+                    input[type="hidden",name="game_id",value=game.id.to_string()];
+                    div[class="flex flex-row gap-2 justify-center p-3 bg-white dark:bg-slate-800"] {
+                        a[href=format!("#{}", Submit::Add),class="btn-primary","hx-boost"="false"] {
+                            span[class="w-4 h-4 i-tabler-plus"];
                         }
-                        button type="submit" name="submit" value=(Submit::Remove) class="btn-error" {
-                            span class="w-4 h-4 i-tabler-trash";
+                        button[type="submit",name="submit",value=Submit::Remove.to_string(),class="btn-error"] {
+                            span[class="w-4 h-4 i-tabler-trash"];
                         }
                     }
-                    div
-                        hx-get=(crate::routes::partials::actor_kinds_table::Path::new(game_slug.clone()))
-                        hx-trigger="revealed"
-                        hx-swap="outerHTML" {
-                        span class="w-6 h-6 i-svg-spinners-gooey-balls-2";
+                    div[
+                        "hx-get"=crate::routes::partials::actor_kinds_table::Path::new(game_slug.clone()).to_string(),
+                        "hx-trigger"="revealed",
+                        "hx-swap"="outerHTML"
+                    ] {
+                        span[class="w-6 h-6 i-svg-spinners-gooey-balls-2"];
                     }
                 }
             }
-            dialog
-                id=(Submit::Edit)
-                class="hidden inset-0 z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm" {
-                div class="flex z-10 flex-col gap-4 p-4 max-w-sm bg-white rounded border dark:text-white dark:bg-slate-900" {
+            dialog[
+                id=Submit::Edit.to_string(),
+                class="hidden inset-0 z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm"
+            ] {
+                div[class="flex z-10 flex-col gap-4 p-4 max-w-sm bg-white rounded border dark:text-white dark:bg-slate-900"] {
                     div {
-                        a href="#!" hx-boost="false" class="float-right w-4 h-4 i-tabler-x" {}
-                        h2 class="text-xl" { "Edit Game" }
+                        a[href="#!","hx-boost"="false",class="float-right w-4 h-4 i-tabler-x"] {}
+                        h2[class="text-xl"] { "Edit Game" }
                     }
-                    form method="post" class="flex flex-col gap-4 justify-center" {
-                        input
-                            type="text"
-                            name="name"
-                            placeholder="Name"
-                            required
-                            autofocus
-                            value=(&game.name)
-                            class="bg-transparent rounded invalid:border-red";
-                        textarea
-                            name="description"
-                            placeholder="Description"
-                            value=[&game.description]
-                            class="bg-transparent rounded invalid:border-red" {}
-                        div class="flex justify-between" {
-                            button type="submit" name="submit" value=(Submit::Edit) class="btn-primary" {
-                                span class="w-4 h-4 i-tabler-check";
+                    form[method="post",class="flex flex-col gap-4 justify-center"] {
+                        input[
+                            type="text",
+                            name="name",
+                            placeholder="Name",
+                            required,
+                            autofocus,
+                            value=&game.name,
+                            class="bg-transparent rounded invalid:border-red"
+                        ];
+                        textarea[
+                            name="description",
+                            placeholder="Description",
+                            value=&game.description,
+                            class="bg-transparent rounded invalid:border-red"
+                        ] {}
+                        div[class="flex justify-between"] {
+                            button[type="submit",name="submit",value=Submit::Edit.to_string(),class="btn-primary"] {
+                                span[class="w-4 h-4 i-tabler-check"];
                             }
                         }
                     }
                 }
-                a href="#!" hx-boost="false" class="fixed inset-0" {}
+                a[href="#!","hx-boost"="false",class="fixed inset-0"] {}
             }
-            dialog
-                id=(Submit::Add)
-                class="hidden inset-0 z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm" {
-                div class="flex z-10 flex-col gap-4 p-4 max-w-sm bg-white rounded border dark:text-white dark:bg-slate-900" {
+            dialog[
+                id=Submit::Add.to_string(),
+                class="hidden inset-0 z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm"
+            ] {
+                div[class="flex z-10 flex-col gap-4 p-4 max-w-sm bg-white rounded border dark:text-white dark:bg-slate-900"] {
                     div {
-                        a href="#!" hx-boost="false" class="float-right w-4 h-4 i-tabler-x" {}
-                        h2 class="text-xl" { "Add Actor Kind" }
+                        a[href="#!","hx-boost"="false",class="float-right w-4 h-4 i-tabler-x"] {}
+                        h2[class="text-xl"] { "Add Actor Kind" }
                     }
-                    form method="post" class="flex flex-col gap-4 justify-center" {
-                        input type="hidden" name="game_id" value=(&game.id);
-                        input
-                            type="text"
-                            name="name"
-                            placeholder="Name"
-                            required
-                            autofocus
-                            class="bg-transparent rounded invalid:border-red";
-                        textarea
-                            name="description"
-                            placeholder="Description"
-                            class="bg-transparent rounded invalid:border-red" {}
-                        div class="flex justify-between" {
-                            button type="submit" name="submit" value=(Submit::Add) class="btn-primary" {
-                                span class="w-4 h-4 i-tabler-check";
+                    form[method="post",class="flex flex-col gap-4 justify-center"] {
+                        input[type="hidden",name="game_id",value=game.id.to_string()];
+                        input[
+                            type="text",
+                            name="name",
+                            placeholder="Name",
+                            required,
+                            autofocus,
+                            class="bg-transparent rounded invalid:border-red"
+                        ];
+                        textarea[
+                            name="description",
+                            placeholder="Description",
+                            class="bg-transparent rounded invalid:border-red"
+                        ] {}
+                        div[class="flex justify-between"] {
+                            button[type="submit",name="submit",value=Submit::Add.to_string(),class="btn-primary"] {
+                                span[class="w-4 h-4 i-tabler-check"];
                             }
                         }
                     }
                 }
-                a href="#!" hx-boost="false" class="fixed inset-0" {}
+                a[href="#!","hx-boost"="false",class="fixed inset-0"] {}
             }
-        })
+        }}.to_string())
     } else {
-        layout(not_found())
+        Html(Layout { content: NotFound {} }.to_string())
     }
 }
 
