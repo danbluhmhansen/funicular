@@ -10,29 +10,41 @@ use serde::Deserialize;
 use crate::{routes, AppState};
 
 #[derive(Deserialize, TypedPath)]
-#[typed_path("/partials/actor-kinds-table/:game_slug")]
+#[typed_path("/partials/actors-table/:game_slug/:actor_kind_slug")]
 pub(crate) struct Path {
     game_slug: Arc<String>,
+    actor_kind_slug: Arc<String>,
 }
 
 impl Path {
-    pub(crate) fn new(game_slug: Arc<String>) -> Self {
-        Self { game_slug }
+    pub(crate) fn new(game_slug: Arc<String>, actor_kind_slug: Arc<String>) -> Self {
+        Self {
+            game_slug,
+            actor_kind_slug,
+        }
     }
 }
 
-pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppState>>) -> impl IntoResponse {
-    let kinds = sqlx::query!(
+pub(crate) async fn get(
+    Path {
+        game_slug,
+        actor_kind_slug,
+    }: Path,
+    State(state): State<Arc<AppState>>,
+) -> impl IntoResponse {
+    let actors = sqlx::query!(
         "
-        SELECT actor_kind.name, actor_kind.slug FROM actor_kind
+        SELECT actor.name, actor.slug FROM actor
+        JOIN actor_kind ON actor_kind.id = actor.kind_id
         JOIN game ON game.id = actor_kind.game_id
-        WHERE game.slug = $1;
+        WHERE game.slug = $1 AND actor_kind.slug = $2;
         ",
-        *game_slug
+        *game_slug,
+        *actor_kind_slug
     )
     .fetch_all(&state.pool)
     .await
-    .map_or(vec![], |kinds| kinds);
+    .map_or(vec![], |actors| actors);
 
     Html(markup::new! {
         table["x-data"="{ toggle: false }",class="w-full"] {
@@ -43,21 +55,22 @@ pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppSta
                 }
             }
             tbody {
-                @for kind in kinds.iter() {
+                @for actor in actors.iter() {
                     tr[class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700"] {
                         td[class="p-3 text-center"] {
-                            input[type="checkbox",name="slugs",value=&kind.slug,":checked"="toggle",class="bg-transparent"];
+                            input[type="checkbox",name="slugs",value=&actor.slug,":checked"="toggle",class="bg-transparent"];
                         }
                         td[class="p-3 text-center"] {
                             a[
-                                href=routes::games::game::actors::Path::new(
+                                href=routes::games::game::actors::actor::Path::new(
                                     game_slug.clone(),
+                                    actor_kind_slug.clone(),
                                     // TODO: avoid clone?
-                                    Arc::new(kind.slug.clone())
+                                    Arc::new(actor.slug.clone())
                                 ).to_string(),
                                 class="hover:text-violet"
                             ] {
-                                @kind.name
+                                @actor.name
                             }
                         }
                     }
