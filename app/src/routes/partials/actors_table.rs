@@ -63,7 +63,11 @@ pub(crate) async fn get(
                         td[class="p-3 text-center"] {
                             a[
                                 // TODO: avoid clone?
-                                href=crate::routes::games::game::actors::Path::new(game_slug.clone(), Arc::new(actor.slug.clone())).to_string(),
+                                href=crate::routes::games::game::actors::actor::Path::new(
+                                    game_slug.clone(),
+                                    actor_kind_slug.clone(),
+                                    Arc::new(actor.slug.clone())
+                                ).to_string(),
                                 class="hover:text-violet"
                             ] {
                                 @actor.name

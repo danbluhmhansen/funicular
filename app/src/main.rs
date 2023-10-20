@@ -38,6 +38,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .typed_get(routes::games::game::get)
         .typed_post(routes::games::game::post)
         .typed_get(routes::games::game::actors::get)
+        .typed_get(routes::games::game::actors::actor::get)
         .typed_get(routes::partials::games_table::get)
         .typed_get(routes::partials::actor_kinds_table::get)
         .typed_get(routes::partials::actors_table::get)

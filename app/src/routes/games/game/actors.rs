@@ -78,7 +78,10 @@ pub(crate) async fn get(
                                 }
                             }
                             div[
-                                "hx-get"=crate::routes::partials::actors_table::Path::new(game_slug.clone(), actor_kind_slug.clone()).to_string(),
+                                "hx-get"=crate::routes::partials::actors_table::Path::new(
+                                    game_slug.clone(),
+                                    actor_kind_slug.clone()
+                                ).to_string(),
                                 "hx-trigger"="revealed",
                                 "hx-swap"="outerHTML"
                             ] {
@@ -94,3 +97,5 @@ pub(crate) async fn get(
         Html(Layout { content: NotFound {} }.to_string())
     }
 }
+
+pub(crate) mod actor;
