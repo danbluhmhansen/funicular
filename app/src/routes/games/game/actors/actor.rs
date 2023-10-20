@@ -2,11 +2,12 @@ use std::sync::Arc;
 
 use axum::{
     extract::State,
-    response::{Html, IntoResponse},
+    response::{Html, IntoResponse, Redirect, Response},
 };
-use axum_extra::routing::TypedPath;
+use axum_extra::{extract::Form, routing::TypedPath};
 use serde::Deserialize;
 use strum::Display;
+use uuid::Uuid;
 
 use crate::{
     components::{Layout, NotFound},
@@ -115,11 +116,78 @@ pub(crate) async fn get(
                             }
                         }
                     }
+                    dialog[
+                        id=Submit::Edit.to_string(),
+                        class="hidden inset-0 z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm"
+                    ] {
+                        div[class="flex z-10 flex-col gap-4 p-4 max-w-sm bg-white rounded border dark:text-white dark:bg-slate-900"] {
+                            div {
+                                a[href="#!","hx-boost"="false",class="float-right w-4 h-4 i-tabler-x"] {}
+                                h2[class="text-xl"] { "Edit Actor" }
+                            }
+                            form[method="post",class="flex flex-col gap-4 justify-center"] {
+                                input[type="hidden",name="actor_id",value=actor.id.unwrap_or_default().to_string()];
+                                input[
+                                    type="text",
+                                    name="name",
+                                    placeholder="Name",
+                                    required,
+                                    autofocus,
+                                    value=&actor.name,
+                                    class="bg-transparent rounded invalid:border-red"
+                                ];
+                                textarea[
+                                    name="description",
+                                    placeholder="Description",
+                                    value=&actor.description,
+                                    class="bg-transparent rounded invalid:border-red"
+                                ] {}
+                                div[class="flex justify-between"] {
+                                    button[type="submit",name="submit",value=Submit::Edit.to_string(),class="btn-primary"] {
+                                        span[class="w-4 h-4 i-tabler-check"];
+                                    }
+                                }
+                            }
+                        }
+                        a[href="#!","hx-boost"="false",class="fixed inset-0"] {}
+                    }
                 },
             }
             .to_string(),
         )
     } else {
         Html(Layout { content: NotFound {} }.to_string())
+    }
+}
+
+#[derive(Deserialize)]
+pub(crate) struct Payload {
+    pub(crate) submit: Submit,
+    pub(crate) actor_id: Option<Uuid>,
+    pub(crate) name: Option<String>,
+    pub(crate) description: Option<String>,
+    #[serde(default)]
+    pub(crate) slugs: Vec<String>,
+}
+
+pub(crate) async fn post(path: Path, State(state): State<Arc<AppState>>, Form(form): Form<Payload>) -> Response {
+    match form.submit {
+        Submit::Edit => {
+            match sqlx::query!(
+                "UPDATE actor SET name = $1, description = $2 WHERE id = $3 RETURNING slug;",
+                form.name,
+                form.description,
+                form.actor_id.unwrap_or_default()
+            )
+            .fetch_one(&state.pool)
+            .await
+            {
+                Ok(actor) if *path.actor_slug != actor.slug => {
+                    Redirect::to(&Path::new(path.game_slug, path.actor_kind_slug, Arc::new(actor.slug)).to_string())
+                        .into_response()
+                }
+                _ => get(path, State(state)).await.into_response(),
+            }
+        }
     }
 }
