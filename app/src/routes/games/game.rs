@@ -11,7 +11,7 @@ use uuid::Uuid;
 
 use crate::{
     components::{Layout, NotFound},
-    AppState,
+    routes, AppState,
 };
 
 pub(crate) mod actors;
@@ -61,7 +61,7 @@ pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppSta
                         }
                     }
                     div[
-                        "hx-get"=crate::routes::partials::actor_kinds_table::Path::new(game_slug.clone()).to_string(),
+                        "hx-get"=routes::partials::actor_kinds_table::Path::new(game_slug.clone()).to_string(),
                         "hx-trigger"="revealed",
                         "hx-swap"="outerHTML"
                     ] {

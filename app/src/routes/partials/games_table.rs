@@ -6,7 +6,7 @@ use axum::{
 };
 use axum_extra::routing::TypedPath;
 
-use crate::AppState;
+use crate::{routes, AppState};
 
 #[derive(TypedPath)]
 #[typed_path("/partials/games-table")]
@@ -35,7 +35,7 @@ pub(crate) async fn get(_: Path, State(state): State<Arc<AppState>>) -> impl Int
                         td[class="p-3 text-center"] {
                             a[
                                 // TODO: avoid clone?
-                                href=crate::routes::games::game::Path::new(Arc::new(game.slug.clone())).to_string(),
+                                href=routes::games::game::Path::new(Arc::new(game.slug.clone())).to_string(),
                                 class="hover:text-violet"
                             ] {
                                 @game.name

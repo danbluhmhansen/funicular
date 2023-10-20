@@ -10,7 +10,7 @@ use strum::Display;
 
 use crate::{
     components::{Layout, NotFound},
-    AppState,
+    routes, AppState,
 };
 
 #[derive(Deserialize, Display)]
@@ -47,7 +47,13 @@ pub(crate) async fn get(
 ) -> impl IntoResponse {
     if let Ok(actor) = sqlx::query!(
         "
-        SELECT actor.id, actor.name, actor.description, actor.skills
+        SELECT
+            actor.id,
+            actor.name,
+            actor.description,
+            actor.skills,
+            game.name AS game_name,
+            actor_kind.name AS actor_kind_name
         FROM actor_skill_agg AS actor
         JOIN actor_kind ON actor_Kind.id = actor.kind_id
         JOIN game ON game.id = actor_kind.game_id
@@ -63,6 +69,26 @@ pub(crate) async fn get(
         Html(
             Layout {
                 content: markup::new! {
+                    ol[class="flex flex-row"] {
+                        li {
+                            a[
+                                href=routes::games::game::Path::new(game_slug.clone()).to_string(),
+                                class="hover:text-violet-500"
+                            ] { @actor.game_name }
+                        }
+                        li[class="flex flex-row justify-center items-center"] {
+                          span[class="i-tabler-chevron-right"];
+                        }
+                        li {
+                            a[
+                                href=routes::games::game::actors::Path::new(
+                                    game_slug.clone(),
+                                    actor_kind_slug.clone()
+                                ).to_string(),
+                                class="hover:text-violet-500"
+                            ] { @actor.actor_kind_name }
+                        }
+                    }
                     div[class="flex flex-row gap-2 justify-center items-center"] {
                         h1[class="text-xl font-bold"] { @actor.name }
                         a[href=format!("#{}", Submit::Edit),class="btn-warning"] {

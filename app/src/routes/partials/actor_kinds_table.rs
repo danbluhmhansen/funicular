@@ -7,7 +7,7 @@ use axum::{
 use axum_extra::routing::TypedPath;
 use serde::Deserialize;
 
-use crate::AppState;
+use crate::{routes, AppState};
 
 #[derive(Deserialize, TypedPath)]
 #[typed_path("/partials/actor-kinds-table/:game_slug")]
@@ -50,8 +50,11 @@ pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppSta
                         }
                         td[class="p-3 text-center"] {
                             a[
-                                // TODO: avoid clone?
-                                href=crate::routes::games::game::actors::Path::new(game_slug.clone(), Arc::new(kind.slug.clone())).to_string(),
+                                href=routes::games::game::actors::Path::new(
+                                    game_slug.clone(),
+                                    // TODO: avoid clone?
+                                    Arc::new(kind.slug.clone())
+                                ).to_string(),
                                 class="hover:text-violet"
                             ] {
                                 @kind.name

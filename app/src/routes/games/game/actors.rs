@@ -11,7 +11,7 @@ use uuid::Uuid;
 
 use crate::{
     components::{Layout, NotFound},
-    AppState,
+    routes, AppState,
 };
 
 pub(crate) mod actor;
@@ -50,7 +50,7 @@ pub(crate) async fn get(
 ) -> impl IntoResponse {
     if let Ok(actor_kind) = sqlx::query!(
         "
-        SELECT actor_kind.id, actor_kind.name, actor_kind.description FROM actor_kind
+        SELECT actor_kind.id, actor_kind.name, actor_kind.description, game.name AS game_name FROM actor_kind
         JOIN game ON game.id = actor_kind.game_id
         WHERE game.slug = $1 AND actor_kind.slug = $2;
         ",
@@ -61,6 +61,7 @@ pub(crate) async fn get(
     .await
     {
         Html(Layout { content: markup::new! {
+            a[href=routes::games::game::Path::new(game_slug.clone()).to_string()] { @actor_kind.game_name }
             div[class="flex flex-row gap-2 justify-center items-center"] {
                 h1[class="text-xl font-bold"] { @actor_kind.name }
                 a[href=format!("#{}", Submit::Edit),class="btn-warning"] {
@@ -79,7 +80,7 @@ pub(crate) async fn get(
                         }
                     }
                     div[
-                        "hx-get"=crate::routes::partials::actors_table::Path::new(
+                        "hx-get"=routes::partials::actors_table::Path::new(
                             game_slug.clone(),
                             actor_kind_slug.clone()
                         ).to_string(),

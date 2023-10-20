@@ -1,3 +1,5 @@
+use crate::routes;
+
 markup::define! {
     Layout<R: markup::Render>(content: R) {
         @markup::doctype()
@@ -18,8 +20,8 @@ markup::define! {
             body["hx-boost"="true",class="dark:text-white dark:bg-slate-900"] {
                 nav[class="py-4"] {
                     ul[class="flex flex-col gap-4 justify-center items-center sm:flex-row"] {
-                        li { a[href=crate::routes::IndexPath.to_string(),class="hover:text-violet"] { "Home" } }
-                        li { a[href=crate::routes::games::Path.to_string(),class="hover:text-violet"] { "Games" } }
+                        li { a[href=routes::IndexPath.to_string(),class="hover:text-violet"] { "Home" } }
+                        li { a[href=routes::games::Path.to_string(),class="hover:text-violet"] { "Games" } }
                     }
                 }
                 main[class="container flex flex-col gap-4 justify-center items-center mx-auto"] { @content }

@@ -8,7 +8,7 @@ use axum_extra::{extract::Form, routing::TypedPath};
 use serde::Deserialize;
 use strum::Display;
 
-use crate::{components::Layout, AppState};
+use crate::{components::Layout, routes, AppState};
 
 pub(crate) mod game;
 
@@ -38,7 +38,7 @@ pub(crate) async fn get(_: Path) -> impl IntoResponse {
                     }
                 }
                 div[
-                    "hx-get"=crate::routes::partials::games_table::Path.to_string(),
+                    "hx-get"=routes::partials::games_table::Path.to_string(),
                     "hx-trigger"="revealed",
                     "hx-swap"="outerHTML"
                 ] {

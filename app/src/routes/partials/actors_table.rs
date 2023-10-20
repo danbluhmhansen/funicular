@@ -7,7 +7,7 @@ use axum::{
 use axum_extra::routing::TypedPath;
 use serde::Deserialize;
 
-use crate::AppState;
+use crate::{routes, AppState};
 
 #[derive(Deserialize, TypedPath)]
 #[typed_path("/partials/actors-table/:game_slug/:actor_kind_slug")]
@@ -62,10 +62,10 @@ pub(crate) async fn get(
                         }
                         td[class="p-3 text-center"] {
                             a[
-                                // TODO: avoid clone?
-                                href=crate::routes::games::game::actors::actor::Path::new(
+                                href=routes::games::game::actors::actor::Path::new(
                                     game_slug.clone(),
                                     actor_kind_slug.clone(),
+                                    // TODO: avoid clone?
                                     Arc::new(actor.slug.clone())
                                 ).to_string(),
                                 class="hover:text-violet"
