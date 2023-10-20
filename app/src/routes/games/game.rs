@@ -79,6 +79,7 @@ pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppSta
                         h2[class="text-xl"] { "Edit Game" }
                     }
                     form[method="post",class="flex flex-col gap-4 justify-center"] {
+                        input[type="hidden",name="game_id",value=game.id.to_string()];
                         input[
                             type="text",
                             name="name",
@@ -156,16 +157,16 @@ pub(crate) async fn post(path: Path, State(state): State<Arc<AppState>>, Form(fo
     match form.submit {
         Submit::Edit => {
             match sqlx::query!(
-                "UPDATE game SET name = $1, description = $2 WHERE slug = $3 RETURNING slug;",
+                "UPDATE game SET name = $1, description = $2 WHERE id = $3 RETURNING slug;",
                 form.name,
                 form.description,
-                *path.game_slug
+                form.game_id.unwrap_or_default()
             )
             .fetch_one(&state.pool)
             .await
             {
                 Ok(game) if *path.game_slug != game.slug => {
-                    Redirect::to(&format!("/games/{}", game.slug)).into_response()
+                    Redirect::to(&Path::new(Arc::new(game.slug)).to_string()).into_response()
                 }
                 _ => get(path, State(state)).await.into_response(),
             }
