@@ -101,15 +101,20 @@ pub(crate) async fn get(
                         .as_ref()
                         .and_then(|skills| skills.as_object())
                         .map(|skills| (skills.keys(), skills.values())) {
-                        table[class="w-full"] {
-                            thead[class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700"] {
-                                tr { @for key in keys { th[class="p-3 text-center"] { @key } } }
+                        div[class="overflow-x-auto relative rounded shadow-md"] {
+                            div[class="flex flex-row gap-2 justify-center p-3 bg-white dark:bg-slate-800"] {
+                                h2[class="text-lg font-bold"] { "Skills" }
                             }
-                            tbody {
-                                tr[class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700"] {
-                                    @for val in vals {
-                                        td[class="p-3 text-center"] {
-                                            @if let Some(val) = val.as_number() { @val.to_string() }
+                            table[class="w-full"] {
+                                thead[class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700"] {
+                                    tr { @for key in keys { th[class="p-3 text-center"] { @key } } }
+                                }
+                                tbody {
+                                    tr[class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700"] {
+                                        @for val in vals {
+                                            td[class="p-3 text-center"] {
+                                                @if let Some(val) = val.as_number() { @val.to_string() }
+                                            }
                                         }
                                     }
                                 }
