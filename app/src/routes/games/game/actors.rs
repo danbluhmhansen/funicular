@@ -87,6 +87,8 @@ pub(crate) async fn get(
                             actor_kind_slug.clone()
                         ).to_string(),
                         "hx-trigger"="revealed",
+                        "hx-select"="#actors-table",
+                        "hx-target"="this",
                     ] {
                         span[class="w-6 h-6 i-svg-spinners-gooey-balls-2"];
                     }

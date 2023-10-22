@@ -85,6 +85,8 @@ pub(crate) async fn get(
                     //         gear_kind_slug.clone()
                     //     ).to_string(),
                     //     "hx-trigger"="revealed",
+                    //     "hx-select"="#gears-table",
+                    //     "hx-target"="this",
                     // ] {
                     //     span[class="w-6 h-6 i-svg-spinners-gooey-balls-2"];
                     // }
