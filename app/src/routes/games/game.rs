@@ -55,24 +55,28 @@ pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppSta
                 Submit::ActorAdd,
                 Submit::ActorRemove,
                 routes::partials::actor_kinds_table::Path::new(game_slug.clone()).to_string(),
+                "#actor-kinds-table",
             ),
             (
                 "Gear Kinds",
                 Submit::GearAdd,
                 Submit::GearRemove,
                 routes::partials::gear_kinds_table::Path::new(game_slug.clone()).to_string(),
+                "#gear-kinds-table",
             ),
             (
                 "Skills",
                 Submit::SkillAdd,
                 Submit::SkillRemove,
                 routes::partials::skills_table::Path::new(game_slug.clone()).to_string(),
+                "#skills-table",
             ),
             (
                 "Traits",
                 Submit::TraitAdd,
                 Submit::TraitRemove,
                 routes::partials::traits_table::Path::new(game_slug.clone()).to_string(),
+                "#traits-table",
             ),
         ];
 
@@ -104,7 +108,12 @@ pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppSta
                                     span[class="w-4 h-4 i-tabler-trash"];
                                 }
                             }
-                            div["hx-get"=&section.3,"hx-trigger"="revealed",] {
+                            div[
+                                "hx-get"=&section.3,
+                                "hx-trigger"="revealed",
+                                "hx-select"=section.4,
+                                "hx-target"="this",
+                            ] {
                                 span[class="w-6 h-6 i-svg-spinners-gooey-balls-2"];
                             }
                         }

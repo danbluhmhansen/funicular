@@ -37,7 +37,12 @@ pub(crate) async fn get(_: Path) -> impl IntoResponse {
                         span[class="w-4 h-4 i-tabler-trash"];
                     }
                 }
-                div["hx-get"=routes::partials::games_table::Path.to_string(),"hx-trigger"="revealed",] {
+                div[
+                    "hx-get"=routes::partials::games_table::Path.to_string(),
+                    "hx-trigger"="revealed",
+                    "hx-select"="#games-table",
+                    "hx-target"="this",
+                ] {
                     span[class="w-6 h-6 i-svg-spinners-gooey-balls-2"];
                 }
             }

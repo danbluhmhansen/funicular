@@ -47,7 +47,7 @@ pub(crate) async fn get(
     .map_or(vec![], |actors| actors);
 
     Html(markup::new! {
-        table["x-data"="{ toggle: false }",class="w-full"] {
+        table #"actors-table"["x-data"="{ toggle: false }",class="w-full"] {
             thead[class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700"] {
                 tr {
                     th[class="p-3 text-center"] { input[type="checkbox","x-model"="toggle",class="bg-transparent"]; }

@@ -35,7 +35,7 @@ pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppSta
     .map_or(vec![], |kinds| kinds);
 
     Html(markup::new! {
-        table["x-data"="{ toggle: false }",class="w-full"] {
+        table #"actor-kinds-table"["x-data"="{ toggle: false }",class="w-full"] {
             thead[class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700"] {
                 tr {
                     th[class="p-3 text-center"] { input[type="checkbox","x-model"="toggle",class="bg-transparent"]; }

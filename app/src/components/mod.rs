@@ -17,15 +17,19 @@ markup::define! {
                 link[rel="stylesheet",type="text/css",href="/site.css"];
                 script[src="/index.js",defer]{}
             }
-            // TODO: hx-boost
-            body[class="overflow-auto h-full dark:text-white dark:bg-slate-900",] {
+            body[
+                "hx-boost"="true",
+                "hx-select"="#main",
+                "hx-target"="#main",
+                class="overflow-auto h-full dark:text-white dark:bg-slate-900",
+            ] {
                 nav[class="py-4"] {
                     ul[class="flex flex-col gap-4 justify-center items-center sm:flex-row"] {
                         li { a[href=routes::IndexPath.to_string(),class="hover:text-violet"] { "Home" } }
                         li { a[href=routes::games::Path.to_string(),class="hover:text-violet"] { "Games" } }
                     }
                 }
-                main[class="container flex flex-col gap-4 justify-center items-center mx-auto"] { @content }
+                main #main[class="container flex flex-col gap-4 justify-center items-center mx-auto"] { @content }
             }
         }
     }
