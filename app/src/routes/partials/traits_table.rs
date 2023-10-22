@@ -7,7 +7,7 @@ use axum::{
 use axum_extra::routing::TypedPath;
 use serde::Deserialize;
 
-use crate::{routes, AppState};
+use crate::AppState;
 
 #[derive(Deserialize, TypedPath)]
 #[typed_path("/partials/traits-table/:game_slug")]

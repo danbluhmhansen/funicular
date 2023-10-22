@@ -76,6 +76,13 @@ pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppSta
             ),
         ];
 
+        let dialogs = vec![
+            (Submit::ActorAdd, "Add Actor Kind"),
+            (Submit::GearAdd, "Add Gear Kind"),
+            (Submit::SkillAdd, "Add Skill"),
+            (Submit::TraitAdd, "Add Trait"),
+        ];
+
         Html(Layout { content: markup::new! {
             div[class="flex flex-row gap-2 justify-center items-center"] {
                 h1[class="text-xl font-bold"] { @game.name }
@@ -97,21 +104,14 @@ pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppSta
                                     span[class="w-4 h-4 i-tabler-trash"];
                                 }
                             }
-                            div[
-                                "hx-get"=&section.3,
-                                "hx-trigger"="revealed",
-                                "hx-swap"="outerHTML"
-                            ] {
+                            div["hx-get"=&section.3,"hx-trigger"="revealed",] {
                                 span[class="w-6 h-6 i-svg-spinners-gooey-balls-2"];
                             }
                         }
                     }
                 }
             }
-            dialog[
-                id=Submit::Edit.to_string(),
-                class="hidden inset-0 z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm"
-            ] {
+            dialog[id=Submit::Edit.to_string(),class="dialog"] {
                 div[class="flex z-10 flex-col gap-4 p-4 max-w-sm bg-white rounded border dark:text-white dark:bg-slate-900"] {
                     div {
                         a[href="#!","hx-boost"="false",class="float-right w-4 h-4 i-tabler-x"] {}
@@ -143,71 +143,37 @@ pub(crate) async fn get(Path { game_slug }: Path, State(state): State<Arc<AppSta
                 }
                 a[href="#!","hx-boost"="false",class="fixed inset-0"] {}
             }
-            dialog[
-                id=Submit::ActorAdd.to_string(),
-                class="hidden inset-0 z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm"
-            ] {
-                div[class="flex z-10 flex-col gap-4 p-4 max-w-sm bg-white rounded border dark:text-white dark:bg-slate-900"] {
-                    div {
-                        a[href="#!","hx-boost"="false",class="float-right w-4 h-4 i-tabler-x"] {}
-                        h2[class="text-xl"] { "Add Actor Kind" }
-                    }
-                    form[method="post",class="flex flex-col gap-4 justify-center"] {
-                        input[type="hidden",name="game_id",value=game.id.to_string()];
-                        input[
-                            type="text",
-                            name="name",
-                            placeholder="Name",
-                            required,
-                            autofocus,
-                            class="bg-transparent rounded invalid:border-red"
-                        ];
-                        textarea[
-                            name="description",
-                            placeholder="Description",
-                            class="bg-transparent rounded invalid:border-red"
-                        ] {}
-                        div[class="flex justify-between"] {
-                            button[type="submit",name="submit",value=Submit::ActorAdd.to_string(),class="btn-primary"] {
-                                span[class="w-4 h-4 i-tabler-check"];
+            @for dialog in &dialogs {
+                dialog[id=dialog.0.to_string(),class="dialog"] {
+                    div[class="flex z-10 flex-col gap-4 p-4 max-w-sm bg-white rounded border dark:text-white dark:bg-slate-900"] {
+                        div {
+                            a[href="#!","hx-boost"="false",class="float-right w-4 h-4 i-tabler-x"] {}
+                            h2[class="text-xl"] { @dialog.1 }
+                        }
+                        form[method="post",class="flex flex-col gap-4 justify-center"] {
+                            input[type="hidden",name="game_id",value=game.id.to_string()];
+                            input[
+                                type="text",
+                                name="name",
+                                placeholder="Name",
+                                required,
+                                autofocus,
+                                class="bg-transparent rounded invalid:border-red"
+                            ];
+                            textarea[
+                                name="description",
+                                placeholder="Description",
+                                class="bg-transparent rounded invalid:border-red"
+                            ] {}
+                            div[class="flex justify-between"] {
+                                button[type="submit",name="submit",value=dialog.0.to_string(),class="btn-primary"] {
+                                    span[class="w-4 h-4 i-tabler-check"];
+                                }
                             }
                         }
                     }
+                    a[href="#!","hx-boost"="false",class="fixed inset-0"] {}
                 }
-                a[href="#!","hx-boost"="false",class="fixed inset-0"] {}
-            }
-            dialog[
-                id=Submit::GearAdd.to_string(),
-                class="hidden inset-0 z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm"
-            ] {
-                div[class="flex z-10 flex-col gap-4 p-4 max-w-sm bg-white rounded border dark:text-white dark:bg-slate-900"] {
-                    div {
-                        a[href="#!","hx-boost"="false",class="float-right w-4 h-4 i-tabler-x"] {}
-                        h2[class="text-xl"] { "Add Gear Kind" }
-                    }
-                    form[method="post",class="flex flex-col gap-4 justify-center"] {
-                        input[type="hidden",name="game_id",value=game.id.to_string()];
-                        input[
-                            type="text",
-                            name="name",
-                            placeholder="Name",
-                            required,
-                            autofocus,
-                            class="bg-transparent rounded invalid:border-red"
-                        ];
-                        textarea[
-                            name="description",
-                            placeholder="Description",
-                            class="bg-transparent rounded invalid:border-red"
-                        ] {}
-                        div[class="flex justify-between"] {
-                            button[type="submit",name="submit",value=Submit::GearAdd.to_string(),class="btn-primary"] {
-                                span[class="w-4 h-4 i-tabler-check"];
-                            }
-                        }
-                    }
-                }
-                a[href="#!","hx-boost"="false",class="fixed inset-0"] {}
             }
         }}.to_string())
     } else {

@@ -87,16 +87,12 @@ pub(crate) async fn get(
                             actor_kind_slug.clone()
                         ).to_string(),
                         "hx-trigger"="revealed",
-                        "hx-swap"="outerHTML"
                     ] {
                         span[class="w-6 h-6 i-svg-spinners-gooey-balls-2"];
                     }
                 }
             }
-            dialog[
-                id=Submit::Edit.to_string(),
-                class="hidden inset-0 z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm"
-            ] {
+            dialog[id=Submit::Edit.to_string(),class="dialog"] {
                 div[class="flex z-10 flex-col gap-4 p-4 max-w-sm bg-white rounded border dark:text-white dark:bg-slate-900"] {
                     div {
                         a[href="#!","hx-boost"="false",class="float-right w-4 h-4 i-tabler-x"] {}
@@ -128,10 +124,7 @@ pub(crate) async fn get(
                 }
                 a[href="#!","hx-boost"="false",class="fixed inset-0"] {}
             }
-            dialog[
-                id=Submit::Add.to_string(),
-                class="hidden inset-0 z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm"
-            ] {
+            dialog[id=Submit::Add.to_string(),class="dialog"] {
                 div[class="flex z-10 flex-col gap-4 p-4 max-w-sm bg-white rounded border dark:text-white dark:bg-slate-900"] {
                     div {
                         a[href="#!","hx-boost"="false",class="float-right w-4 h-4 i-tabler-x"] {}

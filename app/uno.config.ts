@@ -26,6 +26,7 @@ export default defineConfig({
       "btn-success": "btn-green",
       "btn-warning": "btn-amber",
       "btn-error": "btn-red",
+      "dialog": "hidden inset-0 z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm",
     },
   ],
 });

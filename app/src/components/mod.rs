@@ -3,7 +3,7 @@ use crate::routes;
 markup::define! {
     Layout<R: markup::Render>(content: R) {
         @markup::doctype()
-        html[lang="en"] {
+        html[lang="en",class="overflow-auto h-full"] {
             head {
                 meta[charset="utf-8"];
                 meta[name="viewport",contet="width=device-width,initial-scale=1.0"];
@@ -17,7 +17,8 @@ markup::define! {
                 link[rel="stylesheet",type="text/css",href="/site.css"];
                 script[src="/index.js",defer]{}
             }
-            body["hx-boost"="true",class="dark:text-white dark:bg-slate-900"] {
+            // TODO: hx-boost
+            body[class="overflow-auto h-full dark:text-white dark:bg-slate-900",] {
                 nav[class="py-4"] {
                     ul[class="flex flex-col gap-4 justify-center items-center sm:flex-row"] {
                         li { a[href=routes::IndexPath.to_string(),class="hover:text-violet"] { "Home" } }
