@@ -1,8 +1,12 @@
+use std::fmt::Display;
+
+use markup::{define, doctype, raw, Render};
+
 use crate::routes;
 
-markup::define! {
-    Layout<R: markup::Render>(content: R) {
-        @markup::doctype()
+define! {
+    Layout<R: Render>(content: R) {
+        @doctype()
         html[lang="en",class="overflow-auto h-full"] {
             head {
                 meta[charset="utf-8"];
@@ -35,4 +39,22 @@ markup::define! {
     }
 }
 
-markup::define! { NotFound() { h1[class="text-xl font-bold"] { "Not found" } } }
+define! { NotFound() { h1[class="text-xl font-bold"] { "Not found" } } }
+
+define! {
+    Dialog<D1: Display, D2: Display, R: Render>(id: D1, title: D2, content: R) {
+        dialog[
+            id=raw(id),
+            class="hidden inset-0 z-10 justify-center items-center w-full h-full target:flex bg-black/50 backdrop-blur-sm",
+        ] {
+            div[class="flex z-10 flex-col gap-4 p-4 max-w-sm bg-white rounded border dark:text-white dark:bg-slate-900"] {
+                div {
+                    a[href="#!","hx-boost"="false",class="float-right w-4 h-4 i-tabler-x"] {}
+                    h2[class="text-xl"] { @raw(title) }
+                }
+                @content
+            }
+            a[href="#!","hx-boost"="false",class="fixed inset-0"] {}
+        }
+    }
+}

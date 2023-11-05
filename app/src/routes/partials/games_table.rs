@@ -5,6 +5,7 @@ use axum::{
     response::{Html, IntoResponse},
 };
 use axum_extra::routing::TypedPath;
+use markup::Render;
 
 use crate::{routes, AppState};
 
