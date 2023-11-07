@@ -167,13 +167,15 @@ FROM
         SELECT
             actor.id,
             skill.name,
-            SUM(rule.value * COALESCE(actor_trait.amount, 0)) AS value
+            SUM(
+                COALESCE(rule.value, 0) * COALESCE(actor_trait.amount, 1)
+            ) AS value
         FROM
             actor
             JOIN actor_skill ON actor_skill.kind_id = actor.kind_id
             JOIN skill ON skill.id = actor_skill.skill_id
-            JOIN rule ON rule.skill_id = actor_skill.skill_id
-            JOIN actor_trait ON actor_trait.actor_id = actor.id
+            LEFT JOIN rule ON rule.skill_id = actor_skill.skill_id
+            LEFT JOIN actor_trait ON actor_trait.actor_id = actor.id
             AND actor_trait.trait_id = rule.trait_id
         GROUP BY
             actor.id,
@@ -181,3 +183,40 @@ FROM
     ) skills ON skills.id = actor.id
 GROUP BY
     actor.id;
+
+CREATE VIEW gear_skill_agg AS
+SELECT
+    gear.id,
+    gear.kind_id,
+    gear.name,
+    gear.slug,
+    gear.created,
+    gear.description,
+    skills.actor_id,
+    JSONB_OBJECT_AGG(skills.name, skills.value) AS skills
+FROM
+    gear
+    JOIN LATERAL (
+        SELECT
+            actor_gear.actor_id,
+            actor_gear.gear_id,
+            skill.name,
+            SUM(
+                COALESCE(rule.value, 0) * COALESCE(gear_trait.amount, 1)
+            ) AS value
+        FROM
+            gear
+            JOIN actor_gear ON actor_gear.gear_id = gear.id
+            JOIN gear_skill ON gear_skill.kind_id = gear.kind_id
+            JOIN skill ON skill.id = gear_skill.skill_id
+            LEFT JOIN rule ON rule.skill_id = gear_skill.skill_id
+            LEFT JOIN gear_trait ON gear_trait.gear_id = gear.id
+            AND gear_trait.trait_id = rule.trait_id
+        GROUP BY
+            actor_gear.actor_id,
+            actor_gear.gear_id,
+            skill.id
+    ) skills ON skills.gear_id = gear.id
+GROUP BY
+    skills.actor_id,
+    gear.id;
