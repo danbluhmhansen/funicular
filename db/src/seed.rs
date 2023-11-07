@@ -59,24 +59,6 @@ fn seed_skills(game: pgrx::Uuid) -> Result<Skills, spi::Error> {
         att_thr: skills[9],
     };
 
-    Spi::run_with_args(
-        r#"
-        INSERT INTO "sub_skill" VALUES
-            ($1, $3),
-            ($1, $6),
-            ($2, $4),
-            ($2, $5);
-        "#,
-        Some(vec![
-            skills.str.into_arg(),
-            skills.dex.into_arg(),
-            skills.att_mel.into_arg(),
-            skills.att_fin.into_arg(),
-            skills.att_ran.into_arg(),
-            skills.att_thr.into_arg(),
-        ]),
-    )?;
-
     Ok(skills)
 }
 
@@ -131,10 +113,10 @@ fn seed_traits(game: pgrx::Uuid) -> Result<Traits, spi::Error> {
     })
 }
 
-fn seed_rule_nums(skills: &Skills, traits: &Traits) -> Result<(), spi::Error> {
+fn seed_rules(skills: &Skills, traits: &Traits) -> Result<(), spi::Error> {
     Spi::run_with_args(
         r#"
-        INSERT INTO "rule_num" VALUES
+        INSERT INTO "rule" VALUES
             ($1, $7,  8),
             ($2, $7,  8),
             ($3, $7,  8),
@@ -343,7 +325,7 @@ pub fn fun_seed() -> Result<(), spi::Error> {
     let game = seed_game()?;
     let skills = seed_skills(game)?;
     let traits = seed_traits(game)?;
-    seed_rule_nums(&skills, &traits)?;
+    seed_rules(&skills, &traits)?;
     let actors = seed_actors(game, &skills, &traits)?;
     seed_gears(game, actors[0], actors[1], &skills)?;
     Ok(())
