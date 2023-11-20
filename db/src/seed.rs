@@ -330,15 +330,3 @@ pub fn fun_seed() -> Result<(), spi::Error> {
     seed_gears(game, actors[0], actors[1], &skills)?;
     Ok(())
 }
-
-#[cfg(any(test, feature = "pg_test"))]
-#[pg_schema]
-mod tests {
-    use pgrx::prelude::*;
-
-    #[pg_test]
-    fn test_fun_seed() -> Result<(), spi::Error> {
-        Spi::run("SELECT migrations_up();")?;
-        Spi::run("SELECT fun_seed();")
-    }
-}

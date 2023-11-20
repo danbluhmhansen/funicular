@@ -33,19 +33,24 @@ fn uuid7_time(uuid: pgrx::Uuid) -> Result<pgrx::Timestamp, &'static str> {
 
 #[pg_extern]
 fn gen_rand_uuid7() -> Result<pgrx::Uuid, String> {
-    pgrx::Uuid::from_slice(uuid7::uuid7().as_bytes())
+    pgrx::Uuid::from_slice(uuid::Uuid::now_v7().into_bytes().as_ref())
 }
 
 #[pg_extern]
 fn gen_uuid7(ts: pgrx::Timestamp) -> Result<pgrx::Uuid, String> {
     let (h, m, s, ms) = ts.to_hms_micro();
-    if let Some(datetime) = NaiveDate::from_ymd_opt(ts.year(), u32::from(ts.month()), u32::from(ts.day()))
+    if let Some((s, ns)) = NaiveDate::from_ymd_opt(ts.year(), u32::from(ts.month()), u32::from(ts.day()))
         .and_then(|d| d.and_hms_micro_opt(u32::from(h), u32::from(m), u32::from(s), ms))
+        .and_then(|d| {
+            u64::try_from(d.timestamp())
+                .map(|s| (s, d.timestamp_subsec_nanos()))
+                .ok()
+        })
     {
         pgrx::Uuid::from_slice(
-            uuid7::V7Generator::new(rand::rngs::OsRng)
-                .generate_or_reset_core(datetime.timestamp_millis() as u64, 10_000)
-                .as_bytes(),
+            uuid::Uuid::new_v7(uuid::Timestamp::from_unix(uuid::NoContext, s, ns))
+                .into_bytes()
+                .as_ref(),
         )
     } else {
         Err("Cannot convert timestamp to date.".to_string())
