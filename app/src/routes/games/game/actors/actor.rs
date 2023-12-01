@@ -67,6 +67,18 @@ pub(crate) async fn get(
     .fetch_one(&state.pool)
     .await
     {
+        let gears = sqlx::query!(
+            "
+            SELECT name, skills
+            FROM gear_skill_agg
+            WHERE actor_id = $1;
+            ",
+            actor.id
+        )
+        .fetch_all(&state.pool)
+        .await
+        .map_or(vec![], |gears| gears);
+
         Html(
             Layout {
                 content: markup::new! {
@@ -114,6 +126,32 @@ pub(crate) async fn get(
                                         @for val in vals {
                                             td[class="p-3 text-center"] {
                                                 @if let Some(val) = val.as_number() { @val.to_string() }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    div[class="overflow-x-auto relative rounded shadow-md"] {
+                        div[class="flex flex-row gap-2 justify-center p-3 bg-white dark:bg-slate-800"] {
+                            h2[class="text-lg font-bold"] { "Gear" }
+                        }
+                        table [class="w-full"] {
+                            thead[class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700"] {
+                                tr { th[class="p-3 text-center"] { "Name" } th[class="p-3 text-center"] { "Skills" } }
+                            }
+                            tbody {
+                                @for gear in gears.iter() {
+                                    tr[class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700"] {
+                                        td[class="p-3 text-center"] { @gear.name }
+                                        td[class="p-3 text-center"] {
+                                            @if let Some(skills) = gear.skills
+                                                .as_ref()
+                                                .and_then(|skills| skills.as_object()) {
+                                                @for (key, val) in skills {
+                                                    @key @if let Some(val) = val.as_u64() { ": " @val }
+                                                }
                                             }
                                         }
                                     }
