@@ -19,10 +19,9 @@ pg_test = []
 [dependencies]
 bs58 = "0.5.0"
 chrono = { version = "0.4.31", features = ["serde"] }
-pgrx = { version = "0.11.0" }
-rand = { version = "0.8.5", default-features = false }
+pgrx = { version = "0.11.1" }
 regex = "1.10.2"
 uuid = { version = "1.6.1", features = ["v7"] }
 
 [dev-dependencies]
-pgrx-tests = { version = "0.11.0" }
+pgrx-tests = { version = "0.11.1" }

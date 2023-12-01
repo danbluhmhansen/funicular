@@ -1,6 +1,6 @@
-use std::{error::Error, sync::Arc, time::Duration};
+use std::{error::Error, net::Ipv4Addr, sync::Arc, time::Duration};
 
-use axum::{Router, Server};
+use axum::Router;
 use axum_extra::routing::RouterExt;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use tower_http::services::ServeDir;
@@ -55,9 +55,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     #[cfg(debug_assertions)]
     let app = app.layer(LiveReloadLayer::new());
 
-    Server::bind(&([0, 0, 0, 0], 1111).into())
-        .serve(app.into_make_service())
-        .await?;
+    axum::serve(
+        tokio::net::TcpListener::bind((Ipv4Addr::new(0, 0, 0, 0), 1111)).await?,
+        app,
+    )
+    .await?;
 
     Ok(())
 }
