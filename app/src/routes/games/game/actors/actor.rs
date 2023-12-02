@@ -77,7 +77,29 @@ pub(crate) async fn get(
         )
         .fetch_all(&state.pool)
         .await
-        .map_or(vec![], |gears| gears);
+        .map_or(vec![], |gears| {
+            gears
+                .into_iter()
+                .map(|gear| {
+                    gear.skills.and_then(|skill| {
+                        skill.as_object().map(|skill| {
+                            skill
+                                // TODO: avoid clone
+                                .clone()
+                                .into_iter()
+                                .map(|(key, val)| {
+                                    // TODO: avoid clone
+                                    gear.name.clone().zip(val.as_u64()).map(|(name, val)| (name, key, val))
+                                })
+                                .flatten()
+                                .collect::<Vec<_>>()
+                        })
+                    })
+                })
+                .flatten()
+                .flatten()
+                .collect::<Vec<_>>()
+        });
 
         Html(
             Layout {
@@ -139,21 +161,18 @@ pub(crate) async fn get(
                         }
                         table [class="w-full"] {
                             thead[class="text-xs text-gray-700 uppercase dark:text-gray-400 bg-slate-50 dark:bg-slate-700"] {
-                                tr { th[class="p-3 text-center"] { "Name" } th[class="p-3 text-center"] { "Skills" } }
+                                tr {
+                                    th[class="p-3 text-center"] { "Name" }
+                                    th[class="p-3 text-center"] { "Skill" }
+                                    th[class="p-3 text-center"] { "Value" }
+                                }
                             }
                             tbody {
-                                @for gear in gears.iter() {
+                                @for (name, skill, value) in gears.iter() {
                                     tr[class="bg-white border-b last:border-0 dark:bg-slate-800 dark:border-slate-700"] {
-                                        td[class="p-3 text-center"] { @gear.name }
-                                        td[class="p-3 text-center"] {
-                                            @if let Some(skills) = gear.skills
-                                                .as_ref()
-                                                .and_then(|skills| skills.as_object()) {
-                                                @for (key, val) in skills {
-                                                    @key @if let Some(val) = val.as_u64() { ": " @val }
-                                                }
-                                            }
-                                        }
+                                        td[class="p-3 text-center"] { @name }
+                                        td[class="p-3 text-center"] { @skill }
+                                        td[class="p-3 text-center"] { @value }
                                     }
                                 }
                             }
